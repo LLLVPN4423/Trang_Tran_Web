@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using TrangTranHair.Application.Interfaces;
 using TrangTranHair.Domain.Entities;
+using TrangTranHair.Domain.Enums;
 
 namespace TrangTranHair.Infrastructure.Persistence.InMemory;
 
@@ -36,5 +37,25 @@ public sealed class InMemoryOrderRepository : IOrderRepository
         order.UpdatedAt = DateTime.UtcNow;
         _store[order.Id] = order;
         return Task.FromResult(order);
+    }
+
+    public Task<IReadOnlyList<Order>> GetAllAsync(
+        OrderStatus? status = null,
+        string? phone = null,
+        string? customerId = null,
+        CancellationToken cancellationToken = default)
+    {
+        IEnumerable<Order> query = _store.Values;
+
+        if (status is not null)
+            query = query.Where(o => o.Status == status);
+
+        if (!string.IsNullOrWhiteSpace(phone))
+            query = query.Where(o => o.CustomerPhone.Contains(phone, StringComparison.OrdinalIgnoreCase));
+
+        if (!string.IsNullOrWhiteSpace(customerId))
+            query = query.Where(o => o.CustomerId == customerId);
+
+        return Task.FromResult<IReadOnlyList<Order>>(query.OrderByDescending(o => o.CreatedAt).ToList());
     }
 }

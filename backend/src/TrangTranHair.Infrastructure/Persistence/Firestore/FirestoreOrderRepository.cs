@@ -23,6 +23,31 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
         return doc is null ? null : MapFromDocument(doc.ConvertTo<OrderDocument>());
     }
 
+    public async Task<IReadOnlyList<Order>> GetAllAsync(
+        OrderStatus? status = null,
+        string? phone = null,
+        string? customerId = null,
+        CancellationToken cancellationToken = default)
+    {
+        Query query = Collection;
+
+        if (status is not null)
+            query = query.WhereEqualTo("Status", status.ToString());
+
+        if (!string.IsNullOrWhiteSpace(customerId))
+            query = query.WhereEqualTo("CustomerId", customerId);
+
+        var snapshot = await query.GetSnapshotAsync(cancellationToken);
+        var orders = snapshot.Documents
+            .Select(d => MapFromDocument(d.ConvertTo<OrderDocument>()))
+            .AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(phone))
+            orders = orders.Where(o => o.CustomerPhone.Contains(phone, StringComparison.OrdinalIgnoreCase));
+
+        return orders.OrderByDescending(o => o.CreatedAt).ToList();
+    }
+
     public async Task<Order> CreateAsync(Order order, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(order.Id))
@@ -44,6 +69,7 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
         new()
         {
             Id = doc.Id,
+            CustomerId = doc.CustomerId,
             CustomerName = doc.CustomerName,
             CustomerPhone = doc.CustomerPhone,
             CustomerEmail = doc.CustomerEmail,
@@ -55,21 +81,27 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
                 Name = i.Name,
                 Quantity = i.Quantity,
                 UnitPrice = (decimal)i.UnitPrice,
-                HairSize = i.HairSize is null ? null : Enum.Parse<HairSize>(i.HairSize)
+                HairSize = i.HairSize is null ? null : Enum.Parse<HairSize>(i.HairSize),
             }).ToList(),
+            SubtotalAmount = (decimal)(doc.SubtotalAmount != 0 ? doc.SubtotalAmount : doc.TotalAmount),
+            DiscountAmount = (decimal)doc.DiscountAmount,
+            PromotionCode = doc.PromotionCode,
+            PointsRedeemed = doc.PointsRedeemed,
+            PointsEarned = doc.PointsEarned,
             TotalAmount = (decimal)doc.TotalAmount,
             Status = Enum.Parse<OrderStatus>(doc.Status),
             PaymentCode = doc.PaymentCode,
             SePayTransactionId = doc.SePayTransactionId,
             PaidAt = doc.PaidAt is null ? null : FirestoreMapper.FromTimestamp(doc.PaidAt),
             CreatedAt = FirestoreMapper.FromTimestamp(doc.CreatedAt),
-            UpdatedAt = FirestoreMapper.FromTimestamp(doc.UpdatedAt)
+            UpdatedAt = FirestoreMapper.FromTimestamp(doc.UpdatedAt),
         };
 
     private static OrderDocument MapToDocument(Order order) =>
         new()
         {
             Id = order.Id,
+            CustomerId = order.CustomerId,
             CustomerName = order.CustomerName,
             CustomerPhone = order.CustomerPhone,
             CustomerEmail = order.CustomerEmail,
@@ -81,15 +113,20 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
                 Name = i.Name,
                 Quantity = i.Quantity,
                 UnitPrice = (double)i.UnitPrice,
-                HairSize = i.HairSize?.ToString()
+                HairSize = i.HairSize?.ToString(),
             }).ToList(),
+            SubtotalAmount = (double)order.SubtotalAmount,
+            DiscountAmount = (double)order.DiscountAmount,
+            PromotionCode = order.PromotionCode,
+            PointsRedeemed = order.PointsRedeemed,
+            PointsEarned = order.PointsEarned,
             TotalAmount = (double)order.TotalAmount,
             Status = order.Status.ToString(),
             PaymentCode = order.PaymentCode,
             SePayTransactionId = order.SePayTransactionId,
             PaidAt = order.PaidAt is null ? null : FirestoreMapper.ToTimestamp(order.PaidAt.Value),
             CreatedAt = FirestoreMapper.ToTimestamp(order.CreatedAt),
-            UpdatedAt = order.UpdatedAt is null ? null : FirestoreMapper.ToTimestamp(order.UpdatedAt.Value)
+            UpdatedAt = order.UpdatedAt is null ? null : FirestoreMapper.ToTimestamp(order.UpdatedAt.Value),
         };
 }
 
@@ -98,6 +135,9 @@ internal sealed class OrderDocument
 {
     [FirestoreDocumentId]
     public string Id { get; set; } = string.Empty;
+
+    [FirestoreProperty]
+    public string? CustomerId { get; set; }
 
     [FirestoreProperty]
     public string CustomerName { get; set; } = string.Empty;
@@ -113,6 +153,21 @@ internal sealed class OrderDocument
 
     [FirestoreProperty]
     public List<OrderItemDocument> Items { get; set; } = [];
+
+    [FirestoreProperty]
+    public double SubtotalAmount { get; set; }
+
+    [FirestoreProperty]
+    public double DiscountAmount { get; set; }
+
+    [FirestoreProperty]
+    public string? PromotionCode { get; set; }
+
+    [FirestoreProperty]
+    public int PointsRedeemed { get; set; }
+
+    [FirestoreProperty]
+    public int PointsEarned { get; set; }
 
     [FirestoreProperty]
     public double TotalAmount { get; set; }

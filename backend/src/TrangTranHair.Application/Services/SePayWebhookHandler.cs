@@ -11,6 +11,7 @@ namespace TrangTranHair.Application.Services;
 
 public sealed class SePayWebhookHandler(
     IOrderRepository orderRepository,
+    ILoyaltyService loyaltyService,
     IConfiguration configuration,
     ILogger<SePayWebhookHandler> logger) : ISePayWebhookHandler
 {
@@ -83,6 +84,16 @@ public sealed class SePayWebhookHandler(
         order.UpdatedAt = DateTime.UtcNow;
 
         await orderRepository.UpdateAsync(order, cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(order.CustomerId))
+        {
+            await loyaltyService.EarnPointsForOrderAsync(
+                order.CustomerId,
+                order.Id,
+                order.TotalAmount,
+                cancellationToken);
+        }
+
         logger.LogInformation("Order {OrderId} marked as paid via SePay transaction {TxId}", order.Id, payload.Id);
 
         return new SePayWebhookResult(true, "Payment confirmed.");

@@ -47,14 +47,6 @@ export interface CreateOrderItemRequest {
   hairSize?: HairSize | null
 }
 
-export interface CreateOrderRequest {
-  customerName: string
-  customerPhone: string
-  customerEmail?: string | null
-  notes?: string | null
-  items: CreateOrderItemRequest[]
-}
-
 export interface OrderItemResponse {
   itemId: string
   itemType: OrderItemType
@@ -65,16 +57,136 @@ export interface OrderItemResponse {
   subtotal: number
 }
 
+export interface CreateOrderRequest {
+  customerName: string
+  customerPhone: string
+  customerEmail?: string | null
+  notes?: string | null
+  items: CreateOrderItemRequest[]
+  promoCode?: string | null
+  pointsToRedeem?: number
+}
+
 export interface OrderResponse {
   id: string
+  customerId: string | null
   customerName: string
   customerPhone: string
   customerEmail: string | null
   notes: string | null
   items: OrderItemResponse[]
+  subtotalAmount: number
+  discountAmount: number
+  promotionCode: string | null
+  pointsRedeemed: number
+  pointsEarned: number
   totalAmount: number
   status: OrderStatus
   paymentCode: string
+  createdAt: string
+  paidAt?: string | null
+}
+
+export type PromotionType = 'Percentage' | 'FixedAmount'
+
+export interface PromotionResponse {
+  id: string
+  code: string
+  name: string
+  description: string | null
+  type: PromotionType
+  value: number
+  minOrderAmount: number
+  maxUses: number | null
+  usedCount: number
+  expiresAt: string | null
+  isActive: boolean
+}
+
+export interface CreatePromotionRequest {
+  code: string
+  name: string
+  description?: string | null
+  type: PromotionType
+  value: number
+  minOrderAmount: number
+  maxUses?: number | null
+  expiresAt?: string | null
+  isActive?: boolean
+}
+
+export interface UpdatePromotionRequest {
+  code: string
+  name: string
+  description?: string | null
+  type: PromotionType
+  value: number
+  minOrderAmount: number
+  maxUses?: number | null
+  expiresAt?: string | null
+  isActive: boolean
+}
+
+export interface ValidatePromotionResponse {
+  isValid: boolean
+  message: string | null
+  discountAmount: number
+  promotionId: string | null
+  promotionName: string | null
+}
+
+export interface CustomerResponse {
+  id: string
+  name: string
+  phone: string
+  email: string | null
+  loyaltyPoints: number
+  totalSpent: number
+  createdAt: string
+}
+
+export interface SyncCustomerRequest {
+  name: string
+  phone: string
+  email?: string | null
+}
+
+export interface LoyaltySummaryResponse {
+  points: number
+  totalSpent: number
+  pointsPerTenThousandVnd: number
+  redeemRatePoints: number
+  redeemRateValueVnd: number
+}
+
+export type LoyaltyTransactionType = 'Earn' | 'Redeem' | 'Adjust'
+
+export type AppointmentStatus = 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed'
+
+export interface CreateAppointmentRequest {
+  customerName: string
+  customerPhone: string
+  serviceInterest: string
+  notes?: string | null
+}
+
+export interface AppointmentResponse {
+  id: string
+  customerId: string | null
+  customerName: string
+  customerPhone: string
+  serviceInterest: string
+  notes: string | null
+  status: AppointmentStatus
+  createdAt: string
+}
+
+export interface LoyaltyTransactionResponse {
+  id: string
+  type: LoyaltyTransactionType
+  points: number
+  description: string
+  orderId: string | null
   createdAt: string
 }
 

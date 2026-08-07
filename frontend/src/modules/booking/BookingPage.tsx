@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ModuleErrorBoundary } from '@/shared/components/ModuleErrorBoundary'
 import { PageLayout } from '@/shared/components/PageLayout'
 import { CartSummary } from './components/CartSummary'
 import { CheckoutForm } from './components/CheckoutForm'
 import { PaymentPending, PaymentSuccess } from './components/PaymentPanel'
+import { useAuth } from '@/shared/auth/AuthProvider'
 import { useOrderPolling } from './hooks/useOrderPolling'
 import { useCartStore } from '@/shared/store/cartStore'
 import type { OrderResponse } from '@/shared/api/types'
@@ -19,12 +20,17 @@ export function BookingPage() {
 function BookingContent() {
   const [placedOrder, setPlacedOrder] = useState<OrderResponse | null>(null)
   const itemCount = useCartStore((s) => s.itemCount())
+  const { refreshProfile } = useAuth()
   const { order: polledOrder, isPaid } = useOrderPolling(
     placedOrder?.id ?? null,
     placedOrder?.status === 'Pending',
   )
 
   const activeOrder = polledOrder ?? placedOrder
+
+  useEffect(() => {
+    if (isPaid) refreshProfile()
+  }, [isPaid, refreshProfile])
 
   return (
     <PageLayout>

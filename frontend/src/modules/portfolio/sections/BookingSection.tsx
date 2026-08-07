@@ -1,9 +1,15 @@
-import { useEffect, useRef, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { gsap } from '@/shared/lib/gsap'
+import { createAppointment } from '@/shared/api/endpoints'
+import { useAuth } from '@/shared/auth/AuthProvider'
 import { CONTACT, SOCIAL_LINKS } from '../data/content'
 
 export function BookingSection() {
   const sectionRef = useRef<HTMLElement>(null)
+  const { user, customerProfile } = useAuth()
+  const [submitting, setSubmitting] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const section = sectionRef.current
@@ -22,8 +28,27 @@ export function BookingSection() {
     return () => ctx.revert()
   }, [])
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setSubmitting(true)
+    setError(null)
+    setSuccess(false)
+
+    const form = new FormData(e.currentTarget)
+    try {
+      await createAppointment({
+        customerName: String(form.get('name')).trim(),
+        customerPhone: String(form.get('phone')).trim(),
+        serviceInterest: String(form.get('service')),
+        notes: String(form.get('notes')).trim() || null,
+      })
+      setSuccess(true)
+      e.currentTarget.reset()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Không gửi được yêu cầu')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -79,6 +104,17 @@ export function BookingSection() {
           className="space-y-6"
           data-lenis-prevent
         >
+          {success && (
+            <p className="rounded-sm border border-emerald-900/50 bg-emerald-950/20 px-4 py-3 text-sm text-emerald-300">
+              Đã gửi yêu cầu đặt lịch! Salon sẽ liên hệ sớm.
+            </p>
+          )}
+          {error && (
+            <p className="rounded-sm border border-red-900/50 bg-red-950/20 px-4 py-3 text-sm text-red-300">
+              {error}
+            </p>
+          )}
+
           <div>
             <label htmlFor="name" className="mb-2 block text-xs uppercase tracking-widest text-zinc-500">
               Họ tên
@@ -87,6 +123,7 @@ export function BookingSection() {
               id="name"
               name="name"
               required
+              defaultValue={customerProfile?.name}
               className="w-full border-b border-zinc-800 bg-transparent py-3 text-zinc-200 outline-none transition focus:border-gold"
               placeholder="Nguyễn Văn A"
             />
@@ -100,6 +137,7 @@ export function BookingSection() {
               name="phone"
               type="tel"
               required
+              defaultValue={customerProfile?.phone}
               className="w-full border-b border-zinc-800 bg-transparent py-3 text-zinc-200 outline-none transition focus:border-gold"
               placeholder="0986 586 058"
             />
@@ -132,11 +170,15 @@ export function BookingSection() {
               placeholder="Size tóc, mong muốn..."
             />
           </div>
+          {user && (
+            <p className="text-xs text-zinc-600">Đăng nhập với {user.email}</p>
+          )}
           <button
             type="submit"
-            className="w-full bg-gold/90 py-4 text-xs font-medium uppercase tracking-[0.3em] text-zinc-950 transition hover:bg-gold"
+            disabled={submitting}
+            className="w-full bg-gold/90 py-4 text-xs font-medium uppercase tracking-[0.3em] text-zinc-950 transition hover:bg-gold disabled:opacity-50"
           >
-            Gửi yêu cầu đặt lịch
+            {submitting ? 'Đang gửi...' : 'Gửi yêu cầu đặt lịch'}
           </button>
         </form>
       </div>

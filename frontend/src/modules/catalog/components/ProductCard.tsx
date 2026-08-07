@@ -20,7 +20,15 @@ export function ProductCard({ product }: Props) {
   }
 
   return (
-    <article className="group flex flex-col justify-between border border-zinc-800/60 p-6 transition hover:border-zinc-700">
+    <article className="group flex flex-col justify-between border border-zinc-800/60 p-4 transition hover:border-zinc-700 sm:p-6">
+      {product.imageUrl && (
+        <img
+          src={product.imageUrl}
+          alt={product.name}
+          className="mb-4 aspect-square w-full object-cover"
+          loading="lazy"
+        />
+      )}
       <div>
         <p className="text-xs uppercase tracking-widest text-gold-muted">{product.brand}</p>
         <h3 className="mt-2 font-serif text-2xl text-zinc-100">{product.name}</h3>

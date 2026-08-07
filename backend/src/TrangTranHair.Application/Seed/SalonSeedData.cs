@@ -339,4 +339,34 @@ public static class SalonSeedData
             Stock = 35
         }
     ];
+
+    public static List<Promotion> GetPromotions() =>
+    [
+        new()
+        {
+            Id = "promo-welcome10",
+            Code = "WELCOME10",
+            Name = "Chào mừng khách mới",
+            Description = "Giảm 10% cho đơn đầu tiên.",
+            Type = PromotionType.Percentage,
+            Value = 10,
+            MinOrderAmount = 200_000,
+            MaxUses = 500,
+            IsActive = true,
+            ExpiresAt = DateTime.UtcNow.AddYears(1),
+        },
+        new()
+        {
+            Id = "promo-salon50k",
+            Code = "SALON50K",
+            Name = "Ưu đãi salon",
+            Description = "Giảm 50.000đ cho đơn từ 500K.",
+            Type = PromotionType.FixedAmount,
+            Value = 50_000,
+            MinOrderAmount = 500_000,
+            MaxUses = 200,
+            IsActive = true,
+            ExpiresAt = DateTime.UtcNow.AddMonths(6),
+        },
+    ];
 }

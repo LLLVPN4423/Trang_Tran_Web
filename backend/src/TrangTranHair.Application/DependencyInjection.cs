@@ -11,6 +11,10 @@ public static class DependencyInjection
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IDataSeedService, DataSeedService>();
         services.AddScoped<ISePayWebhookHandler, SePayWebhookHandler>();
+        services.AddScoped<ICustomerService, CustomerService>();
+        services.AddScoped<IPromotionService, PromotionService>();
+        services.AddScoped<ILoyaltyService, LoyaltyService>();
+        services.AddScoped<IAppointmentService, AppointmentService>();
         return services;
     }
 }

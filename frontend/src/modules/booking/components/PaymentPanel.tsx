@@ -67,7 +67,10 @@ export function PaymentSuccess({ order }: Props) {
         Đơn hàng <strong className="text-zinc-200">{order.paymentCode}</strong> đã được xác nhận.
       </p>
       <p className="mt-4 text-sm text-zinc-500">
-        Tổng: {formatVnd(order.totalAmount)} · Cảm ơn bạn!
+        Tổng: {formatVnd(order.totalAmount)}
+        {order.pointsEarned > 0 && (
+          <> · Bạn nhận <strong className="text-gold">{order.pointsEarned} điểm</strong></>
+        )}
       </p>
     </div>
   )

@@ -13,7 +13,10 @@ public sealed record CreateOrderRequest(
     string CustomerPhone,
     string? CustomerEmail,
     string? Notes,
-    List<CreateOrderItemRequest> Items);
+    List<CreateOrderItemRequest> Items,
+    string? PromoCode = null,
+    int PointsToRedeem = 0,
+    string? CustomerId = null);
 
 public sealed record OrderItemResponse(
     string ItemId,
@@ -26,12 +29,22 @@ public sealed record OrderItemResponse(
 
 public sealed record OrderResponse(
     string Id,
+    string? CustomerId,
     string CustomerName,
     string CustomerPhone,
     string? CustomerEmail,
     string? Notes,
     IReadOnlyList<OrderItemResponse> Items,
+    decimal SubtotalAmount,
+    decimal DiscountAmount,
+    string? PromotionCode,
+    int PointsRedeemed,
+    int PointsEarned,
     decimal TotalAmount,
     OrderStatus Status,
     string PaymentCode,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    DateTime? PaidAt = null);
+
+public sealed record UpdateOrderStatusRequest(
+    OrderStatus Status);

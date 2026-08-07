@@ -17,6 +17,7 @@ public class SeedController(IDataSeedService seedService, IHostEnvironment env) 
         {
             result.ServicesSeeded,
             result.ProductsSeeded,
+            result.PromotionsSeeded,
             result.Skipped,
             message = result.Skipped
                 ? "Data already exists. Use ?force=true to re-seed."
@@ -36,6 +37,7 @@ public class SeedController(IDataSeedService seedService, IHostEnvironment env) 
         {
             result.ServicesSeeded,
             result.ProductsSeeded,
+            result.PromotionsSeeded,
             result.Skipped,
             message = result.Skipped
                 ? "Data already exists. Use ?force=true to re-seed."

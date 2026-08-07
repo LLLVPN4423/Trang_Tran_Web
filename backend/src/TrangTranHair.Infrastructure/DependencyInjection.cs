@@ -20,12 +20,20 @@ public static class DependencyInjection
             services.AddSingleton<IServiceRepository, FirestoreServiceRepository>();
             services.AddSingleton<IProductRepository, FirestoreProductRepository>();
             services.AddSingleton<IOrderRepository, FirestoreOrderRepository>();
+            services.AddSingleton<ICustomerRepository, FirestoreCustomerRepository>();
+            services.AddSingleton<IPromotionRepository, FirestorePromotionRepository>();
+            services.AddSingleton<ILoyaltyRepository, FirestoreLoyaltyRepository>();
+            services.AddSingleton<IAppointmentRepository, FirestoreAppointmentRepository>();
         }
         else
         {
             services.AddSingleton<IServiceRepository, InMemoryServiceRepository>();
             services.AddSingleton<IProductRepository, InMemoryProductRepository>();
             services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
+            services.AddSingleton<ICustomerRepository, InMemoryCustomerRepository>();
+            services.AddSingleton<IPromotionRepository, InMemoryPromotionRepository>();
+            services.AddSingleton<ILoyaltyRepository, InMemoryLoyaltyRepository>();
+            services.AddSingleton<IAppointmentRepository, InMemoryAppointmentRepository>();
         }
 
         return services;

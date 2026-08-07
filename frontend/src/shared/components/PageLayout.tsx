@@ -1,15 +1,16 @@
 import { type ReactNode } from 'react'
-import { SiteHeader } from './SiteHeader'
+import { AppShell } from './AppShell'
 
 interface Props {
   children: ReactNode
+  variant?: 'customer' | 'admin'
+  showSidebar?: boolean
 }
 
-export function PageLayout({ children }: Props) {
+export function PageLayout({ children, variant = 'customer', showSidebar = true }: Props) {
   return (
-    <div className="min-h-screen bg-zinc-950">
-      <SiteHeader />
-      <main>{children}</main>
-    </div>
+    <AppShell variant={variant} showSidebar={showSidebar}>
+      {children}
+    </AppShell>
   )
 }

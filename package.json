@@ -1,0 +1,19 @@
+{
+  "name": "trang-tran-hair",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Trang Tran Hair Salon — Monorepo",
+  "scripts": {
+    "dev:all": "concurrently -n \"API,WEB\" -c \"cyan,magenta\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "dotnet watch run --project backend/src/TrangTranHair.Api/TrangTranHair.Api.csproj --launch-profile http",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "install:all": "npm install && npm install --prefix frontend",
+    "build:backend": "dotnet build backend/TrangTranHair.slnx",
+    "build:frontend": "npm run build --prefix frontend",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up -d --build",
+    "docker:dev": "docker compose up --build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

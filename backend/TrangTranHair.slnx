@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TrangTranHair.Api/TrangTranHair.Api.csproj" />
+    <Project Path="src/TrangTranHair.Application/TrangTranHair.Application.csproj" />
+    <Project Path="src/TrangTranHair.Domain/TrangTranHair.Domain.csproj" />
+    <Project Path="src/TrangTranHair.Infrastructure/TrangTranHair.Infrastructure.csproj" />
+  </Folder>
+</Solution>

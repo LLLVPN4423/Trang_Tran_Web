@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/shared/lib/gsap'
-import { SALON_TAGLINE } from '../data/content'
+import { HERO_IMAGE, SALON_TAGLINE } from '../data/content'
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -71,7 +71,7 @@ export function HeroSection() {
           style={{
             backgroundImage: `
               linear-gradient(to bottom, rgba(9,9,11,0.3) 0%, rgba(9,9,11,0.7) 60%, rgba(9,9,11,1) 100%),
-              url('https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=80')
+              url('${encodeURI(HERO_IMAGE)}')
             `,
           }}
         />

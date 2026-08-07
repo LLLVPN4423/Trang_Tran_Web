@@ -2,15 +2,6 @@ import { useEffect, useRef } from 'react'
 import { gsap } from '@/shared/lib/gsap'
 import { LOOKBOOK_ITEMS } from '../data/content'
 
-const GRADIENTS = [
-  'from-amber-950/80 via-zinc-900 to-zinc-950',
-  'from-zinc-800 via-zinc-900 to-black',
-  'from-stone-800 via-zinc-900 to-zinc-950',
-  'from-neutral-800 via-zinc-900 to-black',
-  'from-yellow-950/60 via-zinc-900 to-zinc-950',
-  'from-zinc-700 via-zinc-900 to-black',
-]
-
 const ASPECT_CLASS = {
   tall: 'row-span-2 min-h-[420px]',
   wide: 'col-span-2 min-h-[280px]',
@@ -71,13 +62,17 @@ export function LookbookSection() {
               data-speed={item.speed}
               className={`lookbook-item group relative overflow-hidden rounded-sm will-change-transform ${ASPECT_CLASS[item.aspect]}`}
             >
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${GRADIENTS[index % GRADIENTS.length]} transition-transform duration-700 group-hover:scale-105`}
+              <img
+                src={encodeURI(item.image)}
+                alt={item.label}
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                loading={index < 3 ? 'eager' : 'lazy'}
               />
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(201,169,98,0.15),transparent_60%)]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/95 via-zinc-950/35 to-zinc-950/10" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(201,169,98,0.12),transparent_60%)]" />
               <div className="absolute inset-0 flex flex-col justify-end p-6">
                 <span className="text-xs uppercase tracking-[0.25em] text-gold-muted">
-                  0{index + 1}
+                  {String(index + 1).padStart(2, '0')}
                 </span>
                 <p className="mt-1 font-serif text-2xl text-zinc-200">{item.label}</p>
               </div>

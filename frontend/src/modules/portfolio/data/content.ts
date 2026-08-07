@@ -1,5 +1,13 @@
 export const SALON_TAGLINE = 'Where hair becomes art'
 
+/** Static assets in frontend/public/images — served at /images/... */
+export const HERO_IMAGE = '/images/hero/Hero.jpg'
+
+export const ARTIST_IMAGES = {
+  main: '/images/about/The Artist.jpg',
+  secondary: '/images/about/The Artist 1.jpg',
+} as const
+
 export const ARTIST_STATEMENT = [
   'Every strand tells a story.',
   'Editorial precision.',
@@ -9,12 +17,17 @@ export const ARTIST_STATEMENT = [
 ]
 
 export const LOOKBOOK_ITEMS = [
-  { id: 1, label: 'Balayage Editorial', aspect: 'tall', speed: 0.15 },
-  { id: 2, label: 'Precision Cut', aspect: 'wide', speed: 0.08 },
-  { id: 3, label: 'Color Transformation', aspect: 'square', speed: 0.22 },
-  { id: 4, label: 'Salon Interior', aspect: 'wide', speed: 0.12 },
-  { id: 5, label: 'Texture & Volume', aspect: 'tall', speed: 0.18 },
-  { id: 6, label: 'Runway Ready', aspect: 'square', speed: 0.1 },
+  { id: 1, label: 'Không gian salon', aspect: 'tall', speed: 0.15, image: '/images/salon-tour/Salon Tour.jpg' },
+  { id: 2, label: 'Studio styling', aspect: 'wide', speed: 0.08, image: '/images/salon-tour/Salon Tour1.jpg' },
+  { id: 3, label: 'Góc làm việc', aspect: 'square', speed: 0.22, image: '/images/salon-tour/Salon Tour2.jpg' },
+  { id: 4, label: 'Salon interior', aspect: 'wide', speed: 0.12, image: '/images/salon-tour/Salon Tour3.jpg' },
+  { id: 5, label: 'Chi tiết nội thất', aspect: 'tall', speed: 0.18, image: '/images/salon-tour/Salon Tour4.jpg' },
+  { id: 6, label: 'Khu vực gội', aspect: 'square', speed: 0.1, image: '/images/salon-tour/Salon Tour5.jpg' },
+  { id: 7, label: 'Không gian chờ', aspect: 'square', speed: 0.14, image: '/images/salon-tour/Salon Tour6.jpg' },
+  { id: 8, label: 'Gương & ánh sáng', aspect: 'tall', speed: 0.11, image: '/images/salon-tour/Salon Tour7.jpg' },
+  { id: 9, label: 'Team Trang Tran', aspect: 'wide', speed: 0.09, image: '/images/salon-tour/Salon Tour8.jpg' },
+  { id: 10, label: 'Salon tour', aspect: 'square', speed: 0.16, image: '/images/salon-tour/Salon Tour9.jpg' },
+  { id: 11, label: 'Trải nghiệm salon', aspect: 'wide', speed: 0.13, image: '/images/salon-tour/Salon Tour10.jpg' },
 ] as const
 
 export const SERVICE_HIGHLIGHTS = [

@@ -1,9 +1,20 @@
 # Salon Tour images
 
-Your tour photos are loaded from this folder via `src/data/content.ts`.
+Ảnh tour salon được cấu hình trong:
 
-**Current:** 11 photos + 1 reserved slot (max **12**)
+```
+frontend/src/modules/portfolio/data/content.ts
+```
 
-To add slot 12, set `image: '/images/salon-tour/your-file.jpg'` on the last stop in `content.ts`.
+Field `image` trên mỗi item trong `LOOKBOOK_ITEMS`.
 
-Filenames with spaces are supported (encoded automatically).
+**Thư mục ảnh:** `frontend/public/images/salon-tour/`
+
+**Hiện tại:** 11 ảnh `Salon Tour.jpg` → `Salon Tour10.jpg` đã được gắn vào Lookbook section.
+
+Để thêm ảnh mới:
+1. Copy file `.jpg` vào thư mục này
+2. Thêm object vào `LOOKBOOK_ITEMS` trong `content.ts`
+3. Commit Git và deploy
+
+Tên file có dấu cách vẫn dùng được (encode tự động trong code).

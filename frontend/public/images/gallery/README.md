@@ -1,17 +1,11 @@
-# Gallery — Lookbook slots
+# Gallery — Ảnh tóc mẫu (Lookbook tương lai)
 
-Drop hair portfolio images here, then update `src/data/content.ts`:
+Thư mục dành cho **ảnh portfolio tóc** (Balayage, Precision Cut, v.v.) — chưa gắn vào UI.
 
-```typescript
-// Example — fill slot 01:
-{
-  id: '01',
-  image: '/images/gallery/01.jpg',
-  title: { en: 'Platinum Editorial', vi: 'Platinum Editorial' },
-  category: { en: 'Color', vi: 'Nhuộm' },
-}
-```
+**Khi sẵn sàng thêm:**
 
-**Slot limits** (edit in `src/config/slots.ts`):
-- Max lookbook slots: **12**
-- Visible in horizontal scroll: **6** (increase when you add more photos)
+1. Copy ảnh vào `frontend/public/images/gallery/`
+2. Cập nhật `LOOKBOOK_ITEMS` hoặc tạo section Gallery riêng trong `frontend/src/modules/portfolio/`
+3. Tham chiếu: `/images/gallery/ten-file.jpg`
+
+File cấu hình chính: `frontend/src/modules/portfolio/data/content.ts`

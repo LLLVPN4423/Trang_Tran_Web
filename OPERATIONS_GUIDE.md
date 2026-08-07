@@ -1,421 +1,399 @@
 # Hướng dẫn vận hành — Trang Tran Hair Salon
 
-Tài liệu này mô tả cách sử dụng website, quản trị dữ liệu, phân quyền Admin và quy trình làm việc với Git cho dự án **Trang Tran Hair Salon**.
+Tài liệu dành cho **chủ salon / nhân viên vận hành** — hướng dẫn sử dụng website, quản trị dữ liệu, xử lý đơn hàng & lịch hẹn hàng ngày.
+
+> Tài liệu kỹ thuật cho developer: xem [DEVELOPMENT.md](./DEVELOPMENT.md)  
+> Tổng quan dự án: xem [README.md](./README.md)
 
 ---
 
 ## Mục lục
 
-1. [Hướng dẫn chức năng người dùng (User)](#1-hướng-dẫn-chức-năng-người-dùng-user)
-2. [Hướng dẫn chức năng Admin](#2-hướng-dẫn-chức-năng-admin)
-3. [Phân quyền (Authorization)](#3-phân-quyền-authorization)
-4. [Truy cập Database (Firestore)](#4-truy-cập-database-firestore)
-5. [Quản lý hình ảnh (Asset Management)](#5-quản-lý-hình-ảnh-asset-management)
-6. [Quy trình push lên Git](#6-quy-trình-push-lên-git)
+1. [Tổng quan website](#1-tổng-quan-website)
+2. [Hướng dẫn khách hàng (User)](#2-hướng-dẫn-khách-hàng-user)
+3. [Tài khoản & tích điểm](#3-tài-khoản--tích-điểm)
+4. [Hướng dẫn Admin Portal](#4-hướng-dẫn-admin-portal)
+5. [Phân quyền Admin](#5-phân-quyền-admin)
+6. [Database (Firestore)](#6-database-firestore)
+7. [Quản lý hình ảnh](#7-quản-lý-hình-ảnh)
+8. [Thanh toán SePay](#8-thanh-toán-sepay)
+9. [Quy trình Git](#9-quy-trình-git)
+10. [Checklist vận hành hàng ngày](#10-checklist-vận-hành-hàng-ngày)
 
 ---
 
-## 1. Hướng dẫn chức năng người dùng (User)
+## 1. Tổng quan website
 
-Website gồm bốn trang chính:
+### Website đã hoàn thiện chưa?
 
-| Đường dẫn | Mục đích |
-|-----------|----------|
-| `/` | Portfolio — giới thiệu salon |
-| `/catalog` | Bảng giá dịch vụ & sản phẩm |
-| `/booking` | Giỏ hàng & thanh toán |
-| `/admin` | Cổng quản trị (chỉ Admin) |
+**Có — website đã sẵn sàng vận hành** cho salon Trang Tran Hair với đầy đủ chức năng cốt lõi:
 
-### 1.1. Xem Portfolio (`/`)
+| Chức năng | Trạng thái |
+|-----------|------------|
+| Giới thiệu salon (ảnh thật) | ✅ |
+| Bảng giá 26 dịch vụ | ✅ |
+| Bán sản phẩm Moroccanoil | ✅ |
+| Thanh toán chuyển khoản SePay | ✅ |
+| Đăng ký / đăng nhập khách | ✅ |
+| Tích điểm & mã giảm giá | ✅ |
+| Đặt lịch online | ✅ |
+| Admin quản trị toàn bộ | ✅ |
+| Giao diện mobile | ✅ |
 
-Trang chủ trình bày salon qua các section cuộn dọc:
+**Chưa có (có thể bổ sung sau):** gửi email/SMS tự động, trừ tồn kho tự động, form tạo dịch vụ mới trong Admin (hiện dùng seed + Firestore).
 
-1. **Hero** — ảnh nền và slogan salon.
-2. **Artist** — giới thiệu stylist Trang Trần.
-3. **Lookbook** — album ảnh tóc mẫu.
-4. **Catalog preview** — xem nhanh một số dịch vụ, có nút dẫn sang trang bảng giá đầy đủ.
-5. **Booking / Contact** — form đặt lịch và thông tin liên hệ (điện thoại, địa chỉ, mạng xã hội).
+### Bản đồ trang
 
-**Liên hệ trực tiếp:** Khách có thể gọi **0986 586 058** hoặc nhắn qua Facebook / Instagram / Threads / TikTok (link hiển thị ở cuối trang).
+| URL | Mô tả | Sidebar |
+|-----|-------|---------|
+| `/` | Trang chủ Portfolio | Không |
+| `/catalog` | Bảng giá | Có |
+| `/booking` | Giỏ hàng & thanh toán | Có |
+| `/login` | Đăng nhập | Có |
+| `/register` | Đăng ký | Có |
+| `/account` | Tài khoản & đơn hàng | Có |
+| `/account/loyalty` | Điểm tích lũy | Có |
+| `/admin` | Quản trị | Sidebar Admin |
 
-> **Lưu ý:** Form “Gửi yêu cầu đặt lịch” trên trang Portfolio hiện chỉ là giao diện minh họa — dữ liệu **chưa được gửi lên server**. Khách nên gọi điện hoặc nhắn tin để xác nhận lịch. (Tính năng lưu lịch hẹn vào database sẽ được bổ sung trong phiên bản sau.)
-
-### 1.2. Xem bảng giá (`/catalog`)
-
-Luồng khách hàng:
-
-1. Mở **Bảng giá** từ menu hoặc từ section Catalog trên trang chủ.
-2. Dữ liệu được tải từ API `GET /api/services` và `GET /api/products`.
-3. Lọc theo **loại dịch vụ** (Cắt, Uốn, Nhuộm, Phục hồi, v.v.) hoặc **sản phẩm retail**.
-4. Với dịch vụ có giá theo size tóc, chọn **Size S / M / L** trước khi thêm vào giỏ.
-5. Nhấn **Thêm vào giỏ** — giỏ hàng lưu trên trình duyệt (Zustand store).
-6. Chuyển sang **Thanh toán** (`/booking`) khi đã chọn xong.
-
-### 1.3. Đặt lịch & thanh toán (`/booking`)
-
-Đây là luồng **mua dịch vụ / sản phẩm online** (khác với form đặt lịch trên Portfolio):
-
-1. **Xem giỏ hàng** — danh sách item, số lượng, tổng tiền.
-2. **Nhập thông tin khách** — Họ tên, SĐT, Email (tuỳ chọn), Ghi chú.
-3. **Tạo đơn** — Frontend gọi `POST /api/orders`. Backend tính giá server-side và trả về:
-   - Mã đơn (`Id`)
-   - Mã thanh toán (`PaymentCode`) — dùng làm nội dung chuyển khoản
-   - Tổng tiền (`TotalAmount`)
-   - Trạng thái `Pending`
-4. **Thanh toán SePay** — Màn hình hiển thị thông tin chuyển khoản (số TK, ngân hàng, nội dung CK). Cấu hình qua biến môi trường `VITE_SEPAY_*`.
-5. **Xác nhận tự động** — Khi khách chuyển khoản đúng nội dung, SePay gửi webhook tới `POST /api/webhooks/sepay`. Backend cập nhật đơn sang `Paid`. Frontend tự poll `GET /api/orders/{id}` và hiển thị thông báo thành công.
-
-**Khởi chạy local:**
-
-```bash
-npm run install:all
-npm run dev:all
-```
-
-- Frontend: http://localhost:5173  
-- Backend API: http://localhost:5000  
+**Menu sidebar (mobile: nút ☰ góc trái):** Trang chủ · Bảng giá · Giỏ hàng · Tài khoản · Tích điểm · Admin Portal (nếu có quyền).
 
 ---
 
-## 2. Hướng dẫn chức năng Admin
+## 2. Hướng dẫn khách hàng (User)
 
-Truy cập: **http://localhost:5173/admin** (hoặc domain production + `/admin`).
+### 2.1. Xem Portfolio (`/`)
 
-### 2.1. Đăng nhập
+Trang chủ gồm:
 
-1. Mở `/admin`.
-2. Đăng nhập bằng **Email / Password** qua Firebase Authentication.
-3. Hệ thống kiểm tra custom claim `admin: true` (JWT) và gọi `GET /api/health/admin` để xác nhận quyền.
-4. Nếu chưa có quyền Admin, trang hiển thị thông báo “Không có quyền Admin” — xem [mục 3](#3-phân-quyền-authorization) để cấp quyền.
+1. **Hero** — ảnh salon (`/images/hero/Hero.jpg`)
+2. **Artist** — giới thiệu Mr. Trang Trần + ảnh
+3. **Lookbook / Salon Tour** — 11 ảnh không gian salon
+4. **Catalog preview** — xem nhanh giá, link sang bảng giá đầy đủ
+5. **Đặt lịch** — form gửi yêu cầu lên hệ thống (xem 2.2)
 
-### 2.2. Quản lý dịch vụ & bảng giá
+**Liên hệ:** 0986 586 058 · Facebook · Instagram · Threads · TikTok (link cuối trang).
 
-Tab **Dịch vụ** trong Admin Portal:
+### 2.2. Đặt lịch (form Portfolio)
 
-| Thao tác | Mô tả |
-|----------|-------|
-| Xem danh sách | Toàn bộ dịch vụ (kể cả đang ẩn) |
-| Bật / Tắt | `isActive` — ẩn khỏi catalog công khai |
-| Xóa | Xóa vĩnh viễn khỏi database |
-| Seed dữ liệu | Nạp dữ liệu mẫu từ `SalonSeedData.cs` (26 dịch vụ) |
-| Force Re-seed | Ghi đè toàn bộ dịch vụ & sản phẩm bằng dữ liệu seed |
+1. Cuộn xuống section **Đặt lịch** hoặc mục **Booking** trên trang chủ.
+2. Điền **Họ tên, SĐT, dịch vụ quan tâm, ghi chú**.
+3. Nhấn **Gửi yêu cầu đặt lịch**.
+4. Hệ thống lưu vào database → Admin duyệt tại `/admin/appointments`.
+5. Salon liên hệ khách trong **24 giờ** để xác nhận.
 
-API backend (yêu cầu JWT Admin):
+> Nếu đã đăng nhập, form tự điền tên/SĐT từ hồ sơ.
 
-- `GET /api/services` — xem
-- `POST /api/services` — tạo mới
-- `PUT /api/services/{id}` — cập nhật (giá, tên, category, v.v.)
-- `DELETE /api/services/{id}` — xóa
+### 2.3. Mua dịch vụ / sản phẩm
 
-### 2.3. Quản lý sản phẩm
+1. Vào **Bảng giá** (`/catalog`).
+2. Chọn loại dịch vụ hoặc sản phẩm Moroccanoil.
+3. Với dịch vụ có giá theo size tóc → chọn **S / M / L / XL**.
+4. **Thêm vào giỏ** → icon giỏ hàng trên header hiện số lượng.
+5. Vào **Giỏ hàng & Thanh toán** (`/booking`).
 
-Tab **Sản phẩm**:
+### 2.4. Thanh toán (`/booking`)
 
-- Bật/tắt hiển thị, xóa sản phẩm retail (Moroccanoil, v.v.).
-- Chỉnh sửa `imageUrl` (URL ảnh — thường trỏ tới Firebase Storage hoặc CDN).
-
-API: `GET/POST/PUT/DELETE /api/products`.
-
-### 2.4. Xem đơn hàng
-
-> **Trạng thái hiện tại:** Admin Portal **chưa có giao diện** danh sách đơn hàng.
-
-Cách xem đơn hàng hiện tại:
-
-1. **Firebase Console → Firestore** — collection `orders` (xem [mục 4](#4-truy-cập-database-firestore)).
-2. **API trực tiếp** — `GET /api/orders/{id}` nếu biết mã đơn (không yêu cầu đăng nhập).
-
-Trường quan trọng trong document `orders`:
-
-| Trường | Ý nghĩa |
-|--------|---------|
-| `status` | `Pending` → chờ CK; `Paid` → đã thanh toán |
-| `paymentCode` | Nội dung chuyển khoản |
-| `totalAmount` | Tổng tiền (VND) |
-| `customerName`, `customerPhone` | Thông tin khách |
-| `items` | Chi tiết dịch vụ/sản phẩm |
-
-### 2.5. Duyệt lịch hẹn
-
-> **Trạng thái hiện tại:** Form đặt lịch trên Portfolio **chưa lưu** vào database. **Không có** màn hình duyệt lịch trong Admin.
-
-Quy trình vận hành tạm thời:
-
-1. Tiếp nhận yêu cầu qua **điện thoại / mạng xã hội**.
-2. Ghi chép lịch bằng công cụ nội bộ (sổ, Google Calendar, v.v.).
-
-Khi tính năng lịch hẹn được triển khai, dữ liệu sẽ lưu vào Firestore và có thể quản lý từ Admin Portal.
+1. Kiểm tra giỏ hàng, chỉnh số lượng.
+2. Nhập thông tin khách (tự điền nếu đã đăng nhập).
+3. *(Tuỳ chọn)* Nhập mã KM → **Áp dụng** (vd: `WELCOME10`, `SALON50K`).
+4. *(Nếu đã đăng nhập)* Kéo thanh trượt **đổi điểm** tích lũy.
+5. **Xác nhận & Thanh toán SePay** → hiện mã CK và số tiền.
+6. Khách chuyển khoản đúng **nội dung CK** → hệ thống tự xác nhận (vài phút).
+7. Màn hình **Thanh toán thành công** + thông báo điểm tích lũy.
 
 ---
 
-## 3. Phân quyền (Authorization)
+## 3. Tài khoản & tích điểm
 
-### 3.1. Cơ chế hoạt động
+### 3.1. Đăng ký
 
-Dự án dùng **Firebase Authentication** + **Custom Claims**:
+1. Sidebar → **Đăng nhập / Đăng ký** hoặc `/register`.
+2. Nhập Họ tên, SĐT, Email, Mật khẩu (≥ 6 ký tự).
+3. Sau đăng ký → vào `/account`.
 
-1. Người dùng đăng nhập Admin Portal → Firebase cấp **ID Token (JWT)**.
-2. Backend xác thực JWT qua `securetoken.google.com/{projectId}`.
-3. Policy **Admin** yêu cầu claim: `"admin": "true"` (trong JWT payload).
-4. Backend còn gọi Firebase Admin SDK để đọc `CustomClaims` từ user record (double-check).
+> **Yêu cầu:** Firebase Authentication phải được bật (Email/Password). Xem [DEVELOPMENT.md](./DEVELOPMENT.md).
 
-File cấu hình: `backend/src/TrangTranHair.Api/Extensions/AuthenticationExtensions.cs`
+### 3.2. Đăng nhập
 
-```csharp
-.AddPolicy("Admin", policy =>
-    policy.RequireClaim("admin", "true"));
-```
+- URL: `/login`
+- Admin cũng đăng nhập tại `/login`, sau đó vào `/admin` từ sidebar.
 
-Frontend kiểm tra claim qua `AuthProvider` và endpoint `GET /api/health/admin`.
+### 3.3. Quy tắc tích điểm
 
-### 3.2. Cấp quyền Admin cho tài khoản
+| Quy tắc | Giá trị |
+|---------|---------|
+| Tích điểm | **1 điểm** / 10.000đ thanh toán thành công |
+| Đổi điểm | **100 điểm** = giảm **10.000đ** tại checkout |
+| Điều kiện | Phải **đăng nhập** trước khi thanh toán |
 
-> **Lưu ý:** Dự án **không có** endpoint `POST /api/set-admin`. Việc cấp quyền thực hiện qua **Firebase Admin SDK** hoặc Firebase Console (Cloud Functions).
+Xem số dư: `/account/loyalty` hoặc thẻ trên trang Tài khoản.
 
-#### Cách 1 — Script Node.js (khuyến nghị)
+### 3.4. Mã khuyến mãi mặc định (sau seed)
 
-1. Tải **Service Account JSON** từ Firebase Console → Project Settings → Service accounts → Generate new private key.
-2. Đặt file tại `./firebase-service-account.json` (đã có trong `.gitignore`).
-3. Tạo file tạm `set-admin.js`:
+| Mã | Giảm | Điều kiện |
+|----|------|-----------|
+| `WELCOME10` | 10% | Đơn từ 200.000đ |
+| `SALON50K` | 50.000đ | Đơn từ 500.000đ |
+
+Quản lý thêm/sửa tại `/admin/promotions`.
+
+---
+
+## 4. Hướng dẫn Admin Portal
+
+**URL:** `/admin` — yêu cầu tài khoản có quyền Admin.
+
+### 4.1. Đăng nhập Admin
+
+1. Vào `/login` → đăng nhập email/password đã được cấp claim `admin: true`.
+2. Mở `/admin` (sidebar Admin Portal).
+3. Nếu thấy "Không có quyền Admin" → xem [mục 5](#5-phân-quyền-admin).
+
+### 4.2. Tổng quan (`/admin`)
+
+Dashboard liên kết nhanh tới các module quản trị.
+
+### 4.3. Đơn hàng (`/admin/orders`)
+
+| Thao tác | Cách làm |
+|----------|----------|
+| Xem tất cả đơn | Mở trang, lọc theo trạng thái |
+| Lọc theo SĐT | Nhập SĐT → Lọc |
+| Xác nhận thủ công | Nút **Paid** (khi SePay chưa webhook) |
+| Hủy đơn | Nút **Hủy** |
+
+**Trạng thái:** `Pending` (chờ CK) → `Paid` (đã thanh toán) → hoặc `Cancelled`.
+
+### 4.4. Lịch hẹn (`/admin/appointments`)
+
+| Thao tác | Cách làm |
+|----------|----------|
+| Xem yêu cầu mới | Lọc **Chờ duyệt** |
+| Xác nhận lịch | **Xác nhận** → gọi khách |
+| Từ chối | **Từ chối** |
+| Hoàn tất | Sau khi khách đến salon → **Đánh dấu hoàn tất** |
+
+### 4.5. Dịch vụ (`/admin/services`)
+
+- Xem 26 dịch vụ, **Bật/Tắt** hiển thị trên catalog.
+- **Xóa** dịch vụ không còn dùng.
+- **Seed dữ liệu** / **Force Re-seed** (Admin header) — nạp lại bảng giá từ code.
+
+> Sửa giá hàng loạt: chỉnh file `SalonSeedData.cs` (developer) rồi Force Re-seed.
+
+### 4.6. Sản phẩm (`/admin/products`)
+
+- Xem sản phẩm Moroccanoil.
+- Nút **Ảnh** → upload file lên Firebase Storage **hoặc** dán URL.
+- **Bật/Tắt**, **Xóa** sản phẩm.
+
+### 4.7. Khuyến mãi (`/admin/promotions`)
+
+- Xem danh sách mã KM.
+- **Tạo mẫu** → chỉnh code/giá trị trên Firestore hoặc qua API.
+- **Bật/Tắt**, **Xóa** mã.
+
+### 4.8. Khách hàng (`/admin/customers`)
+
+- Xem hồ sơ khách đã đăng ký.
+- **Điều chỉnh điểm** thủ công (cộng/trừ) khi cần.
+
+### 4.9. Force Re-seed
+
+Nút **Force Re-seed** trên header Admin → ghi đè dịch vụ, sản phẩm, khuyến mãi bằng dữ liệu mặc định trong code.
+
+⚠️ **Cẩn thận trên production** — sẽ reset dữ liệu catalog. Ảnh sản phẩm (`imageUrl`) có thể cần upload lại.
+
+---
+
+## 5. Phân quyền Admin
+
+### Cơ chế
+
+- **Khách hàng:** Firebase Auth thường (email/password), không cần claim đặc biệt.
+- **Admin:** cùng Firebase Auth + custom claim **`admin: true`** trong JWT.
+
+### Cấp quyền Admin (một lần)
+
+1. Tải **Service Account JSON** từ Firebase Console.
+2. Tạo file `set-admin.js`:
 
 ```javascript
 const admin = require('firebase-admin');
 const serviceAccount = require('./firebase-service-account.json');
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 
-// Thay bằng UID hoặc email của tài khoản cần cấp quyền
-const uid = 'FIREBASE_USER_UID_HERE';
+const uid = 'PASTE_FIREBASE_USER_UID_HERE';
 
 admin.auth().setCustomUserClaims(uid, { admin: true })
-  .then(() => {
-    console.log('Đã cấp admin: true cho UID:', uid);
-    process.exit(0);
-  })
+  .then(() => { console.log('OK'); process.exit(0); })
   .catch(console.error);
 ```
 
-4. Chạy: `node set-admin.js`
-5. **Quan trọng:** User phải **đăng xuất và đăng nhập lại** (hoặc refresh token) để JWT mới chứa claim `admin`.
+3. Chạy: `node set-admin.js`
+4. User **đăng xuất và đăng nhập lại**.
 
-**Lấy UID:** Firebase Console → Authentication → Users → cột **User UID**.
+**Lấy UID:** Firebase Console → Authentication → Users.
 
-#### Cách 2 — Firebase CLI + Cloud Functions (production)
-
-Triển khai Cloud Function callable chỉ super-admin mới gọi được, bên trong gọi `admin.auth().setCustomUserClaims(uid, { admin: true })`.
-
-#### Cách 3 — Thu hồi quyền Admin
+### Thu hồi quyền
 
 ```javascript
 admin.auth().setCustomUserClaims(uid, { admin: false });
-// hoặc
-admin.auth().setCustomUserClaims(uid, null);
-```
-
-### 3.3. Biến môi trường cần thiết
-
-**Backend** (`.env` hoặc `appsettings`):
-
-```env
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_CREDENTIALS_PATH=./firebase-service-account.json
-```
-
-**Frontend** (`.env`):
-
-```env
-VITE_FIREBASE_API_KEY=...
-VITE_FIREBASE_AUTH_DOMAIN=...
-VITE_FIREBASE_PROJECT_ID=...
 ```
 
 ---
 
-## 4. Truy cập Database (Firestore)
+## 6. Database (Firestore)
 
-### 4.1. Đăng nhập Firebase Console
+### Truy cập
 
-1. Truy cập https://console.firebase.google.com/
-2. Chọn project **Trang Tran Hair** (đúng `FIREBASE_PROJECT_ID`).
-3. Menu trái → **Build** → **Firestore Database**.
+1. https://console.firebase.google.com/
+2. Project → **Firestore Database**
 
-### 4.2. Collections trong dự án
+### Collections
 
 | Collection | Nội dung |
 |------------|----------|
-| `services` | Dịch vụ salon (tên, giá, category, size, duration, isActive) |
-| `products` | Sản phẩm retail (tên, giá, imageUrl, isActive) |
-| `orders` | Đơn hàng checkout (khách, items, total, status, paymentCode) |
+| `services` | Bảng giá dịch vụ |
+| `products` | Sản phẩm + `imageUrl` |
+| `orders` | Đơn checkout |
+| `appointments` | Lịch hẹn từ form Portfolio |
+| `customers` | Hồ sơ khách + `loyaltyPoints` |
+| `promotions` | Mã khuyến mãi |
+| `loyaltyTransactions` | Lịch sử cộng/trừ điểm |
 
-> **Không có** collection `users` trong Firestore — tài khoản đăng nhập nằm ở **Firebase Authentication**, không phải Firestore.
+**Tài khoản login** nằm ở **Authentication**, không phải Firestore.
 
-### 4.3. Xem & chỉnh sửa trực tiếp
+### Dev local (không Firebase)
 
-1. Chọn collection (ví dụ `services`).
-2. Click document để xem/sửa field.
-3. **Thêm document:** nút **Add document** (cần đúng schema — tham khảo document seed có sẵn).
-4. **Xóa document:** menu ⋮ → Delete.
+Backend dùng bộ nhớ tạm — **mất data khi restart**. Seed lại:
 
-**Khuyến nghị:**
-
-- Chỉnh giá hàng loạt: dùng Admin Portal hoặc Force Re-seed từ `SalonSeedData.cs`.
-- Chỉnh tay trên Firestore khi cần sửa nhanh 1–2 field; cẩn thận kiểu dữ liệu (`number`, `boolean`, `map`).
-
-### 4.4. Môi trường Development (không có Firebase)
-
-Nếu **chưa cấu hình** `FIREBASE_PROJECT_ID`, backend dùng **In-Memory repository** — dữ liệu **mất khi restart API**. Gọi `POST /api/seed/dev?force=true` để nạp lại 26 dịch vụ mẫu.
+```
+POST http://localhost:5000/api/seed/dev?force=true
+```
 
 ---
 
-## 5. Quản lý hình ảnh (Asset Management)
+## 7. Quản lý hình ảnh
 
-### 5.1. Ảnh tĩnh (Hero, Background, Artist, Lookbook)
+### 7.1. Ảnh tĩnh (Hero, Artist, Salon Tour)
 
-Ảnh gắn cứng trong code hoặc file frontend — **không** qua Firebase Storage.
-
-**Thư mục khuyến nghị:**
+**Thư mục:** `frontend/public/images/`
 
 ```
-frontend/public/images/
-├── hero/
-├── artist/
-├── lookbook/
-└── backgrounds/
+public/images/
+├── hero/Hero.jpg
+├── about/The Artist.jpg
+├── salon-tour/Salon Tour1.jpg …
+└── gallery/          ← ảnh tóc mẫu (tương lai)
 ```
 
-**Cách dùng:**
+- Đường dẫn web: `/images/hero/Hero.jpg`
+- Sau khi thêm ảnh → cập nhật `content.ts` (developer) → commit Git → deploy.
 
-1. Copy file `.jpg` / `.webp` vào `frontend/public/images/...`
-2. Tham chiếu trong component: `/images/hero/salon-hero.webp`
+### 7.2. Ảnh sản phẩm (động)
 
-Ví dụ hiện tại: `HeroSection.tsx` đang dùng URL Unsplash — có thể thay bằng:
+**Cách 1 — Admin Portal (khuyến nghị):**
 
-```tsx
-url('/images/hero/salon-hero.webp')
-```
+1. `/admin/products` → nút **Ảnh**
+2. Chọn file → upload Firebase Storage (cần `VITE_FIREBASE_STORAGE_BUCKET`)
+3. Hoặc dán URL → **Lưu URL**
 
-**`src/assets/`:** Dùng khi ảnh cần import trực tiếp trong TSX (Vite bundle). Với ảnh lớn, ưu tiên `public/` để tránh phình bundle.
+**Cách 2 — Firestore Console:**
 
-Sau khi đổi ảnh tĩnh: `npm run build:frontend` hoặc commit & deploy lại.
+Sửa field `imageUrl` trong document `products/{id}`.
 
-### 5.2. Ảnh động (Dịch vụ, sản phẩm mới)
+**Cách 3 — Firebase Storage Console:**
 
-Ảnh sản phẩm lưu qua field **`imageUrl`** trong Firestore (`products` collection).
-
-> **Trạng thái hiện tại:** Admin Portal **chưa có** nút upload file. Cập nhật ảnh theo một trong các cách sau:
-
-#### Cách A — Firebase Storage (Console)
-
-1. Firebase Console → **Storage** → **Upload file**.
-2. Tạo thư mục gợi ý: `products/`, `services/`.
-3. Sau khi upload, click file → copy **Download URL** (hoặc public URL nếu đã cấu hình Rules).
-4. Dán URL vào field `imageUrl`:
-   - Admin Portal → tab Sản phẩm → sửa (nếu có form URL), **hoặc**
-   - Firestore Console → document `products/{id}` → field `imageUrl`.
-
-#### Cách B — URL bên ngoài
-
-Dùng link CDN / hosting ảnh hợp lệ (HTTPS), gán vào `imageUrl`.
-
-#### Storage Rules (tham khảo)
-
-```text
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /products/{fileName} {
-      allow read: if true;
-      allow write: if request.auth != null
-                   && request.auth.token.admin == true;
-    }
-  }
-}
-```
-
-#### Tương lai
-
-Tính năng **upload trực tiếp từ Admin Portal** (chọn file → upload Storage → tự điền `imageUrl`) có thể được bổ sung trong phiên bản sau.
+Upload thủ công → copy URL → dán vào Admin hoặc Firestore.
 
 ---
 
-## 6. Quy trình push lên Git
+## 8. Thanh toán SePay
 
-Repository: https://github.com/LLLVPN4423/Trang_Tran_Web.git
+### Cấu hình hiển thị (`.env`)
 
-### 6.1. Chuẩn bị
+```env
+VITE_SEPAY_BANK_NAME=Vietcombank
+VITE_SEPAY_ACCOUNT_NUMBER=0123456789
+VITE_SEPAY_ACCOUNT_NAME=TRANG TRAN HAIR SALON
+SEPAY_WEBHOOK_SECRET=your-secret
+```
+
+### Luồng
+
+1. Khách tạo đơn → nhận mã `DHxxxxxxxx` (nội dung CK).
+2. Khách chuyển khoản **đúng số tiền + đúng nội dung**.
+3. SePay gửi webhook → backend đánh dấu `Paid` → tích điểm tự động.
+
+### Xử lý sự cố
+
+| Vấn đề | Xử lý |
+|--------|-------|
+| Khách CK sai nội dung | Tìm đơn theo SĐT tại `/admin/orders` → **Paid** thủ công |
+| Webhook không chạy | Kiểm tra `SEPAY_WEBHOOK_SECRET` và URL webhook trên SePay |
+| Số tiền không khớp | SePay từ chối — liên hệ khách chuyển bổ sung |
+
+---
+
+## 9. Quy trình Git
+
+**Repo:** https://github.com/LLLVPN4423/Trang_Tran_Web.git
 
 ```bash
 cd D:\download\TrangTranHair_Web
 git status
-```
-
-Kiểm tra nhánh hiện tại (thường là `main`):
-
-```bash
-git branch
-```
-
-### 6.2. Commit thay đổi
-
-```bash
 git add .
-git commit -m "docs: Add operations and management guide"
+git commit -m "mo ta thay doi"
+git push origin main
 ```
 
-**Lưu ý:** Không commit file nhạy cảm:
-
-- `firebase-service-account.json`
-- `.env` (chỉ commit `.env.example`)
-
-Các file này đã được liệt kê trong `.gitignore`.
-
-### 6.3. Push lên GitHub
-
-```bash
-git push -u origin main
-```
-
-Nếu làm việc trên nhánh feature:
-
-```bash
-git checkout -b feature/ten-nhanh
-# ... chỉnh sửa ...
-git add .
-git commit -m "feat: mo ta thay doi"
-git push -u origin feature/ten-nhanh
-```
-
-Sau đó tạo Pull Request trên GitHub.
-
-### 6.4. Đồng bộ từ remote
-
-```bash
-git pull origin main
-```
-
-### 6.5. Xử lý lỗi Git trên Windows
-
-Nếu gặp lỗi ` dubious ownership `, chạy từng lệnh với flag (không đổi git config global):
+**Windows (lỗi ownership):**
 
 ```bash
 git -c safe.directory=D:/download/TrangTranHair_Web status
-git -c safe.directory=D:/download/TrangTranHair_Web push -u origin main
+git -c safe.directory=D:/download/TrangTranHair_Web push origin main
 ```
 
+**Không commit:** `.env`, `firebase-service-account.json`
+
 ---
 
-## Phụ lục — Lệnh vận hành nhanh
+## 10. Checklist vận hành hàng ngày
 
-| Mục đích | Lệnh |
-|----------|------|
-| Chạy full stack local | `npm run dev:all` |
-| Build production | `npm run build:backend` + `npm run build:frontend` |
+### Buổi sáng
+
+- [ ] Mở `/admin/appointments` → duyệt lịch hẹn mới (Pending)
+- [ ] Mở `/admin/orders` → kiểm tra đơn Pending chưa thanh toán
+
+### Khi có đơn mới
+
+- [ ] Xác nhận SePay đã webhook (trạng thái Paid)
+- [ ] Nếu chưa Paid sau 30 phút → gọi khách nhắc CK
+
+### Hàng tuần
+
+- [ ] Kiểm tra tồn kho sản phẩm trên `/admin/products`
+- [ ] Review mã KM sắp hết hạn tại `/admin/promotions`
+
+### Khi cần đổi giá
+
+- [ ] Liên hệ developer chỉnh `SalonSeedData.cs` → Force Re-seed
+- [ ] Hoặc sửa trực tiếp trên Firestore (cẩn thận kiểu số)
+
+---
+
+## Phụ lục — Lệnh nhanh
+
+| Mục đích | Lệnh / URL |
+|----------|------------|
+| Chạy website local | `npm run dev:all` |
+| Seed dữ liệu dev | `POST /api/seed/dev?force=true` |
+| Trang admin | http://localhost:5173/admin |
+| Firebase Console | https://console.firebase.google.com/ |
 | Docker production | `npm run docker:prod` |
-| Seed dev (in-memory) | `POST http://localhost:5000/api/seed/dev?force=true` |
-| Seed admin (Firestore) | Nút “Seed dữ liệu” hoặc `POST /api/seed?force=true` (JWT Admin) |
 
 ---
 
-*Tài liệu cập nhật theo codebase phiên bản 1.0 — Trang Tran Hair Salon.*
+*Phiên bản 2.0 — Cập nhật sau tích hợp loyalty, admin portal, appointments, upload ảnh sản phẩm.*

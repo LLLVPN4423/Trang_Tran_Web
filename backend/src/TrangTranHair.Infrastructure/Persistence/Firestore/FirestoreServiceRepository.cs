@@ -13,7 +13,7 @@ public sealed class FirestoreServiceRepository(FirestoreDb db) : IServiceReposit
     {
         var snapshot = await Collection.GetSnapshotAsync(cancellationToken);
         return snapshot.Documents
-            .Select(d => MapFromDocument(d.ConvertTo<ServiceDocument>()))
+            .Select(d => MapFromDocument(d.Id, d.ConvertTo<ServiceDocument>()))
             .OrderBy(s => s.Name)
             .ToList();
     }
@@ -21,7 +21,7 @@ public sealed class FirestoreServiceRepository(FirestoreDb db) : IServiceReposit
     public async Task<Service?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         var doc = await Collection.Document(id).GetSnapshotAsync(cancellationToken);
-        return doc.Exists ? MapFromDocument(doc.ConvertTo<ServiceDocument>()) : null;
+        return doc.Exists ? MapFromDocument(doc.Id, doc.ConvertTo<ServiceDocument>()) : null;
     }
 
     public async Task<Service> CreateAsync(Service service, CancellationToken cancellationToken = default)
@@ -44,10 +44,10 @@ public sealed class FirestoreServiceRepository(FirestoreDb db) : IServiceReposit
     public Task DeleteAsync(string id, CancellationToken cancellationToken = default) =>
         Collection.Document(id).DeleteAsync(cancellationToken: cancellationToken);
 
-    private static Service MapFromDocument(ServiceDocument doc) =>
+    private static Service MapFromDocument(string documentId, ServiceDocument doc) =>
         new()
         {
-            Id = doc.Id,
+            Id = documentId,
             Name = doc.Name,
             Description = doc.Description,
             Category = Enum.Parse<ServiceCategory>(doc.Category),
@@ -55,6 +55,9 @@ public sealed class FirestoreServiceRepository(FirestoreDb db) : IServiceReposit
             BasePrice = doc.BasePrice is null ? null : (decimal)doc.BasePrice,
             PriceBySize = FirestoreMapper.ToDecimalDict(doc.PriceBySize),
             DurationMinutes = doc.DurationMinutes,
+            ImageUrl = doc.ImageUrl,
+            GalleryUrls = doc.GalleryUrls ?? [],
+            VideoUrl = doc.VideoUrl,
             IsActive = doc.IsActive,
             CreatedAt = FirestoreMapper.FromTimestamp(doc.CreatedAt),
             UpdatedAt = FirestoreMapper.FromTimestamp(doc.UpdatedAt)
@@ -71,6 +74,9 @@ public sealed class FirestoreServiceRepository(FirestoreDb db) : IServiceReposit
             BasePrice = service.BasePrice is null ? null : (double)service.BasePrice,
             PriceBySize = FirestoreMapper.ToDoubleDict(service.PriceBySize),
             DurationMinutes = service.DurationMinutes,
+            ImageUrl = service.ImageUrl,
+            GalleryUrls = service.GalleryUrls,
+            VideoUrl = service.VideoUrl,
             IsActive = service.IsActive,
             CreatedAt = FirestoreMapper.ToTimestamp(service.CreatedAt),
             UpdatedAt = service.UpdatedAt is null ? null : FirestoreMapper.ToTimestamp(service.UpdatedAt.Value)
@@ -103,6 +109,15 @@ internal sealed class ServiceDocument
 
     [FirestoreProperty]
     public int? DurationMinutes { get; set; }
+
+    [FirestoreProperty]
+    public string? ImageUrl { get; set; }
+
+    [FirestoreProperty]
+    public List<string>? GalleryUrls { get; set; }
+
+    [FirestoreProperty]
+    public string? VideoUrl { get; set; }
 
     [FirestoreProperty]
     public bool IsActive { get; set; } = true;

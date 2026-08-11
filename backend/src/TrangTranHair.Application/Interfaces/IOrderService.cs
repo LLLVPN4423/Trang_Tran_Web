@@ -9,4 +9,6 @@ public interface IOrderService
     Task<OrderResponse> GetOrderAsync(string id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<OrderResponse>> ListOrdersAsync(OrderStatus? status = null, string? phone = null, string? customerId = null, CancellationToken cancellationToken = default);
     Task<OrderResponse> UpdateStatusAsync(string id, OrderStatus status, CancellationToken cancellationToken = default);
+    Task<OrderResponse> ConfirmPaymentAsync(string id, string? sePayTransactionId = null, CancellationToken cancellationToken = default);
+    Task<int> LinkGuestOrdersAsync(string customerId, string phone, CancellationToken cancellationToken = default);
 }

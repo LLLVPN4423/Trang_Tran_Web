@@ -5,15 +5,21 @@
   "description": "Trang Tran Hair Salon — Monorepo",
   "scripts": {
     "dev:all": "concurrently -n \"API,WEB\" -c \"cyan,magenta\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "check:firebase": "node scripts/check-firebase-config.js",
     "dev:backend": "dotnet watch run --project backend/src/TrangTranHair.Api/TrangTranHair.Api.csproj --launch-profile http",
     "dev:frontend": "npm run dev --prefix frontend",
     "install:all": "npm install && npm install --prefix frontend",
-    "build:backend": "dotnet build backend/TrangTranHair.slnx",
+    "build:backend": "dotnet build backend/TrangTranHair.slnx -c Release",
     "build:frontend": "npm run build --prefix frontend",
+    "test:backend": "dotnet test backend/TrangTranHair.slnx -c Release",
+    "ci": "npm run build:frontend && npm run build:backend && npm run test:backend",
     "docker:prod": "docker compose -f docker-compose.prod.yml up -d --build",
     "docker:dev": "docker compose up --build"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.2.0"
   }
 }

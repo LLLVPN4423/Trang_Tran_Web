@@ -1,3 +1,4 @@
+using TrangTranHair.Application.Common;
 using TrangTranHair.Application.DTOs;
 using TrangTranHair.Application.Exceptions;
 using TrangTranHair.Application.Interfaces;
@@ -27,6 +28,7 @@ public sealed class AppointmentService(IAppointmentRepository repository) : IApp
             ServiceInterest = request.ServiceInterest.Trim(),
             Notes = request.Notes?.Trim(),
             Status = AppointmentStatus.Pending,
+            AccessToken = AccessTokenGenerator.Create(),
         };
 
         var saved = await repository.CreateAsync(appointment, cancellationToken);
@@ -48,6 +50,14 @@ public sealed class AppointmentService(IAppointmentRepository repository) : IApp
         return items.Select(Map).ToList();
     }
 
+    public async Task<IReadOnlyList<AppointmentResponse>> ListByCustomerAsync(
+        string customerId,
+        CancellationToken cancellationToken = default)
+    {
+        var items = await repository.GetByCustomerIdAsync(customerId, cancellationToken);
+        return items.Select(Map).ToList();
+    }
+
     public async Task<AppointmentResponse> UpdateStatusAsync(
         string id,
         AppointmentStatus status,
@@ -62,5 +72,5 @@ public sealed class AppointmentService(IAppointmentRepository repository) : IApp
     }
 
     private static AppointmentResponse Map(Appointment a) =>
-        new(a.Id, a.CustomerId, a.CustomerName, a.CustomerPhone, a.ServiceInterest, a.Notes, a.Status, a.CreatedAt);
+        new(a.Id, a.CustomerId, a.CustomerName, a.CustomerPhone, a.ServiceInterest, a.Notes, a.Status, a.AccessToken, a.CreatedAt);
 }

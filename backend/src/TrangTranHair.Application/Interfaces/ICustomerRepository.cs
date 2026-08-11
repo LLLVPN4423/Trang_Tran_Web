@@ -25,6 +25,7 @@ public interface IPromotionRepository
 public interface ILoyaltyRepository
 {
     Task<IReadOnlyList<LoyaltyTransaction>> GetByCustomerIdAsync(string customerId, CancellationToken cancellationToken = default);
+    Task<LoyaltyTransaction?> GetEarnByOrderIdAsync(string orderId, CancellationToken cancellationToken = default);
     Task<LoyaltyTransaction> CreateAsync(LoyaltyTransaction transaction, CancellationToken cancellationToken = default);
 }
 

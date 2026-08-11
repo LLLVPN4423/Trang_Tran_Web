@@ -11,6 +11,9 @@ public class Service : Common.BaseEntity
     public decimal? BasePrice { get; set; }
     public Dictionary<string, decimal>? PriceBySize { get; set; }
     public int? DurationMinutes { get; set; }
+    public string? ImageUrl { get; set; }
+    public List<string> GalleryUrls { get; set; } = [];
+    public string? VideoUrl { get; set; }
     public bool IsActive { get; set; } = true;
 
     public decimal ResolvePrice(HairSize? size)

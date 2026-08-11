@@ -1,3 +1,4 @@
+using TrangTranHair.Application.Common;
 using TrangTranHair.Application.DTOs;
 using TrangTranHair.Application.Exceptions;
 using TrangTranHair.Application.Interfaces;
@@ -14,8 +15,12 @@ public sealed class OrderService(
     ILoyaltyService loyaltyService,
     ICustomerRepository customerRepository) : IOrderService
 {
+    public const int StockReservationMinutes = 15;
+
     public async Task<OrderResponse> CreateOrderAsync(CreateOrderRequest request, CancellationToken cancellationToken = default)
     {
+        await ReleaseExpiredPendingReservationsAsync(cancellationToken);
+
         ValidateRequest(request);
 
         var orderItems = new List<OrderItem>();
@@ -86,9 +91,23 @@ public sealed class OrderService(
             TotalAmount = total,
             Status = OrderStatus.Pending,
             PaymentCode = $"DH{Guid.NewGuid().ToString("N")[..8].ToUpperInvariant()}",
+            AccessToken = AccessTokenGenerator.Create(),
         };
 
-        var saved = await orderRepository.CreateAsync(order, cancellationToken);
+        await ReserveStockForOrderAsync(order, cancellationToken);
+        order.StockReserved = true;
+        order.StockReservedAt = DateTime.UtcNow;
+
+        Order saved;
+        try
+        {
+            saved = await orderRepository.CreateAsync(order, cancellationToken);
+        }
+        catch
+        {
+            await ReleaseStockForOrderAsync(order, cancellationToken);
+            throw;
+        }
 
         if (!string.IsNullOrWhiteSpace(request.CustomerId) && pointsRedeemed > 0)
             await loyaltyService.RedeemPointsAsync(request.CustomerId, pointsRedeemed, saved.Id, cancellationToken);
@@ -122,12 +141,182 @@ public sealed class OrderService(
         var order = await orderRepository.GetByIdAsync(id, cancellationToken)
             ?? throw new NotFoundException($"Order '{id}' not found.");
 
-        order.Status = status;
-        if (status == OrderStatus.Paid && order.PaidAt is null)
-            order.PaidAt = DateTime.UtcNow;
+        if (order.Status == status)
+            return MapToResponse(order);
 
+        if (status == OrderStatus.Paid)
+            return await ConfirmPaymentAsync(id, null, cancellationToken);
+
+        if (status == OrderStatus.Cancelled && order.Status == OrderStatus.Pending)
+        {
+            if (order.StockReserved)
+            {
+                await ReleaseStockForOrderAsync(order, cancellationToken);
+                order.StockReserved = false;
+                order.StockReservedAt = null;
+            }
+
+            order.Status = OrderStatus.Cancelled;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            if (!string.IsNullOrWhiteSpace(order.CustomerId) && order.PointsRedeemed > 0)
+            {
+                await loyaltyService.RefundRedeemedPointsAsync(
+                    order.CustomerId,
+                    order.PointsRedeemed,
+                    order.Id,
+                    cancellationToken);
+            }
+
+            var cancelled = await orderRepository.UpdateAsync(order, cancellationToken);
+            return MapToResponse(cancelled);
+        }
+
+        order.Status = status;
+        order.UpdatedAt = DateTime.UtcNow;
         var updated = await orderRepository.UpdateAsync(order, cancellationToken);
         return MapToResponse(updated);
+    }
+
+    public async Task<OrderResponse> ConfirmPaymentAsync(
+        string id,
+        string? sePayTransactionId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var order = await orderRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException($"Order '{id}' not found.");
+
+        if (order.Status == OrderStatus.Paid)
+            return MapToResponse(order);
+
+        if (order.Status != OrderStatus.Pending)
+            throw new ValidationException("status", "Only pending orders can be marked as paid.");
+
+        await ReleaseExpiredPendingReservationsAsync(cancellationToken);
+
+        order = await orderRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException($"Order '{id}' not found.");
+
+        if (order.Status != OrderStatus.Pending)
+            throw new ValidationException("status", "Only pending orders can be marked as paid.");
+
+        order.Status = OrderStatus.Paid;
+        order.PaidAt = DateTime.UtcNow;
+        order.UpdatedAt = DateTime.UtcNow;
+
+        if (!string.IsNullOrWhiteSpace(sePayTransactionId))
+            order.SePayTransactionId = sePayTransactionId;
+
+        if (!order.StockReserved)
+            await DeductStockForOrderAsync(order, cancellationToken);
+        else
+            order.StockReserved = false;
+
+        order.StockReservedAt = null;
+        await orderRepository.UpdateAsync(order, cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(order.CustomerId))
+        {
+            await loyaltyService.EarnPointsForOrderAsync(
+                order.CustomerId,
+                order.Id,
+                order.TotalAmount,
+                cancellationToken);
+        }
+
+        return MapToResponse(order);
+    }
+
+    public async Task<int> LinkGuestOrdersAsync(string customerId, string phone, CancellationToken cancellationToken = default)
+    {
+        var normalized = PhoneNormalizer.Normalize(phone);
+        if (string.IsNullOrEmpty(normalized)) return 0;
+
+        var candidates = await orderRepository.GetAllAsync(phone: phone, cancellationToken: cancellationToken);
+        var linked = 0;
+
+        foreach (var order in candidates.Where(o => string.IsNullOrWhiteSpace(o.CustomerId)))
+        {
+            if (PhoneNormalizer.Normalize(order.CustomerPhone) != normalized)
+                continue;
+
+            order.CustomerId = customerId;
+            await orderRepository.UpdateAsync(order, cancellationToken);
+            linked++;
+        }
+
+        return linked;
+    }
+
+    private async Task ReserveStockForOrderAsync(Order order, CancellationToken cancellationToken)
+    {
+        foreach (var item in order.Items.Where(i => i.ItemType == OrderItemType.Product))
+        {
+            var product = await productRepository.GetByIdAsync(item.ItemId, cancellationToken)
+                ?? throw new NotFoundException($"Product '{item.ItemId}' not found.");
+
+            if (product.Stock < item.Quantity)
+                throw new ValidationException("stock", $"Không đủ tồn kho cho '{product.Name}'.");
+
+            product.Stock -= item.Quantity;
+            product.UpdatedAt = DateTime.UtcNow;
+            await productRepository.UpdateAsync(product, cancellationToken);
+        }
+    }
+
+    private async Task ReleaseStockForOrderAsync(Order order, CancellationToken cancellationToken)
+    {
+        foreach (var item in order.Items.Where(i => i.ItemType == OrderItemType.Product))
+        {
+            var product = await productRepository.GetByIdAsync(item.ItemId, cancellationToken);
+            if (product is null) continue;
+
+            product.Stock += item.Quantity;
+            product.UpdatedAt = DateTime.UtcNow;
+            await productRepository.UpdateAsync(product, cancellationToken);
+        }
+    }
+
+    private async Task ReleaseExpiredPendingReservationsAsync(CancellationToken cancellationToken)
+    {
+        var cutoff = DateTime.UtcNow.AddMinutes(-StockReservationMinutes);
+        var pending = await orderRepository.GetAllAsync(OrderStatus.Pending, cancellationToken: cancellationToken);
+
+        foreach (var order in pending.Where(o => o.StockReserved && o.CreatedAt < cutoff))
+        {
+            await ReleaseStockForOrderAsync(order, cancellationToken);
+            order.StockReserved = false;
+            order.StockReservedAt = null;
+
+            if (!string.IsNullOrWhiteSpace(order.CustomerId) && order.PointsRedeemed > 0)
+            {
+                await loyaltyService.RefundRedeemedPointsAsync(
+                    order.CustomerId,
+                    order.PointsRedeemed,
+                    order.Id,
+                    cancellationToken);
+            }
+
+            order.Status = OrderStatus.Cancelled;
+            order.UpdatedAt = DateTime.UtcNow;
+            await orderRepository.UpdateAsync(order, cancellationToken);
+        }
+    }
+
+    private async Task DeductStockForOrderAsync(Order order, CancellationToken cancellationToken)
+    {
+        foreach (var item in order.Items.Where(i => i.ItemType == OrderItemType.Product))
+        {
+            var product = await productRepository.GetByIdAsync(item.ItemId, cancellationToken);
+            if (product is null) continue;
+
+            if (product.Stock < item.Quantity)
+                throw new ValidationException("stock", $"Không đủ tồn kho cho '{product.Name}'.");
+
+            product.Stock -= item.Quantity;
+            product.UpdatedAt = DateTime.UtcNow;
+            await productRepository.UpdateAsync(product, cancellationToken);
+        }
     }
 
     private static void ValidateRequest(CreateOrderRequest request)
@@ -208,6 +397,7 @@ public sealed class OrderService(
             order.TotalAmount,
             order.Status,
             order.PaymentCode,
+            order.AccessToken,
             order.CreatedAt,
             order.PaidAt);
 }

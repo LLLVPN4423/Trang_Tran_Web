@@ -26,12 +26,12 @@ export function AppShell({ children, variant = 'customer', showSidebar = true }:
 
       <div className="mx-auto flex max-w-7xl">
         <div className="hidden w-64 shrink-0 lg:block">
-          <div className="sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto">
+          <div className="sticky top-[var(--header-height)] h-[calc(100dvh-var(--header-height))] overflow-y-auto">
             <AppSidebar variant={variant} />
           </div>
         </div>
 
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="min-w-0 flex-1 overflow-x-hidden">{children}</main>
       </div>
 
       {mobileOpen && (

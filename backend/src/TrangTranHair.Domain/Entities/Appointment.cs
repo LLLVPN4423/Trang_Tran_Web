@@ -10,4 +10,5 @@ public class Appointment : Common.BaseEntity
     public string ServiceInterest { get; set; } = string.Empty;
     public string? Notes { get; set; }
     public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
+    public string AccessToken { get; set; } = string.Empty;
 }

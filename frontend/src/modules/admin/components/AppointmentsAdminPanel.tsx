@@ -43,8 +43,12 @@ export function AppointmentsAdminPanel() {
   }, [load])
 
   const handleStatus = async (id: string, next: AppointmentStatus) => {
-    await updateAppointmentStatus(id, next)
-    load()
+    try {
+      await updateAppointmentStatus(id, next)
+      load()
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Không thể cập nhật')
+    }
   }
 
   if (loading) return <LoadingState label="Đang tải lịch hẹn..." />

@@ -4,6 +4,8 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 export default defineConfig({
+  // Monorepo: .env nằm ở thư mục gốc repo (cùng cấp frontend/)
+  envDir: path.resolve(__dirname, '..'),
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

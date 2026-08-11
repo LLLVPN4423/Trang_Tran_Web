@@ -7,6 +7,7 @@ public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor)
 {
     public string? UserId =>
         httpContextAccessor.HttpContext?.User.FindFirstValue("user_id")
+        ?? httpContextAccessor.HttpContext?.User.FindFirstValue("sub")
         ?? httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
     public bool IsAuthenticated =>

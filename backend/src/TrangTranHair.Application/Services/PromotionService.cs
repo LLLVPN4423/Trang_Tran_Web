@@ -14,6 +14,16 @@ public sealed class PromotionService(IPromotionRepository promotionRepository) :
         return promotions.Select(Map).ToList();
     }
 
+    public async Task<IReadOnlyList<PromotionResponse>> ListActiveAsync(CancellationToken cancellationToken = default)
+    {
+        var now = DateTime.UtcNow;
+        var promotions = await promotionRepository.GetAllAsync(cancellationToken);
+        return promotions
+            .Where(p => p.IsActive && (p.ExpiresAt is null || p.ExpiresAt > now))
+            .Select(Map)
+            .ToList();
+    }
+
     public async Task<PromotionResponse> GetAsync(string id, CancellationToken cancellationToken = default)
     {
         var promotion = await promotionRepository.GetByIdAsync(id, cancellationToken)

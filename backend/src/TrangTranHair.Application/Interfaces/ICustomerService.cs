@@ -14,6 +14,7 @@ public interface ICustomerService
 public interface IPromotionService
 {
     Task<IReadOnlyList<PromotionResponse>> ListAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<PromotionResponse>> ListActiveAsync(CancellationToken cancellationToken = default);
     Task<PromotionResponse> GetAsync(string id, CancellationToken cancellationToken = default);
     Task<PromotionResponse> CreateAsync(CreatePromotionRequest request, CancellationToken cancellationToken = default);
     Task<PromotionResponse> UpdateAsync(string id, UpdatePromotionRequest request, CancellationToken cancellationToken = default);
@@ -29,6 +30,8 @@ public interface ILoyaltyService
     Task<IReadOnlyList<LoyaltyTransactionResponse>> GetHistoryAsync(string customerId, CancellationToken cancellationToken = default);
     Task<int> RedeemPointsAsync(string customerId, int points, string orderId, CancellationToken cancellationToken = default);
     Task EarnPointsForOrderAsync(string customerId, string orderId, decimal paidAmount, CancellationToken cancellationToken = default);
+    Task<int> SyncMissedEarnsForCustomerAsync(string customerId, CancellationToken cancellationToken = default);
+    Task RefundRedeemedPointsAsync(string customerId, int points, string orderId, CancellationToken cancellationToken = default);
     Task AdjustPointsAsync(string customerId, int points, string description, CancellationToken cancellationToken = default);
     int CalculateRedeemDiscount(int points);
     int CalculateMaxRedeemablePoints(int availablePoints, decimal subtotalAfterPromo);

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using TrangTranHair.Api.Authorization;
 
 namespace TrangTranHair.Api.Extensions;
 
@@ -11,10 +13,13 @@ public static class AuthenticationExtensions
     {
         var projectId = configuration["Firebase:ProjectId"];
 
-        if (string.IsNullOrWhiteSpace(projectId))
-        {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                // Keep Firebase claim names (admin, sub, user_id) unchanged.
+                options.MapInboundClaims = false;
+
+                if (string.IsNullOrWhiteSpace(projectId))
                 {
                     options.Events = new JwtBearerEvents
                     {
@@ -22,14 +27,10 @@ public static class AuthenticationExtensions
                         {
                             context.NoResult();
                             return Task.CompletedTask;
-                        }
+                        },
                     };
-                });
-        }
-        else
-        {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+                }
+                else
                 {
                     options.Authority = $"https://securetoken.google.com/{projectId}";
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -38,23 +39,15 @@ public static class AuthenticationExtensions
                         ValidIssuer = $"https://securetoken.google.com/{projectId}",
                         ValidateAudience = true,
                         ValidAudience = projectId,
-                        ValidateLifetime = true
+                        ValidateLifetime = true,
                     };
+                }
+            });
 
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnAuthenticationFailed = context =>
-                        {
-                            context.NoResult();
-                            return Task.CompletedTask;
-                        }
-                    };
-                });
-        }
+        services.AddSingleton<IAuthorizationHandler, AdminAuthorizationHandler>();
 
         services.AddAuthorizationBuilder()
-            .AddPolicy("Admin", policy =>
-                policy.RequireClaim("admin", "true"));
+            .AddPolicy("Admin", policy => policy.Requirements.Add(new AdminRequirement()));
 
         return services;
     }

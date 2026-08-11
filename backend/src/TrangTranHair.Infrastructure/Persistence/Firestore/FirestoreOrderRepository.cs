@@ -91,6 +91,9 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
             TotalAmount = (decimal)doc.TotalAmount,
             Status = Enum.Parse<OrderStatus>(doc.Status),
             PaymentCode = doc.PaymentCode,
+            AccessToken = doc.AccessToken ?? string.Empty,
+            StockReserved = doc.StockReserved,
+            StockReservedAt = doc.StockReservedAt is null ? null : FirestoreMapper.FromTimestamp(doc.StockReservedAt),
             SePayTransactionId = doc.SePayTransactionId,
             PaidAt = doc.PaidAt is null ? null : FirestoreMapper.FromTimestamp(doc.PaidAt),
             CreatedAt = FirestoreMapper.FromTimestamp(doc.CreatedAt),
@@ -123,6 +126,9 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
             TotalAmount = (double)order.TotalAmount,
             Status = order.Status.ToString(),
             PaymentCode = order.PaymentCode,
+            AccessToken = order.AccessToken,
+            StockReserved = order.StockReserved,
+            StockReservedAt = order.StockReservedAt is null ? null : FirestoreMapper.ToTimestamp(order.StockReservedAt.Value),
             SePayTransactionId = order.SePayTransactionId,
             PaidAt = order.PaidAt is null ? null : FirestoreMapper.ToTimestamp(order.PaidAt.Value),
             CreatedAt = FirestoreMapper.ToTimestamp(order.CreatedAt),
@@ -177,6 +183,15 @@ internal sealed class OrderDocument
 
     [FirestoreProperty]
     public string PaymentCode { get; set; } = string.Empty;
+
+    [FirestoreProperty]
+    public string? AccessToken { get; set; }
+
+    [FirestoreProperty]
+    public bool StockReserved { get; set; }
+
+    [FirestoreProperty]
+    public Timestamp? StockReservedAt { get; set; }
 
     [FirestoreProperty]
     public string? SePayTransactionId { get; set; }

@@ -3,29 +3,35 @@ import { fetchOrder } from '@/shared/api/endpoints'
 import type { OrderResponse } from '@/shared/api/types'
 
 const POLL_INTERVAL_MS = 3000
-const MAX_POLLS = 60
+const MAX_POLLS = 120
 
-export function useOrderPolling(orderId: string | null, enabled: boolean) {
+export function useOrderPolling(orderId: string | null, accessToken: string | null, enabled: boolean) {
   const [order, setOrder] = useState<OrderResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [pollingExhausted, setPollingExhausted] = useState(false)
   const pollCount = useRef(0)
 
   useEffect(() => {
-    if (!orderId || !enabled) return
+    if (!orderId || !accessToken || !enabled) return
 
     pollCount.current = 0
     setError(null)
+    setPollingExhausted(false)
 
     const poll = async () => {
       try {
-        const result = await fetchOrder(orderId)
+        const result = await fetchOrder(orderId, accessToken)
         setOrder(result)
         if (result.status === 'Paid') return true
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Lỗi kiểm tra đơn hàng')
       }
       pollCount.current += 1
-      return pollCount.current >= MAX_POLLS
+      if (pollCount.current >= MAX_POLLS) {
+        setPollingExhausted(true)
+        return true
+      }
+      return false
     }
 
     const interval = setInterval(async () => {
@@ -36,7 +42,7 @@ export function useOrderPolling(orderId: string | null, enabled: boolean) {
     poll()
 
     return () => clearInterval(interval)
-  }, [orderId, enabled])
+  }, [orderId, accessToken, enabled])
 
-  return { order, error, isPaid: order?.status === 'Paid' }
+  return { order, error, isPaid: order?.status === 'Paid', pollingExhausted }
 }

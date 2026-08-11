@@ -12,18 +12,18 @@ export function CatalogSection() {
 
     const ctx = gsap.context(() => {
       gsap.from('.catalog-heading', {
-        y: 50,
+        y: 36,
         opacity: 0,
-        duration: 0.8,
-        scrollTrigger: { trigger: section, start: 'top 75%' },
+        duration: 0.75,
+        scrollTrigger: { trigger: section, start: 'top 78%' },
       })
 
       gsap.from('.catalog-item', {
-        x: -40,
+        y: 20,
         opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        scrollTrigger: { trigger: section, start: 'top 65%' },
+        duration: 0.55,
+        stagger: 0.08,
+        scrollTrigger: { trigger: section, start: 'top 68%' },
       })
     }, section)
 
@@ -31,41 +31,24 @@ export function CatalogSection() {
   }, [])
 
   return (
-    <section
-      ref={sectionRef}
-      id="services"
-      className="border-t border-zinc-900 px-6 py-32 md:py-48"
-    >
-      <div className="mx-auto max-w-5xl">
-        <p className="catalog-heading mb-4 text-xs uppercase tracking-[0.35em] text-gold-muted">
-          Catalog & Services
-        </p>
-        <h2 className="catalog-heading font-serif text-4xl text-zinc-100 md:text-6xl">
-          Bảng giá
-        </h2>
-        <p className="catalog-heading mt-4 text-sm text-zinc-500">{CONTACT.note}</p>
+    <section ref={sectionRef} id="services" className="section-shell">
+      <div className="section-inner">
+        <p className="catalog-heading section-eyebrow">Catalog & Services</p>
+        <h2 className="catalog-heading section-title">Bảng giá</h2>
+        <p className="catalog-heading section-lead">{CONTACT.note}</p>
 
-        <ul className="mt-16 divide-y divide-zinc-800/80">
+        <ul className="mt-12 divide-y divide-zinc-800/70">
           {SERVICE_HIGHLIGHTS.map((service) => (
-            <li
-              key={service.name}
-              className="catalog-item group flex items-baseline justify-between gap-4 py-6 md:py-8"
-            >
-              <span className="font-serif text-2xl text-zinc-200 transition-colors group-hover:text-gold md:text-4xl">
-                {service.name}
-              </span>
-              <span className="shrink-0 text-sm tracking-wide text-zinc-500 md:text-base">
-                {service.range}
-              </span>
+            <li key={service.name} className="catalog-item group price-row">
+              <span className="price-row-name">{service.name}</span>
+              <span className="price-row-leader" aria-hidden />
+              <span className="price-row-value">{service.range}</span>
             </li>
           ))}
         </ul>
 
-        <div className="catalog-item mt-12 text-center">
-          <Link
-            to="/catalog"
-            className="inline-block border border-zinc-700 px-8 py-3 text-xs uppercase tracking-[0.3em] text-zinc-400 transition hover:border-gold hover:text-gold"
-          >
+        <div className="catalog-item mt-10 text-center">
+          <Link to="/catalog" className="btn-editorial">
             Xem toàn bộ menu
           </Link>
         </div>

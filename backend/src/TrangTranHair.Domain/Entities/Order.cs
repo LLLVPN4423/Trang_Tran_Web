@@ -18,6 +18,9 @@ public class Order : Common.BaseEntity
     public decimal TotalAmount { get; set; }
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
     public string PaymentCode { get; set; } = string.Empty;
+    public string AccessToken { get; set; } = string.Empty;
+    public bool StockReserved { get; set; }
+    public DateTime? StockReservedAt { get; set; }
     public string? SePayTransactionId { get; set; }
     public DateTime? PaidAt { get; set; }
 }

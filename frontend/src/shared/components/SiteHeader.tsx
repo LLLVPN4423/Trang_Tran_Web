@@ -12,8 +12,8 @@ export function SiteHeader({ onMenuClick, showMenuButton = true }: Props) {
   const { user, customerProfile } = useAuth()
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-900/80 bg-zinc-950/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+    <header className="site-header sticky top-0 z-50 border-b border-zinc-900/80 bg-zinc-950/90 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
         <div className="flex items-center gap-3">
           {showMenuButton && (
             <button
@@ -27,12 +27,12 @@ export function SiteHeader({ onMenuClick, showMenuButton = true }: Props) {
               <span className="mt-1 block h-0.5 w-4 bg-current" />
             </button>
           )}
-          <Link to="/" className="font-serif text-lg tracking-wide text-zinc-200 sm:text-xl">
+          <Link to="/" className="font-serif text-lg tracking-wide text-zinc-100 sm:text-xl">
             Trang Tran
           </Link>
         </div>
 
-        <nav className="hidden items-center gap-5 text-xs uppercase tracking-[0.15em] md:flex">
+        <nav className="hidden items-center gap-5 text-[0.6875rem] font-medium uppercase tracking-[0.22em] md:flex">
           <Link to="/catalog" className="text-zinc-500 transition hover:text-gold">
             Menu
           </Link>

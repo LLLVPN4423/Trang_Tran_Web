@@ -21,8 +21,9 @@ function BookingContent() {
   const [placedOrder, setPlacedOrder] = useState<OrderResponse | null>(null)
   const itemCount = useCartStore((s) => s.itemCount())
   const { refreshProfile } = useAuth()
-  const { order: polledOrder, isPaid } = useOrderPolling(
+  const { order: polledOrder, isPaid, pollingExhausted } = useOrderPolling(
     placedOrder?.id ?? null,
+    placedOrder?.accessToken ?? null,
     placedOrder?.status === 'Pending',
   )
 
@@ -40,7 +41,7 @@ function BookingContent() {
 
         {isPaid && activeOrder && <PaymentSuccess order={activeOrder} />}
 
-        {!isPaid && activeOrder && <PaymentPending order={activeOrder} />}
+        {!isPaid && activeOrder && <PaymentPending order={activeOrder} pollingExhausted={pollingExhausted} />}
 
         {!activeOrder && (
           <div className="mt-10 space-y-12">

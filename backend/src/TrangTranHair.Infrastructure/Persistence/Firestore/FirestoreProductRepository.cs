@@ -12,7 +12,7 @@ public sealed class FirestoreProductRepository(FirestoreDb db) : IProductReposit
     {
         var snapshot = await Collection.GetSnapshotAsync(cancellationToken);
         return snapshot.Documents
-            .Select(d => MapFromDocument(d.ConvertTo<ProductDocument>()))
+            .Select(d => MapFromDocument(d.Id, d.ConvertTo<ProductDocument>()))
             .OrderBy(p => p.Name)
             .ToList();
     }
@@ -20,7 +20,7 @@ public sealed class FirestoreProductRepository(FirestoreDb db) : IProductReposit
     public async Task<Product?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         var doc = await Collection.Document(id).GetSnapshotAsync(cancellationToken);
-        return doc.Exists ? MapFromDocument(doc.ConvertTo<ProductDocument>()) : null;
+        return doc.Exists ? MapFromDocument(doc.Id, doc.ConvertTo<ProductDocument>()) : null;
     }
 
     public async Task<Product> CreateAsync(Product product, CancellationToken cancellationToken = default)
@@ -43,16 +43,18 @@ public sealed class FirestoreProductRepository(FirestoreDb db) : IProductReposit
     public Task DeleteAsync(string id, CancellationToken cancellationToken = default) =>
         Collection.Document(id).DeleteAsync(cancellationToken: cancellationToken);
 
-    private static Product MapFromDocument(ProductDocument doc) =>
+    private static Product MapFromDocument(string documentId, ProductDocument doc) =>
         new()
         {
-            Id = doc.Id,
+            Id = documentId,
             Name = doc.Name,
             Description = doc.Description,
             Brand = doc.Brand,
             Price = (decimal)doc.Price,
             Stock = doc.Stock,
             ImageUrl = doc.ImageUrl,
+            GalleryUrls = doc.GalleryUrls ?? [],
+            VideoUrl = doc.VideoUrl,
             IsActive = doc.IsActive,
             CreatedAt = FirestoreMapper.FromTimestamp(doc.CreatedAt),
             UpdatedAt = FirestoreMapper.FromTimestamp(doc.UpdatedAt)
@@ -68,6 +70,8 @@ public sealed class FirestoreProductRepository(FirestoreDb db) : IProductReposit
             Price = (double)product.Price,
             Stock = product.Stock,
             ImageUrl = product.ImageUrl,
+            GalleryUrls = product.GalleryUrls,
+            VideoUrl = product.VideoUrl,
             IsActive = product.IsActive,
             CreatedAt = FirestoreMapper.ToTimestamp(product.CreatedAt),
             UpdatedAt = product.UpdatedAt is null ? null : FirestoreMapper.ToTimestamp(product.UpdatedAt.Value)
@@ -97,6 +101,12 @@ internal sealed class ProductDocument
 
     [FirestoreProperty]
     public string? ImageUrl { get; set; }
+
+    [FirestoreProperty]
+    public List<string>? GalleryUrls { get; set; }
+
+    [FirestoreProperty]
+    public string? VideoUrl { get; set; }
 
     [FirestoreProperty]
     public bool IsActive { get; set; } = true;

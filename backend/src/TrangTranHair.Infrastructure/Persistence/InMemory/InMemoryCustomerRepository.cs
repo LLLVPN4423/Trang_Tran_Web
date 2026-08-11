@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using TrangTranHair.Application.Interfaces;
 using TrangTranHair.Domain.Entities;
+using TrangTranHair.Domain.Enums;
 
 namespace TrangTranHair.Infrastructure.Persistence.InMemory;
 
@@ -97,6 +98,13 @@ public sealed class InMemoryLoyaltyRepository : ILoyaltyRepository
             .OrderByDescending(t => t.CreatedAt)
             .ToList();
         return Task.FromResult<IReadOnlyList<LoyaltyTransaction>>(items);
+    }
+
+    public Task<LoyaltyTransaction?> GetEarnByOrderIdAsync(string orderId, CancellationToken cancellationToken = default)
+    {
+        var tx = _store.Values.FirstOrDefault(t =>
+            t.OrderId == orderId && t.Type == LoyaltyTransactionType.Earn);
+        return Task.FromResult(tx);
     }
 
     public Task<LoyaltyTransaction> CreateAsync(LoyaltyTransaction transaction, CancellationToken cancellationToken = default)

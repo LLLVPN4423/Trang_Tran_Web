@@ -1,7 +1,8 @@
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '@/shared/auth/AuthProvider'
 import { PageLayout } from '@/shared/components/PageLayout'
-import { AuthForm } from './LoginPage'
+import { GoogleSignInButton } from '@/shared/components/GoogleSignInButton'
+import { AuthDivider, AuthForm } from './LoginPage'
 
 export function RegisterPage() {
   const { isConfigured, register, user } = useAuth()
@@ -35,6 +36,11 @@ export function RegisterPage() {
             </p>
           }
         />
+        <AuthDivider />
+        <p className="mb-4 text-center text-xs text-zinc-600">
+          Đăng ký nhanh bằng Google — bạn sẽ bổ sung số điện thoại tại trang Tài khoản.
+        </p>
+        <GoogleSignInButton />
       </div>
     </PageLayout>
   )

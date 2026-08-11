@@ -31,8 +31,12 @@ export function CustomersAdminPanel() {
     if (!raw) return
     const points = Number(raw)
     if (Number.isNaN(points)) return
-    await adjustLoyalty(customer.id, points, `Admin điều chỉnh ${points} điểm`)
-    load()
+    try {
+      await adjustLoyalty(customer.id, points, `Admin điều chỉnh ${points} điểm`)
+      load()
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Không thể điều chỉnh điểm')
+    }
   }
 
   if (loading) return <LoadingState label="Đang tải khách hàng..." />

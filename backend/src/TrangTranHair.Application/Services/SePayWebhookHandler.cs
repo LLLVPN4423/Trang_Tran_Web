@@ -5,13 +5,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TrangTranHair.Application.DTOs;
 using TrangTranHair.Application.Interfaces;
-using TrangTranHair.Domain.Enums;
 
 namespace TrangTranHair.Application.Services;
 
 public sealed class SePayWebhookHandler(
     IOrderRepository orderRepository,
-    ILoyaltyService loyaltyService,
+    IOrderService orderService,
     IConfiguration configuration,
     ILogger<SePayWebhookHandler> logger) : ISePayWebhookHandler
 {
@@ -67,7 +66,7 @@ public sealed class SePayWebhookHandler(
             return new SePayWebhookResult(true, "Order not found — acknowledged.");
         }
 
-        if (order.Status == OrderStatus.Paid)
+        if (order.Status == Domain.Enums.OrderStatus.Paid)
             return new SePayWebhookResult(true, "Order already paid.");
 
         if (payload.TransferAmount != (int)order.TotalAmount)
@@ -78,21 +77,7 @@ public sealed class SePayWebhookHandler(
             return new SePayWebhookResult(false, "Amount mismatch.", 400);
         }
 
-        order.Status = OrderStatus.Paid;
-        order.SePayTransactionId = payload.Id.ToString();
-        order.PaidAt = DateTime.UtcNow;
-        order.UpdatedAt = DateTime.UtcNow;
-
-        await orderRepository.UpdateAsync(order, cancellationToken);
-
-        if (!string.IsNullOrWhiteSpace(order.CustomerId))
-        {
-            await loyaltyService.EarnPointsForOrderAsync(
-                order.CustomerId,
-                order.Id,
-                order.TotalAmount,
-                cancellationToken);
-        }
+        await orderService.ConfirmPaymentAsync(order.Id, payload.Id.ToString(), cancellationToken);
 
         logger.LogInformation("Order {OrderId} marked as paid via SePay transaction {TxId}", order.Id, payload.Id);
 

@@ -28,6 +28,18 @@ public sealed class FirestoreAppointmentRepository(FirestoreDb db) : IAppointmen
             .ToList();
     }
 
+    public async Task<IReadOnlyList<Appointment>> GetByCustomerIdAsync(string customerId, CancellationToken cancellationToken = default)
+    {
+        var snapshot = await Collection
+            .WhereEqualTo("CustomerId", customerId)
+            .GetSnapshotAsync(cancellationToken);
+
+        return snapshot.Documents
+            .Select(d => MapFrom(d.ConvertTo<AppointmentDocument>()))
+            .OrderByDescending(a => a.CreatedAt)
+            .ToList();
+    }
+
     public async Task<Appointment> CreateAsync(Appointment appointment, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(appointment.Id))
@@ -55,6 +67,7 @@ public sealed class FirestoreAppointmentRepository(FirestoreDb db) : IAppointmen
             ServiceInterest = doc.ServiceInterest,
             Notes = doc.Notes,
             Status = Enum.Parse<AppointmentStatus>(doc.Status),
+            AccessToken = doc.AccessToken ?? string.Empty,
             CreatedAt = FirestoreMapper.FromTimestamp(doc.CreatedAt),
             UpdatedAt = FirestoreMapper.FromTimestamp(doc.UpdatedAt),
         };
@@ -69,6 +82,7 @@ public sealed class FirestoreAppointmentRepository(FirestoreDb db) : IAppointmen
             ServiceInterest = appointment.ServiceInterest,
             Notes = appointment.Notes,
             Status = appointment.Status.ToString(),
+            AccessToken = appointment.AccessToken,
             CreatedAt = FirestoreMapper.ToTimestamp(appointment.CreatedAt),
             UpdatedAt = appointment.UpdatedAt is null ? null : FirestoreMapper.ToTimestamp(appointment.UpdatedAt.Value),
         };
@@ -97,6 +111,9 @@ internal sealed class AppointmentDocument
 
     [FirestoreProperty]
     public string Status { get; set; } = AppointmentStatus.Pending.ToString();
+
+    [FirestoreProperty]
+    public string? AccessToken { get; set; }
 
     [FirestoreProperty]
     public Timestamp CreatedAt { get; set; }

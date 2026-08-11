@@ -26,6 +26,9 @@ export interface ServiceResponse {
   basePrice: number | null
   priceBySize: Record<string, number> | null
   durationMinutes: number | null
+  imageUrl: string | null
+  galleryUrls: string[]
+  videoUrl: string | null
   isActive: boolean
 }
 
@@ -37,6 +40,8 @@ export interface ProductResponse {
   price: number
   stock: number
   imageUrl: string | null
+  galleryUrls: string[]
+  videoUrl: string | null
   isActive: boolean
 }
 
@@ -83,6 +88,7 @@ export interface OrderResponse {
   totalAmount: number
   status: OrderStatus
   paymentCode: string
+  accessToken: string
   createdAt: string
   paidAt?: string | null
 }
@@ -205,6 +211,9 @@ export interface CreateServiceRequest {
   basePrice?: number | null
   priceBySize?: Record<string, number> | null
   durationMinutes?: number | null
+  imageUrl?: string | null
+  galleryUrls?: string[] | null
+  videoUrl?: string | null
   isActive?: boolean
 }
 
@@ -216,6 +225,9 @@ export interface UpdateServiceRequest {
   basePrice?: number | null
   priceBySize?: Record<string, number> | null
   durationMinutes?: number | null
+  imageUrl?: string | null
+  galleryUrls?: string[] | null
+  videoUrl?: string | null
   isActive: boolean
 }
 
@@ -226,6 +238,8 @@ export interface CreateProductRequest {
   price: number
   stock: number
   imageUrl?: string | null
+  galleryUrls?: string[] | null
+  videoUrl?: string | null
   isActive?: boolean
 }
 
@@ -236,6 +250,8 @@ export interface UpdateProductRequest {
   price: number
   stock: number
   imageUrl?: string | null
+  galleryUrls?: string[] | null
+  videoUrl?: string | null
   isActive: boolean
 }
 
@@ -251,6 +267,19 @@ export const CATEGORY_LABELS: Record<ServiceCategory, string> = {
   Highlight: 'Highlight',
   Balayage: 'Balayage',
   Recovery: 'Phục hồi',
+}
+
+export const STYLIST_LABELS: Record<StylistLevel, string> = {
+  MasterTrangTran: 'Master Trang Trần',
+  Senior: 'Senior',
+  Junior: 'Junior',
+  BangTrim: 'Cắt mái',
+}
+
+export interface UpdateCustomerRequest {
+  name: string
+  phone: string
+  email?: string | null
 }
 
 export function resolveServicePrice(service: ServiceResponse, hairSize: HairSize): number {

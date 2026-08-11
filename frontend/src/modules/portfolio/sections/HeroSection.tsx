@@ -13,10 +13,13 @@ export function HeroSection() {
     const content = contentRef.current
     if (!section || !bg || !content) return
 
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reducedMotion) return
+
     const ctx = gsap.context(() => {
       gsap.to(bg, {
-        yPercent: 40,
-        scale: 1.15,
+        yPercent: 24,
+        scale: 1.06,
         ease: 'none',
         scrollTrigger: {
           trigger: section,
@@ -27,7 +30,7 @@ export function HeroSection() {
       })
 
       gsap.to(content, {
-        yPercent: -20,
+        yPercent: -12,
         opacity: 0,
         ease: 'none',
         scrollTrigger: {
@@ -39,20 +42,20 @@ export function HeroSection() {
       })
 
       gsap.from('.hero-title-line', {
-        y: 80,
+        y: 48,
         opacity: 0,
-        duration: 1.4,
-        stagger: 0.15,
+        duration: 1.2,
+        stagger: 0.12,
         ease: 'power3.out',
-        delay: 0.3,
+        delay: 0.2,
       })
 
       gsap.from('.hero-tagline', {
-        y: 30,
+        y: 20,
         opacity: 0,
-        duration: 1,
+        duration: 0.9,
         ease: 'power2.out',
-        delay: 0.9,
+        delay: 0.75,
       })
     }, section)
 
@@ -63,38 +66,43 @@ export function HeroSection() {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative h-screen overflow-hidden"
+      className="relative min-h-[100dvh] overflow-hidden"
     >
       <div ref={bgRef} className="absolute inset-0 will-change-transform">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `
-              linear-gradient(to bottom, rgba(9,9,11,0.3) 0%, rgba(9,9,11,0.7) 60%, rgba(9,9,11,1) 100%),
-              url('${encodeURI(HERO_IMAGE)}')
-            `,
-          }}
+        <img
+          src={encodeURI(HERO_IMAGE)}
+          alt="Trang Tran Hair Salon"
+          fetchPriority="high"
+          decoding="async"
+          className="media-cover min-h-[115%] min-w-full object-[center_22%]"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-zinc-950/40 via-transparent to-amber-950/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/35 via-zinc-950/55 to-zinc-950" />
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-950/30 via-transparent to-amber-950/15" />
       </div>
 
       <div
         ref={contentRef}
-        className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center"
+        className="relative z-10 flex min-h-[100dvh] flex-col items-center justify-center px-5 pb-16 pt-[calc(var(--header-height)+2rem)] text-center sm:px-8"
       >
-        <p className="hero-tagline mb-6 text-xs uppercase tracking-[0.4em] text-gold-muted">
+        <p className="hero-tagline mb-5 section-eyebrow tracking-[0.36em]">
           Hair Salon · Editorial
         </p>
         <h1 className="overflow-hidden">
-          <span className="hero-title-line block font-serif text-6xl font-light tracking-wide text-zinc-50 md:text-8xl lg:text-9xl">
+          <span
+            className="hero-title-line block font-serif font-light text-zinc-50"
+            style={{ fontSize: 'clamp(2.75rem, 7vw + 0.5rem, 5.5rem)' }}
+          >
             Trang Tran
           </span>
         </h1>
-        <p className="hero-tagline mt-6 max-w-md font-serif text-xl italic text-zinc-400 md:text-2xl">
+        <p
+          className="hero-tagline mt-5 max-w-md font-serif italic text-zinc-300/90"
+          style={{ fontSize: 'clamp(1.0625rem, 1.5vw + 0.75rem, 1.5rem)' }}
+        >
           {SALON_TAGLINE}
         </p>
-        <div className="hero-tagline mt-16 animate-pulse">
-          <span className="block h-12 w-px bg-gradient-to-b from-gold/60 to-transparent mx-auto" />
+        <div className="hero-tagline mt-14">
+          <span className="mx-auto block h-10 w-px bg-gradient-to-b from-gold/50 to-transparent" />
         </div>
       </div>
     </section>

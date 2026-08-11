@@ -2,10 +2,10 @@ import { useEffect, useRef } from 'react'
 import { gsap } from '@/shared/lib/gsap'
 import { LOOKBOOK_ITEMS } from '../data/content'
 
-const ASPECT_CLASS = {
-  tall: 'row-span-2 min-h-[420px]',
-  wide: 'col-span-2 min-h-[280px]',
-  square: 'min-h-[320px]',
+const TILE_CLASS = {
+  tall: 'col-span-1 aspect-[3/4] sm:aspect-[4/5] lg:row-span-2 lg:aspect-auto lg:min-h-[420px]',
+  wide: 'col-span-2 aspect-[16/10]',
+  square: 'col-span-1 aspect-[4/5]',
 } as const
 
 export function LookbookSection() {
@@ -15,18 +15,22 @@ export function LookbookSection() {
     const section = sectionRef.current
     if (!section) return
 
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
     const ctx = gsap.context(() => {
       gsap.from('.lookbook-heading', {
-        y: 50,
+        y: 36,
         opacity: 0,
-        duration: 0.8,
-        scrollTrigger: { trigger: section, start: 'top 75%' },
+        duration: 0.75,
+        scrollTrigger: { trigger: section, start: 'top 78%' },
       })
+
+      if (reducedMotion) return
 
       section.querySelectorAll<HTMLElement>('.lookbook-item').forEach((item) => {
         const speed = parseFloat(item.dataset.speed ?? '0.1')
         gsap.to(item, {
-          y: speed * -200,
+          y: speed * -80,
           ease: 'none',
           scrollTrigger: {
             trigger: section,
@@ -42,41 +46,34 @@ export function LookbookSection() {
   }, [])
 
   return (
-    <section
-      ref={sectionRef}
-      id="lookbook"
-      className="border-t border-zinc-900 px-6 py-32 md:py-48"
-    >
-      <div className="mx-auto max-w-7xl">
-        <p className="lookbook-heading mb-4 text-xs uppercase tracking-[0.35em] text-gold-muted">
-          Salon Tour
-        </p>
-        <h2 className="lookbook-heading font-serif text-4xl text-zinc-100 md:text-6xl">
-          Lookbook
-        </h2>
+    <section ref={sectionRef} id="lookbook" className="section-shell">
+      <div className="section-inner-wide">
+        <p className="lookbook-heading section-eyebrow">Salon Tour</p>
+        <h2 className="lookbook-heading section-title">Lookbook</h2>
 
-        <div className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-flow-dense lg:grid-cols-3 lg:gap-4">
           {LOOKBOOK_ITEMS.map((item, index) => (
-            <div
+            <article
               key={item.id}
               data-speed={item.speed}
-              className={`lookbook-item group relative overflow-hidden rounded-sm will-change-transform ${ASPECT_CLASS[item.aspect]}`}
+              className={`lookbook-item group relative overflow-hidden rounded-sm will-change-transform ${TILE_CLASS[item.aspect]}`}
             >
               <img
                 src={encodeURI(item.image)}
                 alt={item.label}
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                loading={index < 3 ? 'eager' : 'lazy'}
+                className="media-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                loading={index < 4 ? 'eager' : 'lazy'}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/95 via-zinc-950/35 to-zinc-950/10" />
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(201,169,98,0.12),transparent_60%)]" />
-              <div className="absolute inset-0 flex flex-col justify-end p-6">
-                <span className="text-xs uppercase tracking-[0.25em] text-gold-muted">
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/25 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+                <span className="label-caps text-gold-muted/90">
                   {String(index + 1).padStart(2, '0')}
                 </span>
-                <p className="mt-1 font-serif text-2xl text-zinc-200">{item.label}</p>
+                <p className="mt-1 font-serif text-lg leading-snug text-zinc-100 sm:text-xl">
+                  {item.label}
+                </p>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </div>

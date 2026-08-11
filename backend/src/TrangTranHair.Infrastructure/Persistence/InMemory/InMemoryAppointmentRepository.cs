@@ -24,6 +24,16 @@ public sealed class InMemoryAppointmentRepository : IAppointmentRepository
         return Task.FromResult<IReadOnlyList<Appointment>>(query.OrderByDescending(a => a.CreatedAt).ToList());
     }
 
+    public Task<IReadOnlyList<Appointment>> GetByCustomerIdAsync(string customerId, CancellationToken cancellationToken = default)
+    {
+        var items = _store.Values
+            .Where(a => a.CustomerId == customerId)
+            .OrderByDescending(a => a.CreatedAt)
+            .ToList();
+
+        return Task.FromResult<IReadOnlyList<Appointment>>(items);
+    }
+
     public Task<Appointment> CreateAsync(Appointment appointment, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(appointment.Id))

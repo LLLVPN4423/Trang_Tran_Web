@@ -43,6 +43,7 @@ public sealed record OrderResponse(
     decimal TotalAmount,
     OrderStatus Status,
     string PaymentCode,
+    string AccessToken,
     DateTime CreatedAt,
     DateTime? PaidAt = null);
 

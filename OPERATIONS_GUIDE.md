@@ -111,7 +111,7 @@ Trang chủ gồm:
 2. Nhập Họ tên, SĐT, Email, Mật khẩu (≥ 6 ký tự).
 3. Sau đăng ký → vào `/account`.
 
-> **Yêu cầu:** Firebase Authentication phải được bật (Email/Password). Xem [DEVELOPMENT.md](./DEVELOPMENT.md).
+> **Yêu cầu:** Firebase Authentication phải được bật (**Email/Password** + **Google**). Xem [FIREBASE_SETUP.md](./FIREBASE_SETUP.md).
 
 ### 3.2. Đăng nhập
 
@@ -184,7 +184,7 @@ Dashboard liên kết nhanh tới các module quản trị.
 ### 4.6. Sản phẩm (`/admin/products`)
 
 - Xem sản phẩm Moroccanoil.
-- Nút **Ảnh** → upload file lên Firebase Storage **hoặc** dán URL.
+- Nút **Ảnh** → dán URL (khuyến nghị: `/images/products/...` hoặc link ngoài). Upload Firebase Storage **chỉ khi** đã bật gói trả phí.
 - **Bật/Tắt**, **Xóa** sản phẩm.
 
 ### 4.7. Khuyến mãi (`/admin/promotions`)
@@ -210,7 +210,7 @@ Nút **Force Re-seed** trên header Admin → ghi đè dịch vụ, sản phẩm
 
 ### Cơ chế
 
-- **Khách hàng:** Firebase Auth thường (email/password), không cần claim đặc biệt.
+- **Khách hàng:** Firebase Auth (email/password hoặc Google), không cần claim đặc biệt.
 - **Admin:** cùng Firebase Auth + custom claim **`admin: true`** trong JWT.
 
 ### Cấp quyền Admin (một lần)
@@ -231,7 +231,7 @@ admin.auth().setCustomUserClaims(uid, { admin: true })
   .catch(console.error);
 ```
 
-3. Chạy: `node set-admin.js`
+3. Chạy: `node scripts/set-admin.js YOUR_FIREBASE_UID`
 4. User **đăng xuất và đăng nhập lại**.
 
 **Lấy UID:** Firebase Console → Authentication → Users.
@@ -294,19 +294,18 @@ public/images/
 
 ### 7.2. Ảnh sản phẩm (động)
 
-**Cách 1 — Admin Portal (khuyến nghị):**
+**Cách 1 — Ảnh tĩnh + Admin (khuyến nghị, miễn phí):**
 
-1. `/admin/products` → nút **Ảnh**
-2. Chọn file → upload Firebase Storage (cần `VITE_FIREBASE_STORAGE_BUCKET`)
-3. Hoặc dán URL → **Lưu URL**
+1. Copy ảnh vào `frontend/public/images/products/`
+2. `/admin/products` → **Ảnh** → dán `/images/products/ten-file.jpg` → **Lưu URL**
 
-**Cách 2 — Firestore Console:**
+**Cách 2 — Admin / Firestore — URL bên ngoài:**
 
-Sửa field `imageUrl` trong document `products/{id}`.
+Dán link public (Drive, Imgur…) vào field `imageUrl`.
 
-**Cách 3 — Firebase Storage Console:**
+**Cách 3 — Firebase Storage (tùy chọn, thường cần billing):**
 
-Upload thủ công → copy URL → dán vào Admin hoặc Firestore.
+Upload file từ Admin khi đã set `VITE_FIREBASE_STORAGE_BUCKET`.
 
 ---
 

@@ -19,6 +19,17 @@ public sealed class FirestoreLoyaltyRepository(FirestoreDb db) : ILoyaltyReposit
             .ToList();
     }
 
+    public async Task<LoyaltyTransaction?> GetEarnByOrderIdAsync(string orderId, CancellationToken cancellationToken = default)
+    {
+        var query = Collection
+            .WhereEqualTo("OrderId", orderId)
+            .WhereEqualTo("Type", LoyaltyTransactionType.Earn.ToString())
+            .Limit(1);
+        var snapshot = await query.GetSnapshotAsync(cancellationToken);
+        var doc = snapshot.Documents.FirstOrDefault();
+        return doc is null ? null : MapFrom(doc.ConvertTo<LoyaltyTransactionDocument>());
+    }
+
     public async Task<LoyaltyTransaction> CreateAsync(LoyaltyTransaction transaction, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(transaction.Id))

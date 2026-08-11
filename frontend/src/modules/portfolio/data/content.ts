@@ -16,6 +16,18 @@ export const ARTIST_STATEMENT = [
   'Your canvas, reimagined.',
 ]
 
+/** Ảnh tóc mẫu — copy vào public/images/gallery/ rồi thêm mục ở đây. Section ẩn khi mảng rỗng. */
+export const GALLERY_ITEMS: ReadonlyArray<{
+  id: number
+  label: string
+  category?: string
+  image: string
+}> = [
+  // Ví dụ (bỏ comment sau khi có ảnh):
+  // { id: 1, label: 'Balayage honey', category: 'Balayage', image: '/images/gallery/balayage-01.jpg' },
+  // { id: 2, label: 'Precision bob', category: 'Cắt tóc', image: '/images/gallery/cut-01.jpg' },
+]
+
 export const LOOKBOOK_ITEMS = [
   { id: 1, label: 'Không gian salon', aspect: 'tall', speed: 0.15, image: '/images/salon-tour/Salon Tour.jpg' },
   { id: 2, label: 'Studio styling', aspect: 'wide', speed: 0.08, image: '/images/salon-tour/Salon Tour1.jpg' },

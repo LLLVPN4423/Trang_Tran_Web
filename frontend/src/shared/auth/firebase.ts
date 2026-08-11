@@ -2,11 +2,14 @@ import { initializeApp, type FirebaseApp } from 'firebase/app'
 import {
   createUserWithEmailAndPassword,
   getAuth,
+  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   type Auth,
   type User,
+  type UserCredential,
 } from 'firebase/auth'
 import { getDownloadURL, getStorage, ref, uploadBytes, type FirebaseStorage } from 'firebase/storage'
 
@@ -41,6 +44,10 @@ export function getFirebaseAuth(): Auth | null {
   return auth
 }
 
+export function isFirebaseStorageConfigured(): boolean {
+  return Boolean(isFirebaseConfigured() && firebaseConfig.storageBucket)
+}
+
 export function getFirebaseStorage(): FirebaseStorage | null {
   getFirebaseAuth()
   return storage
@@ -60,7 +67,8 @@ export async function uploadProductImage(file: File, productId: string): Promise
 export async function getIdToken(): Promise<string | null> {
   const firebaseAuth = getFirebaseAuth()
   if (!firebaseAuth?.currentUser) return null
-  return firebaseAuth.currentUser.getIdToken()
+  // Refresh when cached token is close to expiry so admin claims stay current.
+  return firebaseAuth.currentUser.getIdToken(false)
 }
 
 export function subscribeAuth(callback: (user: User | null) => void): () => void {
@@ -82,6 +90,15 @@ export async function registerWithEmail(email: string, password: string) {
   const firebaseAuth = getFirebaseAuth()
   if (!firebaseAuth) throw new Error('Firebase chưa được cấu hình.')
   return createUserWithEmailAndPassword(firebaseAuth, email, password)
+}
+
+export async function loginWithGoogle(): Promise<UserCredential> {
+  const firebaseAuth = getFirebaseAuth()
+  if (!firebaseAuth) throw new Error('Firebase chưa được cấu hình.')
+
+  const provider = new GoogleAuthProvider()
+  provider.setCustomParameters({ prompt: 'select_account' })
+  return signInWithPopup(firebaseAuth, provider)
 }
 
 export async function logoutUser() {

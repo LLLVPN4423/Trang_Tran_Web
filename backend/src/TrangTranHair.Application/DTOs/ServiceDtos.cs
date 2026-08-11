@@ -11,6 +11,9 @@ public sealed record ServiceResponse(
     decimal? BasePrice,
     Dictionary<string, decimal>? PriceBySize,
     int? DurationMinutes,
+    string? ImageUrl,
+    IReadOnlyList<string> GalleryUrls,
+    string? VideoUrl,
     bool IsActive);
 
 public sealed record CreateServiceRequest(
@@ -21,6 +24,9 @@ public sealed record CreateServiceRequest(
     decimal? BasePrice,
     Dictionary<string, decimal>? PriceBySize,
     int? DurationMinutes,
+    string? ImageUrl,
+    IReadOnlyList<string>? GalleryUrls,
+    string? VideoUrl,
     bool IsActive = true);
 
 public sealed record UpdateServiceRequest(
@@ -31,4 +37,7 @@ public sealed record UpdateServiceRequest(
     decimal? BasePrice,
     Dictionary<string, decimal>? PriceBySize,
     int? DurationMinutes,
+    string? ImageUrl,
+    IReadOnlyList<string>? GalleryUrls,
+    string? VideoUrl,
     bool IsActive);

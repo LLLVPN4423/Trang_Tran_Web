@@ -64,7 +64,7 @@ frontend/
 
 ## 3. Biến môi trường
 
-Copy `.env.example` → `.env` ở thư mục gốc.
+Copy `.env.example` → `.env` ở thư mục gốc. Vite đọc file này qua `frontend/vite.config.ts` (`envDir: ..`).
 
 ### Backend
 
@@ -238,17 +238,21 @@ Tài khoản login: **Firebase Authentication** (không có collection `users`).
 ### Bước 2 — Authentication
 
 - Bật **Email/Password**
+- Bật **Google** (Sign-in method → Google → Enable)
+- Thêm domain vào **Authorized domains** (`localhost` + domain production)
+
+> Chi tiết từng bước: [FIREBASE_SETUP.md](./FIREBASE_SETUP.md)
 
 ### Bước 3 — Firestore
 
 - Tạo database (production mode)
 - Deploy rules phù hợp (backend dùng Admin SDK, client chỉ qua API)
 
-### Bước 4 — Storage
+### Bước 4 — Ảnh sản phẩm (không bắt buộc Storage)
 
-- Tạo bucket
-- Rules: read public, write chỉ admin claim
-- Set `VITE_FIREBASE_STORAGE_BUCKET`
+- Đặt ảnh vào `frontend/public/images/products/`
+- Admin → dán URL `/images/products/...` — **miễn phí, không cần billing**
+- Storage + `VITE_FIREBASE_STORAGE_BUCKET` chỉ khi muốn upload từ trình duyệt (thường cần Blaze)
 
 ### Bước 5 — Cấp quyền Admin
 
@@ -273,7 +277,7 @@ npm run docker:prod
 
 ## 11. Checklist trước go-live
 
-- [ ] Firebase Auth + Firestore + Storage đã cấu hình
+- [ ] Firebase Auth + Firestore đã cấu hình (Storage **không bắt buộc**)
 - [ ] Admin account có claim `admin: true`
 - [ ] SePay webhook trỏ tới `https://domain/api/webhooks/sepay`
 - [ ] `VITE_SEPAY_*` đúng số TK thật

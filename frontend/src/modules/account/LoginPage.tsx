@@ -1,7 +1,9 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '@/shared/auth/AuthProvider'
+import { getAuthErrorMessage } from '@/shared/auth/authErrors'
 import { PageLayout } from '@/shared/components/PageLayout'
+import { GoogleSignInButton } from '@/shared/components/GoogleSignInButton'
 
 export function LoginPage() {
   const { isConfigured, login, user } = useAuth()
@@ -12,7 +14,14 @@ export function LoginPage() {
     return (
       <PageLayout>
         <div className="mx-auto max-w-lg px-6 py-24 text-center">
-          <p className="text-zinc-500">Firebase chưa cấu hình — không thể đăng nhập.</p>
+          <p className="text-zinc-400">Firebase chưa cấu hình — không thể đăng nhập.</p>
+          <p className="mt-4 text-sm leading-relaxed text-zinc-600">
+            Điền <code className="text-zinc-500">VITE_FIREBASE_API_KEY</code>,{' '}
+            <code className="text-zinc-500">VITE_FIREBASE_AUTH_DOMAIN</code>,{' '}
+            <code className="text-zinc-500">VITE_FIREBASE_PROJECT_ID</code> trong file{' '}
+            <code className="text-zinc-500">.env</code> ở thư mục gốc repo, rồi{' '}
+            <strong className="font-normal text-zinc-500">tắt và chạy lại</strong> <code className="text-zinc-500">npm run dev:all</code>.
+          </p>
         </div>
       </PageLayout>
     )
@@ -34,6 +43,8 @@ export function LoginPage() {
             </p>
           }
         />
+        <AuthDivider />
+        <GoogleSignInButton />
       </div>
     </PageLayout>
   )
@@ -64,7 +75,7 @@ export function AuthForm({ title, subtitle, onSubmit, showProfileFields, footer 
         String(form.get('phone') ?? ''),
       )
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Thao tác thất bại')
+      setError(getAuthErrorMessage(err))
     } finally {
       setLoading(false)
     }
@@ -102,6 +113,19 @@ export function AuthForm({ title, subtitle, onSubmit, showProfileFields, footer 
       </form>
 
       {footer && <div className="mt-8">{footer}</div>}
+    </div>
+  )
+}
+
+export function AuthDivider() {
+  return (
+    <div className="relative my-8">
+      <div className="absolute inset-0 flex items-center">
+        <div className="w-full border-t border-zinc-800" />
+      </div>
+      <div className="relative flex justify-center">
+        <span className="bg-zinc-950 px-3 text-xs uppercase tracking-widest text-zinc-600">hoặc</span>
+      </div>
     </div>
   )
 }

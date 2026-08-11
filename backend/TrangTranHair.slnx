@@ -5,4 +5,7 @@
     <Project Path="src/TrangTranHair.Domain/TrangTranHair.Domain.csproj" />
     <Project Path="src/TrangTranHair.Infrastructure/TrangTranHair.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TrangTranHair.Application.Tests/TrangTranHair.Application.Tests.csproj" />
+  </Folder>
 </Solution>

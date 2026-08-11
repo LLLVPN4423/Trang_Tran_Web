@@ -2,9 +2,10 @@ import { formatVnd, type OrderResponse } from '@/shared/api/types'
 
 interface Props {
   order: OrderResponse
+  pollingExhausted?: boolean
 }
 
-export function PaymentPending({ order }: Props) {
+export function PaymentPending({ order, pollingExhausted }: Props) {
   const bankName = import.meta.env.VITE_SEPAY_BANK_NAME || 'Vietcombank'
   const accountNumber = import.meta.env.VITE_SEPAY_ACCOUNT_NUMBER || '0123456789'
   const accountName = import.meta.env.VITE_SEPAY_ACCOUNT_NAME || 'TRANG TRAN HAIR SALON'
@@ -32,6 +33,7 @@ export function PaymentPending({ order }: Props) {
             <strong className="font-mono text-gold">{order.paymentCode}</strong>
           </li>
           <li>Hệ thống tự xác nhận trong vài phút.</li>
+          <li>Sản phẩm trong đơn được <strong className="text-zinc-300">giữ tồn kho 15 phút</strong> — thanh toán trước khi hết hạn.</li>
         </ol>
       </div>
 
@@ -51,8 +53,17 @@ export function PaymentPending({ order }: Props) {
       </dl>
 
       <div className="flex items-center gap-3 text-sm text-zinc-500">
-        <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-700 border-t-gold" />
-        Đang chờ xác nhận thanh toán...
+        {!pollingExhausted ? (
+          <>
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-700 border-t-gold" />
+            Đang chờ xác nhận thanh toán...
+          </>
+        ) : (
+          <p>
+            Chưa nhận xác nhận tự động. Nếu đã chuyển khoản, salon sẽ duyệt thủ công — giữ mã{' '}
+            <strong className="font-mono text-gold">{order.paymentCode}</strong>.
+          </p>
+        )}
       </div>
     </div>
   )

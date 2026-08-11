@@ -41,12 +41,12 @@ export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
   const items = variant === 'admin' ? ADMIN_NAV : MAIN_NAV
 
   return (
-    <aside className="flex h-full flex-col border-r border-zinc-800 bg-zinc-950/95 p-6">
-      <div className="mb-8">
-        <p className="text-xs uppercase tracking-[0.35em] text-gold-muted">
+    <aside className="flex h-full flex-col border-r border-zinc-800/90 bg-zinc-950/95 p-5 sm:p-6">
+      <div className="mb-7">
+        <p className="section-eyebrow">
           {variant === 'admin' ? 'Admin Portal' : 'Trang Tran Hair'}
         </p>
-        <h2 className="mt-2 font-serif text-2xl text-zinc-100">
+        <h2 className="mt-2 font-serif text-xl text-zinc-100 sm:text-2xl">
           {variant === 'admin' ? 'Quản trị' : 'Salon Menu'}
         </h2>
       </div>

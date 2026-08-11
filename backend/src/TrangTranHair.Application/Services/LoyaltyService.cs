@@ -1,3 +1,4 @@
+using TrangTranHair.Application.Common;
 using TrangTranHair.Application.DTOs;
 using TrangTranHair.Application.Exceptions;
 using TrangTranHair.Application.Interfaces;
@@ -8,7 +9,8 @@ namespace TrangTranHair.Application.Services;
 
 public sealed class LoyaltyService(
     ICustomerRepository customerRepository,
-    ILoyaltyRepository loyaltyRepository) : ILoyaltyService
+    ILoyaltyRepository loyaltyRepository,
+    IOrderRepository orderRepository) : ILoyaltyService
 {
     public const int PointsPerTenThousandVnd = 1;
     public const int RedeemRatePoints = 100;
@@ -19,6 +21,8 @@ public sealed class LoyaltyService(
 
     public async Task<LoyaltySummaryResponse> GetSummaryAsync(string customerId, CancellationToken cancellationToken = default)
     {
+        await SyncMissedEarnsForCustomerAsync(customerId, cancellationToken);
+
         var customer = await customerRepository.GetByIdAsync(customerId, cancellationToken)
             ?? throw new NotFoundException("Customer not found.");
 
@@ -32,11 +36,39 @@ public sealed class LoyaltyService(
 
     public async Task<IReadOnlyList<LoyaltyTransactionResponse>> GetHistoryAsync(string customerId, CancellationToken cancellationToken = default)
     {
+        await SyncMissedEarnsForCustomerAsync(customerId, cancellationToken);
+
         var transactions = await loyaltyRepository.GetByCustomerIdAsync(customerId, cancellationToken);
         return transactions
             .OrderByDescending(t => t.CreatedAt)
             .Select(t => new LoyaltyTransactionResponse(t.Id, t.Type, t.Points, t.Description, t.OrderId, t.CreatedAt))
             .ToList();
+    }
+
+    public async Task<int> SyncMissedEarnsForCustomerAsync(string customerId, CancellationToken cancellationToken = default)
+    {
+        var customer = await ResolveCustomerAsync(customerId, cancellationToken);
+        if (customer is null) return 0;
+
+        var paidOrders = await GetPaidOrdersForCustomerAsync(customer, cancellationToken);
+        var synced = 0;
+
+        foreach (var order in paidOrders)
+        {
+            if (await loyaltyRepository.GetEarnByOrderIdAsync(order.Id, cancellationToken) is not null)
+                continue;
+
+            if (string.IsNullOrWhiteSpace(order.CustomerId))
+            {
+                order.CustomerId = customer.Id;
+                await orderRepository.UpdateAsync(order, cancellationToken);
+            }
+
+            await EarnPointsForOrderAsync(customer.Id, order.Id, order.TotalAmount, cancellationToken);
+            synced++;
+        }
+
+        return synced;
     }
 
     public async Task<int> RedeemPointsAsync(string customerId, int points, string orderId, CancellationToken cancellationToken = default)
@@ -69,10 +101,13 @@ public sealed class LoyaltyService(
 
     public async Task EarnPointsForOrderAsync(string customerId, string orderId, decimal paidAmount, CancellationToken cancellationToken = default)
     {
+        if (await loyaltyRepository.GetEarnByOrderIdAsync(orderId, cancellationToken) is not null)
+            return;
+
         var points = CalculateEarnPoints(paidAmount);
         if (points <= 0) return;
 
-        var customer = await customerRepository.GetByIdAsync(customerId, cancellationToken);
+        var customer = await ResolveCustomerAsync(customerId, cancellationToken);
         if (customer is null) return;
 
         customer.LoyaltyPoints += points;
@@ -81,11 +116,31 @@ public sealed class LoyaltyService(
 
         await loyaltyRepository.CreateAsync(new LoyaltyTransaction
         {
-            CustomerId = customerId,
+            CustomerId = customer.Id,
             OrderId = orderId,
             Type = LoyaltyTransactionType.Earn,
             Points = points,
-            Description = $"Tích {points} điểm từ đơn {orderId}",
+            Description = $"Tích {points} điểm từ đơn đã thanh toán",
+        }, cancellationToken);
+    }
+
+    public async Task RefundRedeemedPointsAsync(string customerId, int points, string orderId, CancellationToken cancellationToken = default)
+    {
+        if (points <= 0) return;
+
+        var customer = await customerRepository.GetByIdAsync(customerId, cancellationToken)
+            ?? throw new NotFoundException("Customer not found.");
+
+        customer.LoyaltyPoints += points;
+        await customerRepository.UpdateAsync(customer, cancellationToken);
+
+        await loyaltyRepository.CreateAsync(new LoyaltyTransaction
+        {
+            CustomerId = customerId,
+            OrderId = orderId,
+            Type = LoyaltyTransactionType.Adjust,
+            Points = points,
+            Description = $"Hoàn {points} điểm — đơn {orderId} đã hủy",
         }, cancellationToken);
     }
 
@@ -118,4 +173,27 @@ public sealed class LoyaltyService(
 
     public int CalculateEarnPoints(decimal paidAmount) =>
         (int)(paidAmount / 10_000m) * PointsPerTenThousandVnd;
+
+    private async Task<Customer?> ResolveCustomerAsync(string customerId, CancellationToken cancellationToken)
+    {
+        return await customerRepository.GetByIdAsync(customerId, cancellationToken)
+            ?? await customerRepository.GetByFirebaseUidAsync(customerId, cancellationToken);
+    }
+
+    private async Task<IReadOnlyList<Order>> GetPaidOrdersForCustomerAsync(Customer customer, CancellationToken cancellationToken)
+    {
+        var byCustomerId = await orderRepository.GetAllAsync(OrderStatus.Paid, customerId: customer.Id, cancellationToken: cancellationToken);
+        var byPhone = await orderRepository.GetAllAsync(OrderStatus.Paid, phone: customer.Phone, cancellationToken: cancellationToken);
+        var normalizedPhone = PhoneNormalizer.Normalize(customer.Phone);
+
+        return byCustomerId
+            .Concat(byPhone.Where(o =>
+                string.IsNullOrWhiteSpace(o.CustomerId)
+                || o.CustomerId == customer.Id
+                || o.CustomerId == customer.FirebaseUid
+                || PhoneNormalizer.Normalize(o.CustomerPhone) == normalizedPhone))
+            .GroupBy(o => o.Id)
+            .Select(g => g.First())
+            .ToList();
+    }
 }

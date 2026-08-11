@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck & build
+        run: npm run build
+        env:
+          VITE_API_URL: http://localhost:5000
+          VITE_FIREBASE_API_KEY: ci-placeholder-key
+          VITE_FIREBASE_AUTH_DOMAIN: ci-project.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID: ci-project
+
+  backend:
+    name: Backend build & tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore backend/TrangTranHair.slnx
+
+      - name: Build
+        run: dotnet build backend/TrangTranHair.slnx --no-restore -c Release
+
+      - name: Test
+        run: dotnet test backend/TrangTranHair.slnx --no-build -c Release --verbosity normal

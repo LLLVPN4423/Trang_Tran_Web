@@ -12,6 +12,8 @@ export interface CartLine {
   hairSize: HairSize | null
   unitPrice: number
   maxStock?: number
+  /** Giá theo size — lưu snapshot để chỉnh size ngay trong giỏ hàng */
+  priceBySize?: Record<string, number> | null
 }
 
 interface CartState {
@@ -20,6 +22,8 @@ interface CartState {
   addProduct: (product: ProductResponse) => void
   removeLine: (cartLineId: string) => void
   setQuantity: (cartLineId: string, quantity: number) => void
+  updateHairSize: (cartLineId: string, hairSize: HairSize) => void
+  hydrateServicePricing: (services: ServiceResponse[]) => void
   clearCart: () => void
   itemCount: () => number
   estimatedTotal: () => number
@@ -60,6 +64,7 @@ export const useCartStore = create<CartState>()(
                 quantity: 1,
                 hairSize,
                 unitPrice: resolveServicePrice(service, hairSize),
+                priceBySize: service.priceBySize,
               },
             ],
           }
@@ -117,6 +122,55 @@ export const useCartStore = create<CartState>()(
               return { ...i, quantity: qty }
             })
             .filter((i) => i.quantity > 0),
+        })),
+
+      updateHairSize: (cartLineId, hairSize) =>
+        set((state) => {
+          const line = state.items.find((i) => i.cartLineId === cartLineId)
+          if (!line || line.itemType !== 'Service' || !line.priceBySize) return state
+
+          const unitPrice = line.priceBySize[hairSize]
+          if (unitPrice == null) return state
+          if (line.hairSize === hairSize) return state
+
+          const targetKey = lineKey(line.itemId, 'Service', hairSize)
+          const duplicate = state.items.find(
+            (i) => i.cartLineId !== cartLineId && lineKey(i.itemId, i.itemType, i.hairSize) === targetKey,
+          )
+
+          if (duplicate) {
+            return {
+              items: state.items
+                .filter((i) => i.cartLineId !== cartLineId)
+                .map((i) =>
+                  i.cartLineId === duplicate.cartLineId
+                    ? { ...i, quantity: i.quantity + line.quantity }
+                    : i,
+                ),
+            }
+          }
+
+          return {
+            items: state.items.map((i) =>
+              i.cartLineId === cartLineId ? { ...i, hairSize, unitPrice } : i,
+            ),
+          }
+        }),
+
+      hydrateServicePricing: (services) =>
+        set((state) => ({
+          items: state.items.map((line) => {
+            if (line.itemType !== 'Service' || line.priceBySize) return line
+            const svc = services.find((s) => s.id === line.itemId)
+            if (!svc) return line
+            const hairSize = line.hairSize ?? 'M'
+            return {
+              ...line,
+              priceBySize: svc.priceBySize,
+              unitPrice: resolveServicePrice(svc, hairSize),
+              hairSize,
+            }
+          }),
         })),
 
       clearCart: () => set({ items: [] }),

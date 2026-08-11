@@ -36,6 +36,29 @@ apiClient.interceptors.response.use(
     if (!error.response) {
       return Promise.reject(new Error('Không thể kết nối máy chủ. Kiểm tra mạng hoặc thử lại sau.'))
     }
+    if (error.response.status === 401) {
+      return Promise.reject(
+        new Error(
+          'Phiên đăng nhập không hợp lệ (401). Kiểm tra FIREBASE_PROJECT_ID khớp frontend/backend, rồi đăng xuất và đăng nhập lại.',
+        ),
+      )
+    }
+    if (error.response.status === 403) {
+      return Promise.reject(
+        new Error(
+          'Không có quyền Admin (403). Chạy node scripts/set-admin.js YOUR_UID rồi đăng xuất/đăng nhập lại.',
+        ),
+      )
+    }
+    if (error.response.status === 404) {
+      const detail = error.response.data?.message
+      return Promise.reject(
+        new Error(detail ?? 'Không tìm thấy dữ liệu (404). Kiểm tra backend đang chạy và VITE_API_URL.'),
+      )
+    }
+    if (error.response.status === 405) {
+      return Promise.reject(new Error('Phương thức API không được hỗ trợ (405). Liên hệ dev.'))
+    }
     const message = error.response.data?.message ?? error.message
     return Promise.reject(new Error(message))
   },

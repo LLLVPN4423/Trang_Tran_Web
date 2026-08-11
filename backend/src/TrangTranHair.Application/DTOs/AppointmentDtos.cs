@@ -16,6 +16,7 @@ public sealed record AppointmentResponse(
     string ServiceInterest,
     string? Notes,
     AppointmentStatus Status,
+    string AccessToken,
     DateTime CreatedAt);
 
 public sealed record UpdateAppointmentStatusRequest(

@@ -1,9 +1,16 @@
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
+import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '@/shared/auth/AuthProvider'
 import { PageLayout } from '@/shared/components/PageLayout'
 import { LoadingState } from '@/shared/components/LoadingState'
-import { seedAdminData } from '@/shared/api/endpoints'
-import { useState } from 'react'
+import {
+  fetchAllCustomers,
+  fetchAppointments,
+  fetchOrders,
+  seedAdminData,
+} from '@/shared/api/endpoints'
+import { formatVnd } from '@/shared/api/types'
+import { FirebaseStatusBanner } from './components/FirebaseStatusBanner'
 
 const TITLES: Record<string, string> = {
   '/admin': 'Tổng quan',
@@ -45,6 +52,11 @@ export function AdminLayout() {
       <PageLayout>
         <div className="mx-auto max-w-lg px-6 py-24 text-center">
           <h1 className="font-serif text-3xl text-zinc-200">Không có quyền Admin</h1>
+          <p className="mt-4 text-sm text-zinc-500">
+            Tài khoản này là khách hàng thường. Admin chỉ dành cho UID có trong{' '}
+            <code className="text-zinc-400">FIREBASE_ADMIN_UIDS</code> và đã chạy{' '}
+            <code className="text-zinc-400">set-admin.js</code>.
+          </p>
           <Link to="/" className="mt-8 inline-block text-sm text-gold-muted hover:underline">← Trang chủ</Link>
         </div>
       </PageLayout>
@@ -83,6 +95,8 @@ export function AdminLayout() {
           </p>
         )}
 
+        <FirebaseStatusBanner />
+
         <Outlet />
       </div>
     </PageLayout>
@@ -90,25 +104,84 @@ export function AdminLayout() {
 }
 
 export function AdminOverview() {
+  const [stats, setStats] = useState({
+    pendingOrders: 0,
+    pendingAppointments: 0,
+    customers: 0,
+    revenueToday: 0,
+  })
+  const [loading, setLoading] = useState(true)
+
+  const loadStats = useCallback(async () => {
+    setLoading(true)
+    try {
+      const [orders, appointments, customers] = await Promise.all([
+        fetchOrders(),
+        fetchAppointments(),
+        fetchAllCustomers(),
+      ])
+      const today = new Date().toDateString()
+      const revenueToday = orders
+        .filter(
+          (o) =>
+            o.status === 'Paid' &&
+            new Date(o.paidAt ?? o.createdAt).toDateString() === today,
+        )
+        .reduce((sum, o) => sum + o.totalAmount, 0)
+
+      setStats({
+        pendingOrders: orders.filter((o) => o.status === 'Pending').length,
+        pendingAppointments: appointments.filter((a) => a.status === 'Pending').length,
+        customers: customers.length,
+        revenueToday,
+      })
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadStats()
+  }, [loadStats])
+
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {[
-        { to: '/admin/orders', label: 'Theo dõi đơn hàng', desc: 'Xem, cập nhật trạng thái thanh toán' },
-        { to: '/admin/appointments', label: 'Lịch hẹn', desc: 'Duyệt yêu cầu đặt lịch từ website' },
-        { to: '/admin/services', label: 'Quản lý dịch vụ', desc: 'Bảng giá salon, bật/tắt dịch vụ' },
-        { to: '/admin/products', label: 'Sản phẩm retail', desc: 'Moroccanoil, tồn kho, ảnh' },
-        { to: '/admin/promotions', label: 'Khuyến mãi', desc: 'Mã giảm giá WELCOME10, SALON50K...' },
-        { to: '/admin/customers', label: 'Khách hàng', desc: 'Điểm tích lũy, lịch sử chi tiêu' },
-      ].map((card) => (
-        <Link
-          key={card.to}
-          to={card.to}
-          className="border border-zinc-800 p-6 transition hover:border-zinc-700 hover:bg-zinc-900/30"
-        >
-          <h2 className="font-serif text-xl text-zinc-200">{card.label}</h2>
-          <p className="mt-2 text-sm text-zinc-500">{card.desc}</p>
-        </Link>
-      ))}
+    <div className="space-y-8">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard label="Đơn chờ thanh toán" value={loading ? '…' : String(stats.pendingOrders)} href="/admin/orders" />
+        <StatCard label="Lịch hẹn chờ duyệt" value={loading ? '…' : String(stats.pendingAppointments)} href="/admin/appointments" />
+        <StatCard label="Khách hàng" value={loading ? '…' : String(stats.customers)} href="/admin/customers" />
+        <StatCard label="Doanh thu hôm nay" value={loading ? '…' : formatVnd(stats.revenueToday)} />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {[
+          { to: '/admin/orders', label: 'Theo dõi đơn hàng', desc: 'Xem chi tiết, xác nhận thanh toán CK' },
+          { to: '/admin/appointments', label: 'Lịch hẹn', desc: 'Duyệt yêu cầu đặt lịch từ website' },
+          { to: '/admin/services', label: 'Quản lý dịch vụ', desc: 'Thêm/sửa bảng giá, bật/tắt dịch vụ' },
+          { to: '/admin/products', label: 'Sản phẩm retail', desc: 'Moroccanoil — giá, tồn kho, ảnh' },
+          { to: '/admin/promotions', label: 'Khuyến mãi', desc: 'Tạo/sửa mã giảm giá' },
+          { to: '/admin/customers', label: 'Khách hàng', desc: 'Điểm tích lũy, điều chỉnh thủ công' },
+        ].map((card) => (
+          <Link
+            key={card.to}
+            to={card.to}
+            className="border border-zinc-800 p-6 transition hover:border-zinc-700 hover:bg-zinc-900/30"
+          >
+            <h2 className="font-serif text-xl text-zinc-200">{card.label}</h2>
+            <p className="mt-2 text-sm text-zinc-500">{card.desc}</p>
+          </Link>
+        ))}
+      </div>
     </div>
   )
+}
+
+function StatCard({ label, value, href }: { label: string; value: string; href?: string }) {
+  const content = (
+    <div className="border border-zinc-800 p-5 transition hover:border-zinc-700">
+      <p className="text-xs uppercase tracking-widest text-zinc-600">{label}</p>
+      <p className="mt-2 font-serif text-2xl text-zinc-100">{value}</p>
+    </div>
+  )
+  return href ? <Link to={href}>{content}</Link> : content
 }

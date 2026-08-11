@@ -5,6 +5,12 @@
   --font-sans: "Inter", system-ui, sans-serif;
   --color-gold: #c9a962;
   --color-gold-muted: #8a7340;
+  --color-surface: #09090b;
+  --color-surface-muted: #18181b;
+}
+
+:root {
+  --header-height: 4.25rem;
 }
 
 html {
@@ -13,15 +19,108 @@ html {
 
 body {
   font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.65;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
 }
 
 ::selection {
   background-color: color-mix(in srgb, var(--color-gold) 30%, transparent);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+@layer components {
+  .site-header {
+    --header-height: 4.25rem;
+  }
+
+  .section-shell {
+    @apply border-t border-zinc-900/90 px-5 py-20 sm:px-8 md:py-28 lg:py-36;
+  }
+
+  .section-inner {
+    @apply mx-auto w-full max-w-6xl;
+  }
+
+  .section-inner-wide {
+    @apply mx-auto w-full max-w-7xl;
+  }
+
+  .section-eyebrow {
+    @apply mb-3 text-[0.6875rem] font-medium uppercase tracking-[0.32em] text-gold-muted;
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 3.5vw + 0.75rem, 3.75rem);
+    @apply leading-[1.08] text-zinc-50;
+  }
+
+  .section-lead {
+    @apply mt-4 max-w-2xl text-[0.9375rem] leading-relaxed text-zinc-500 md:text-base;
+  }
+
+  .section-body {
+    @apply text-[0.9375rem] leading-[1.75] text-zinc-400 md:text-base md:leading-[1.8];
+  }
+
+  .label-caps {
+    @apply text-[0.6875rem] font-medium uppercase tracking-[0.28em] text-zinc-500;
+  }
+
+  .btn-editorial {
+    @apply inline-flex items-center justify-center border border-zinc-700/90 px-6 py-3 text-[0.6875rem] font-medium uppercase tracking-[0.28em] text-zinc-400 transition hover:border-gold/60 hover:text-gold;
+  }
+
+  .btn-gold {
+    @apply bg-gold/90 py-3.5 text-[0.6875rem] font-medium uppercase tracking-[0.28em] text-zinc-950 transition hover:bg-gold disabled:opacity-50;
+  }
+
+  .field-input {
+    @apply w-full border-b border-zinc-800/90 bg-transparent py-3 text-[0.9375rem] text-zinc-200 outline-none transition placeholder:text-zinc-600 focus:border-gold/80;
+  }
+
+  .media-frame {
+    @apply overflow-hidden rounded-sm bg-zinc-900/40 ring-1 ring-zinc-800/60;
+  }
+
+  .media-cover {
+    @apply h-full w-full object-cover object-center;
+  }
+
+  .price-row {
+    @apply flex items-baseline gap-3 py-5 md:py-6;
+  }
+
+  .price-row-name {
+    @apply shrink-0 font-serif text-xl text-zinc-200 transition-colors group-hover:text-gold md:text-2xl;
+  }
+
+  .price-row-leader {
+    @apply mb-1 min-w-8 flex-1 border-b border-dotted border-zinc-800;
+  }
+
+  .price-row-value {
+    @apply shrink-0 text-right text-sm tabular-nums tracking-wide text-zinc-500;
+  }
 }
 
 .lenis.lenis-smooth {
@@ -34,4 +133,15 @@ h1, h2, h3, h4, h5, h6 {
 
 .lenis.lenis-stopped {
   overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -12,6 +12,7 @@ import {
   getIdToken,
   isFirebaseConfigured,
   loginWithEmail,
+  loginWithGoogle as loginWithGoogleFirebase,
   logoutUser,
   registerWithEmail,
   subscribeAuth,
@@ -31,9 +32,11 @@ interface AuthContextValue {
   isLoading: boolean
   isAdmin: boolean
   login: (email: string, password: string) => Promise<void>
+  loginWithGoogle: () => Promise<void>
   register: (email: string, password: string, name: string, phone: string) => Promise<void>
   logout: () => Promise<void>
   refreshProfile: () => Promise<void>
+  applyCustomerProfile: (profile: CustomerResponse) => void
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -43,24 +46,28 @@ const AuthContext = createContext<AuthContextValue>({
   isLoading: true,
   isAdmin: false,
   login: async () => {},
+  loginWithGoogle: async () => {},
   register: async () => {},
   logout: async () => {},
   refreshProfile: async () => {},
+  applyCustomerProfile: () => {},
 })
 
 async function resolveAdminClaim(user: User | null): Promise<boolean> {
   if (!user) return false
   try {
     const token = await user.getIdTokenResult(true)
-    if (token.claims.admin === true) return true
+    const claim = token.claims.admin
+    const hasClaim = claim === true || claim === 'true'
+    if (!hasClaim) return false
     return verifyAdminAccess()
   } catch {
     return false
   }
 }
 
-async function loadCustomerProfile(user: User | null, isAdmin: boolean): Promise<CustomerResponse | null> {
-  if (!user || isAdmin) return null
+async function loadCustomerProfile(user: User | null): Promise<CustomerResponse | null> {
+  if (!user) return null
   try {
     return await fetchCustomerMe()
   } catch {
@@ -84,26 +91,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(nextUser)
       const admin = await resolveAdminClaim(nextUser)
       setIsAdmin(admin)
-      setCustomerProfile(await loadCustomerProfile(nextUser, admin))
+      setCustomerProfile(await loadCustomerProfile(nextUser))
       setIsLoading(false)
     })
     return unsubscribe
   }, [])
 
   const refreshProfile = useCallback(async () => {
-    if (!user || isAdmin) {
+    if (!user) {
       setCustomerProfile(null)
       return
     }
-    setCustomerProfile(await loadCustomerProfile(user, false))
-  }, [user, isAdmin])
+    setCustomerProfile(await loadCustomerProfile(user))
+  }, [user])
+
+  const applyCustomerProfile = useCallback((profile: CustomerResponse) => {
+    setCustomerProfile(profile)
+  }, [])
 
   const login = useCallback(async (email: string, password: string) => {
     const credential = await loginWithEmail(email, password)
     setUser(credential.user)
     const admin = await resolveAdminClaim(credential.user)
     setIsAdmin(admin)
-    setCustomerProfile(await loadCustomerProfile(credential.user, admin))
+    setCustomerProfile(await loadCustomerProfile(credential.user))
+  }, [])
+
+  const loginWithGoogle = useCallback(async () => {
+    const credential = await loginWithGoogleFirebase()
+    setUser(credential.user)
+    const admin = await resolveAdminClaim(credential.user)
+    setIsAdmin(admin)
+    setCustomerProfile(await loadCustomerProfile(credential.user))
   }, [])
 
   const register = useCallback(async (email: string, password: string, name: string, phone: string) => {
@@ -129,11 +148,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       isAdmin,
       login,
+      loginWithGoogle,
       register,
       logout,
       refreshProfile,
+      applyCustomerProfile,
     }),
-    [user, customerProfile, isConfigured, isLoading, isAdmin, login, register, logout, refreshProfile],
+    [user, customerProfile, isConfigured, isLoading, isAdmin, login, loginWithGoogle, register, logout, refreshProfile, applyCustomerProfile],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

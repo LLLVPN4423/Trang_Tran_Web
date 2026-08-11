@@ -5,31 +5,49 @@ using TrangTranHair.Domain.Entities;
 
 namespace TrangTranHair.Application.Services;
 
-public sealed class CustomerService(ICustomerRepository customerRepository) : ICustomerService
+public sealed class CustomerService(
+    ICustomerRepository customerRepository,
+    ILoyaltyService loyaltyService,
+    IOrderService orderService) : ICustomerService
 {
     public async Task<CustomerResponse> SyncAsync(string firebaseUid, SyncCustomerRequest request, CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(request.Name))
+            throw new ValidationException("name", "Họ tên là bắt buộc.");
+        if (string.IsNullOrWhiteSpace(request.Phone))
+            throw new ValidationException("phone", "Số điện thoại là bắt buộc.");
+
         var existing = await customerRepository.GetByFirebaseUidAsync(firebaseUid, cancellationToken);
+        CustomerResponse response;
         if (existing is not null)
         {
             existing.Name = request.Name.Trim();
             existing.Phone = request.Phone.Trim();
             existing.Email = request.Email?.Trim();
             var updated = await customerRepository.UpdateAsync(existing, cancellationToken);
-            return Map(updated);
+            response = Map(updated);
+        }
+        else
+        {
+            var customer = new Customer
+            {
+                Id = firebaseUid,
+                FirebaseUid = firebaseUid,
+                Name = request.Name.Trim(),
+                Phone = request.Phone.Trim(),
+                Email = request.Email?.Trim(),
+            };
+
+            var created = await customerRepository.CreateAsync(customer, cancellationToken);
+            response = Map(created);
         }
 
-        var customer = new Customer
-        {
-            Id = firebaseUid,
-            FirebaseUid = firebaseUid,
-            Name = request.Name.Trim(),
-            Phone = request.Phone.Trim(),
-            Email = request.Email?.Trim(),
-        };
+        await orderService.LinkGuestOrdersAsync(response.Id, response.Phone, cancellationToken);
+        await loyaltyService.SyncMissedEarnsForCustomerAsync(response.Id, cancellationToken);
 
-        var created = await customerRepository.CreateAsync(customer, cancellationToken);
-        return Map(created);
+        var refreshed = await customerRepository.GetByIdAsync(response.Id, cancellationToken)
+            ?? await customerRepository.GetByFirebaseUidAsync(firebaseUid, cancellationToken);
+        return refreshed is null ? response : Map(refreshed);
     }
 
     public async Task<CustomerResponse> GetMeAsync(string firebaseUid, CancellationToken cancellationToken = default)

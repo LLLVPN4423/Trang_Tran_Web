@@ -33,15 +33,15 @@ function CatalogContent() {
 
   return (
     <PageLayout>
-      <div className="mx-auto max-w-6xl px-6 py-16">
-        <p className="text-xs uppercase tracking-[0.35em] text-gold-muted">Catalog</p>
-        <h1 className="mt-3 font-serif text-4xl text-zinc-100 md:text-5xl">Menu dịch vụ</h1>
+      <div className="section-inner px-5 py-12 sm:px-8 sm:py-16">
+        <p className="section-eyebrow">Catalog</p>
+        <h1 className="section-title">Menu dịch vụ</h1>
 
-        <div className="mt-10 flex flex-wrap items-center gap-4 border-b border-zinc-800 pb-4">
+        <div className="mt-8 flex flex-wrap items-center gap-4 border-b border-zinc-800/80 pb-4">
           <button
             type="button"
             onClick={() => setTab('services')}
-            className={`text-xs uppercase tracking-widest ${
+            className={`label-caps transition ${
               tab === 'services' ? 'text-gold' : 'text-zinc-500 hover:text-zinc-300'
             }`}
           >
@@ -50,7 +50,7 @@ function CatalogContent() {
           <button
             type="button"
             onClick={() => setTab('products')}
-            className={`text-xs uppercase tracking-widest ${
+            className={`label-caps transition ${
               tab === 'products' ? 'text-gold' : 'text-zinc-500 hover:text-zinc-300'
             }`}
           >
@@ -59,7 +59,7 @@ function CatalogContent() {
           {itemCount > 0 && (
             <Link
               to="/booking"
-              className="ml-auto text-xs uppercase tracking-widest text-gold-muted hover:text-gold"
+              className="label-caps ml-auto text-gold-muted hover:text-gold"
             >
               Thanh toán ({itemCount}) →
             </Link>
@@ -84,7 +84,7 @@ function CatalogContent() {
         {error && !loading && <ApiErrorState message={error} onRetry={reload} />}
 
         {!loading && !error && tab === 'services' && (
-          <div className="mt-10 grid gap-4 sm:grid-cols-2">
+          <div className="mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             {services.map((s) => (
               <ServiceCard key={s.id} service={s} />
             ))}
@@ -95,7 +95,7 @@ function CatalogContent() {
         )}
 
         {!loading && !error && tab === 'products' && (
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             {products.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
@@ -124,8 +124,8 @@ function FilterChip({
       onClick={onClick}
       className={`px-3 py-1.5 text-xs transition ${
         active
-          ? 'bg-zinc-800 text-zinc-200'
-          : 'text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'
+          ? 'bg-zinc-800/90 text-zinc-100 ring-1 ring-zinc-700/80'
+          : 'text-zinc-500 hover:bg-zinc-900/80 hover:text-zinc-300'
       }`}
     >
       {label}

@@ -11,17 +11,18 @@ Website chính thức cho **Trang Tran Hair Salon** (Sóc Trăng): portfolio sal
 | Hạng mục | Trạng thái |
 |----------|------------|
 | Portfolio (Hero, Artist, Lookbook, ảnh salon) | ✅ Hoàn thiện |
+| Gallery tóc mẫu (cấu hình qua `content.ts`) | ✅ Sẵn sàng — thêm ảnh + mục `GALLERY_ITEMS` |
 | Bảng giá 26 dịch vụ + sản phẩm | ✅ Hoàn thiện |
 | Giỏ hàng & checkout SePay | ✅ Hoàn thiện |
-| Đăng ký / đăng nhập khách | ✅ Hoàn thiện (cần Firebase) |
+| Đăng ký / đăng nhập khách | ✅ Hoàn thiện (email + Google — cần Firebase) |
 | Tích điểm & mã khuyến mãi | ✅ Hoàn thiện |
-| Form đặt lịch → database | ✅ Hoàn thiện |
-| Admin Portal (đơn, lịch, KM, ảnh SP) | ✅ Hoàn thiện |
+| Form đặt lịch → database + theo dõi tại `/account` | ✅ Hoàn thiện |
+| Admin Portal (CRUD dịch vụ/SP/KM, đơn, lịch, khách) | ✅ Hoàn thiện |
+| Trừ tồn kho + tích điểm khi đơn Paid | ✅ Hoàn thiện |
 | Responsive mobile / desktop | ✅ Hoàn thiện |
 | Production deploy (Docker) | ✅ Sẵn sàng (cần cấu hình Firebase + domain) |
-| Email/SMS thông báo tự động | ⏳ Chưa có |
-| Tạo/sửa dịch vụ qua form Admin | ⏳ Chỉ seed + bật/tắt/xóa |
-| Trừ tồn kho khi đặt hàng | ⏳ Chưa tự động |
+| Email/SMS thông báo tự động | ⏳ Chưa có — salon gọi điện / Zalo |
+| Đặt lịch chọn giờ slot tự động | ⏳ Chưa có — admin gọi xác nhận giờ |
 
 **Kết luận:** Website **đã sẵn sàng vận hành** cho salon (xem portfolio, bán dịch vụ/sản phẩm, duyệt lịch, quản trị). Cần **cấu hình Firebase + SePay production** trước khi go-live thật.
 
@@ -73,6 +74,8 @@ curl -X POST "http://localhost:5000/api/seed/dev?force=true"
 |------|----------|
 | [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md) | Chủ salon / vận hành hàng ngày |
 | [DEVELOPMENT.md](./DEVELOPMENT.md) | Developer — cấu trúc code, API, môi trường |
+| [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) | Cấu hình Firebase (Auth Google, Firestore, Storage, Admin) |
+| [HUONG_DAN_VAN_HANH.md](./HUONG_DAN_VAN_HANH.md) | **Checklist việc bạn cần làm + vận hành salon hàng ngày** |
 | [.env.example](./.env.example) | Biến môi trường mẫu |
 | [.env.production.example](./.env.production.example) | Deploy production |
 

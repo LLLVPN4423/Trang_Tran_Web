@@ -13,6 +13,7 @@ import type {
   PromotionResponse,
   ServiceResponse,
   SyncCustomerRequest,
+  UpdateCustomerRequest,
   UpdateProductRequest,
   UpdatePromotionRequest,
   UpdateServiceRequest,
@@ -24,22 +25,60 @@ import type {
 
 export async function fetchServices(): Promise<ServiceResponse[]> {
   const { data } = await apiClient.get<ServiceResponse[]>('/api/services')
-  return data.filter((s) => s.isActive)
+  return data.filter((s) => s.isActive).map(normalizeService)
+}
+
+export async function fetchService(id: string): Promise<ServiceResponse> {
+  try {
+    const { data } = await apiClient.get<ServiceResponse>(`/api/services/${encodeURIComponent(id)}`)
+    return normalizeService(data)
+  } catch (err) {
+    const { data } = await apiClient.get<ServiceResponse[]>('/api/services')
+    const found = data.find((s) => s.id === id)
+    if (found) return normalizeService(found)
+    throw err
+  }
 }
 
 export async function fetchAllServices(): Promise<ServiceResponse[]> {
   const { data } = await apiClient.get<ServiceResponse[]>('/api/services')
-  return data
+  return data.map(normalizeService)
 }
 
 export async function fetchProducts(): Promise<ProductResponse[]> {
   const { data } = await apiClient.get<ProductResponse[]>('/api/products')
-  return data.filter((p) => p.isActive)
+  return data.filter((p) => p.isActive).map(normalizeProduct)
+}
+
+export async function fetchProduct(id: string): Promise<ProductResponse> {
+  try {
+    const { data } = await apiClient.get<ProductResponse>(`/api/products/${encodeURIComponent(id)}`)
+    return normalizeProduct(data)
+  } catch (err) {
+    const { data } = await apiClient.get<ProductResponse[]>('/api/products')
+    const found = data.find((p) => p.id === id)
+    if (found) return normalizeProduct(found)
+    throw err
+  }
+}
+
+function normalizeService(service: ServiceResponse): ServiceResponse {
+  return {
+    ...service,
+    galleryUrls: service.galleryUrls ?? [],
+  }
+}
+
+function normalizeProduct(product: ProductResponse): ProductResponse {
+  return {
+    ...product,
+    galleryUrls: product.galleryUrls ?? [],
+  }
 }
 
 export async function fetchAllProducts(): Promise<ProductResponse[]> {
   const { data } = await apiClient.get<ProductResponse[]>('/api/products')
-  return data
+  return data.map(normalizeProduct)
 }
 
 export async function createService(request: CreateServiceRequest): Promise<ServiceResponse> {
@@ -75,8 +114,10 @@ export async function createOrder(request: CreateOrderRequest): Promise<OrderRes
   return data
 }
 
-export async function fetchOrder(id: string): Promise<OrderResponse> {
-  const { data } = await apiClient.get<OrderResponse>(`/api/orders/${id}`)
+export async function fetchOrder(id: string, accessToken?: string): Promise<OrderResponse> {
+  const { data } = await apiClient.get<OrderResponse>(`/api/orders/${encodeURIComponent(id)}`, {
+    params: accessToken ? { token: accessToken } : undefined,
+  })
   return data
 }
 
@@ -100,6 +141,11 @@ export async function fetchCustomerMe(): Promise<CustomerResponse> {
   return data
 }
 
+export async function updateCustomerMe(request: UpdateCustomerRequest): Promise<CustomerResponse> {
+  const { data } = await apiClient.put<CustomerResponse>('/api/customers/me', request)
+  return data
+}
+
 export async function fetchAllCustomers(): Promise<CustomerResponse[]> {
   const { data } = await apiClient.get<CustomerResponse[]>('/api/customers')
   return data
@@ -107,6 +153,11 @@ export async function fetchAllCustomers(): Promise<CustomerResponse[]> {
 
 export async function fetchPromotions(): Promise<PromotionResponse[]> {
   const { data } = await apiClient.get<PromotionResponse[]>('/api/promotions')
+  return data
+}
+
+export async function fetchAllPromotions(): Promise<PromotionResponse[]> {
+  const { data } = await apiClient.get<PromotionResponse[]>('/api/promotions/all')
   return data
 }
 
@@ -153,6 +204,11 @@ export async function adjustLoyalty(customerId: string, points: number, descript
 
 export async function createAppointment(request: CreateAppointmentRequest): Promise<AppointmentResponse> {
   const { data } = await apiClient.post<AppointmentResponse>('/api/appointments', request)
+  return data
+}
+
+export async function fetchMyAppointments(): Promise<AppointmentResponse[]> {
+  const { data } = await apiClient.get<AppointmentResponse[]>('/api/appointments/me')
   return data
 }
 

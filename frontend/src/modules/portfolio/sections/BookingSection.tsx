@@ -86,6 +86,7 @@ export function BookingSection() {
                 <SocialLink href={SOCIAL_LINKS.instagram} label="Instagram" />
                 <SocialLink href={SOCIAL_LINKS.threads} label="Threads" />
                 <SocialLink href={SOCIAL_LINKS.tiktok} label="TikTok" />
+                <SocialLink href={SOCIAL_LINKS.about} label="About" />
               </dd>
             </div>
           </dl>

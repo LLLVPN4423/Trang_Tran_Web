@@ -56,6 +56,7 @@ export const SOCIAL_LINKS = {
   instagram: 'https://www.instagram.com/trang_tran_hair',
   threads: 'https://www.threads.com/@trang_tran_hair',
   tiktok: 'https://www.tiktok.com/@trangtranhair',
+  about: 'https://trang-tran-portfolio.vercel.app/',
 } as const
 
 export const CONTACT = {

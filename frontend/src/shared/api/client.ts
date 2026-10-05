@@ -1,10 +1,11 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
+import { getApiBaseUrl } from '@/shared/config/env'
 import type { ApiErrorResponse } from './types'
 
 const TIMEOUT_MS = 30_000
 
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? '',
+  baseURL: getApiBaseUrl(),
   timeout: TIMEOUT_MS,
   headers: { 'Content-Type': 'application/json' },
 })
@@ -79,5 +80,5 @@ apiClient.interceptors.response.use(
 )
 
 export function isApiConfigured(): boolean {
-  return import.meta.env.DEV || Boolean(import.meta.env.VITE_API_URL)
+  return import.meta.env.DEV || Boolean(getApiBaseUrl())
 }

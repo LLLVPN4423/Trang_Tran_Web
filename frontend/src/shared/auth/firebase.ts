@@ -17,16 +17,9 @@ import {
   type UserCredential,
 } from 'firebase/auth'
 import { getDownloadURL, getStorage, ref, uploadBytes, type FirebaseStorage } from 'firebase/storage'
+import { getFirebaseWebConfig } from '@/shared/config/env'
 
-const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID || ''
-
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain:
-    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || `${projectId}.firebaseapp.com`,
-  projectId,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-}
+const firebaseConfig = getFirebaseWebConfig()
 
 let app: FirebaseApp | null = null
 let auth: Auth | null = null

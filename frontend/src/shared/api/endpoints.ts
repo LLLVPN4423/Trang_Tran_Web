@@ -1,7 +1,7 @@
 import { apiClient } from './client'
 import { normalizeFulfillmentMethod, normalizePaymentMethod } from '@/shared/lib/orderLabels'
 import { normalizeFulfillmentStatus } from '@/shared/lib/orderFulfillment'
-import { DEFAULT_SITE_CONTENT } from '@/shared/lib/siteContentDefaults'
+import { mergeSiteContentForm } from '@/shared/lib/siteContentDefaults'
 import type {
   CreateOrderRequest,
   CreateProductRequest,
@@ -228,41 +228,16 @@ export async function updateSiteContent(request: UpdateSiteContentRequest): Prom
 }
 
 function normalizeSiteContent(content: SiteContentResponse): SiteContentResponse {
-  const defaults = DEFAULT_SITE_CONTENT
-  const contact = content.contact?.phone?.trim()
-    ? {
-        phone: content.contact.phone.trim(),
-        phoneRaw:
-          content.contact.phoneRaw?.trim() ||
-          content.contact.phone.replace(/\D/g, ''),
-        address: content.contact.address?.trim() ?? '',
-        note: content.contact.note?.trim() ?? '',
-      }
-    : defaults.contact
-
-  const socialLinks =
-    content.socialLinks?.filter((l) => l.label?.trim() && l.url?.trim()).map((l) => ({
-      label: l.label.trim(),
-      url: l.url.trim(),
-    })) ?? []
-
+  const merged = mergeSiteContentForm(content)
   return {
-    hero: { ...defaults.hero, ...content.hero },
-    artist: {
-      ...defaults.artist,
-      ...content.artist,
-      statementLines: content.artist.statementLines ?? defaults.artist.statementLines,
-    },
+    ...merged,
     lookbook: {
-      ...defaults.lookbook,
-      ...content.lookbook,
-      items: (content.lookbook.items ?? defaults.lookbook.items).map((item) => ({
+      ...merged.lookbook,
+      items: merged.lookbook.items.map((item) => ({
         ...item,
         aspect: (['tall', 'wide', 'square'].includes(item.aspect) ? item.aspect : 'square') as LookbookAspect,
       })),
     },
-    contact,
-    socialLinks: socialLinks.length > 0 ? socialLinks : defaults.socialLinks,
   }
 }
 

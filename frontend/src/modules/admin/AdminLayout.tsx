@@ -190,6 +190,7 @@ export function AdminOverview() {
           { to: '/admin/appointments', label: 'Lịch hẹn', desc: 'Duyệt yêu cầu đặt lịch từ website' },
           { to: '/admin/services', label: 'Quản lý dịch vụ', desc: 'Thêm/sửa bảng giá, bật/tắt dịch vụ' },
           { to: '/admin/products', label: 'Sản phẩm retail', desc: 'Moroccanoil — giá, tồn kho, ảnh' },
+          { to: '/admin/site-content', label: 'Trang chủ (CMS)', desc: 'Hero, Artist, Lookbook, liên hệ & link Portfolio' },
           { to: '/admin/promotions', label: 'Khuyến mãi', desc: 'Tạo/sửa mã giảm giá' },
           { to: '/admin/customers', label: 'Khách hàng', desc: 'Điểm tích lũy, điều chỉnh thủ công' },
         ].map((card) => (

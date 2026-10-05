@@ -54,3 +54,43 @@ export const DEFAULT_SITE_CONTENT: SiteContentResponse = {
     { label: 'Portfolio', url: 'https://trang-tran-portfolio.vercel.app/' },
   ],
 }
+
+/** Gộp dữ liệu API (có thể thiếu contact/social) với mặc định — tránh crash Admin. */
+export function mergeSiteContentForm(raw: SiteContentResponse | null | undefined): SiteContentResponse {
+  const base = DEFAULT_SITE_CONTENT
+  if (!raw) return base
+
+  const contact =
+    raw.contact?.phone?.trim()
+      ? {
+          phone: raw.contact.phone.trim(),
+          phoneRaw: raw.contact.phoneRaw?.trim() || raw.contact.phone.replace(/\D/g, ''),
+          address: raw.contact.address?.trim() ?? base.contact.address,
+          note: raw.contact.note?.trim() ?? base.contact.note,
+        }
+      : base.contact
+
+  const socialFromApi = (raw.socialLinks ?? []).filter((l) => l?.label?.trim() && l?.url?.trim())
+  const socialLinks =
+    socialFromApi.length > 0
+      ? socialFromApi.map((l) => ({ label: l.label.trim(), url: l.url.trim() }))
+      : base.socialLinks
+
+  return {
+    hero: { ...base.hero, ...raw.hero },
+    artist: {
+      ...base.artist,
+      ...raw.artist,
+      statementLines: raw.artist?.statementLines?.length
+        ? raw.artist.statementLines
+        : base.artist.statementLines,
+    },
+    lookbook: {
+      ...base.lookbook,
+      ...raw.lookbook,
+      items: raw.lookbook?.items?.length ? raw.lookbook.items : base.lookbook.items,
+    },
+    contact,
+    socialLinks,
+  }
+}

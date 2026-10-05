@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { fetchSiteContent } from '@/shared/api/endpoints'
 import type { SiteContentResponse } from '@/shared/api/types'
-import { DEFAULT_SITE_CONTENT } from '@/shared/lib/siteContentDefaults'
+import { DEFAULT_SITE_CONTENT, mergeSiteContentForm } from '@/shared/lib/siteContentDefaults'
 
 type SiteContentContextValue = {
   content: SiteContentResponse
@@ -17,9 +17,9 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
 
   const refresh = async () => {
     try {
-      setContent(await fetchSiteContent())
+      setContent(mergeSiteContentForm(await fetchSiteContent()))
     } catch {
-      setContent(DEFAULT_SITE_CONTENT)
+      setContent(mergeSiteContentForm(DEFAULT_SITE_CONTENT))
     } finally {
       setLoading(false)
     }

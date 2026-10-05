@@ -6,7 +6,7 @@ import type {
   SiteContentResponse,
   UpdateSiteContentRequest,
 } from '@/shared/api/types'
-import { DEFAULT_SITE_CONTENT } from '@/shared/lib/siteContentDefaults'
+import { DEFAULT_SITE_CONTENT, mergeSiteContentForm } from '@/shared/lib/siteContentDefaults'
 import {
   GOOGLE_DRIVE_SHARE_HINT,
   resolveProductImageUrl,
@@ -43,8 +43,8 @@ function DrivePreview({ url, alt }: { url: string; alt: string }) {
 }
 
 export function SiteContentAdminPanel() {
-  const [tab, setTab] = useState<Tab>('hero')
-  const [form, setForm] = useState<SiteContentResponse>(DEFAULT_SITE_CONTENT)
+  const [tab, setTab] = useState<Tab>('contact')
+  const [form, setForm] = useState<SiteContentResponse>(() => mergeSiteContentForm(DEFAULT_SITE_CONTENT))
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -54,10 +54,10 @@ export function SiteContentAdminPanel() {
     setLoading(true)
     setError(null)
     try {
-      setForm(await fetchSiteContent())
+      setForm(mergeSiteContentForm(await fetchSiteContent()))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Không tải được nội dung trang chủ')
-      setForm(DEFAULT_SITE_CONTENT)
+      setForm(mergeSiteContentForm(DEFAULT_SITE_CONTENT))
     } finally {
       setLoading(false)
     }
@@ -91,8 +91,8 @@ export function SiteContentAdminPanel() {
           .map((l) => ({ label: l.label.trim(), url: l.url.trim() }))
           .filter((l) => l.label && l.url),
       }
-      setForm(await updateSiteContent(payload))
-      setMessage('Đã lưu — trang chủ cập nhật sau vài giây.')
+      setForm(mergeSiteContentForm(await updateSiteContent(payload)))
+      setMessage('Đã lưu — trang chủ cập nhật sau vài giây (Ctrl+F5 nếu chưa thấy).')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Không thể lưu')
     } finally {

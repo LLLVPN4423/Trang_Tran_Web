@@ -1,8 +1,9 @@
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/shared/auth/AuthProvider'
 import { PageLayout } from '@/shared/components/PageLayout'
 import { LoadingState } from '@/shared/components/LoadingState'
+import { ApiErrorState } from '@/shared/components/ApiErrorState'
 import {
   fetchAllCustomers,
   fetchAppointments,
@@ -11,6 +12,8 @@ import {
 } from '@/shared/api/endpoints'
 import { formatVnd } from '@/shared/api/types'
 import { FirebaseStatusBanner } from './components/FirebaseStatusBanner'
+import { AdminLiveBadge } from './components/AdminLiveBadge'
+import { useAdminPoll } from './hooks/useAdminLiveRefresh'
 
 const TITLES: Record<string, string> = {
   '/admin': 'Tổng quan',
@@ -18,6 +21,7 @@ const TITLES: Record<string, string> = {
   '/admin/appointments': 'Lịch hẹn',
   '/admin/services': 'Dịch vụ',
   '/admin/products': 'Sản phẩm',
+  '/admin/site-content': 'Trang chủ',
   '/admin/promotions': 'Khuyến mãi',
   '/admin/customers': 'Khách hàng',
 }
@@ -111,17 +115,26 @@ export function AdminOverview() {
     revenueToday: 0,
   })
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const hasLoadedRef = useRef(false)
 
-  const loadStats = useCallback(async () => {
-    setLoading(true)
+  const loadStats = useCallback(async (showSpinner = true) => {
+    const isFirst = !hasLoadedRef.current
+    if (isFirst && showSpinner) setLoading(true)
+    else if (showSpinner) setRefreshing(true)
+
+    if (isFirst || showSpinner) setError(null)
+
     try {
       const [orders, appointments, customers] = await Promise.all([
-        fetchOrders(),
-        fetchAppointments(),
+        fetchOrders({ live: !showSpinner }),
+        fetchAppointments(undefined, { live: !showSpinner }),
         fetchAllCustomers(),
       ])
       const today = new Date().toDateString()
-      const revenueToday = orders
+      const revenueToday = (orders ?? [])
         .filter(
           (o) =>
             o.status === 'Paid' &&
@@ -130,22 +143,40 @@ export function AdminOverview() {
         .reduce((sum, o) => sum + o.totalAmount, 0)
 
       setStats({
-        pendingOrders: orders.filter((o) => o.status === 'Pending').length,
-        pendingAppointments: appointments.filter((a) => a.status === 'Pending').length,
-        customers: customers.length,
+        pendingOrders: (orders ?? []).filter((o) => o.status === 'Pending').length,
+        pendingAppointments: (appointments ?? []).filter((a) => a.status === 'Pending').length,
+        customers: (customers ?? []).length,
         revenueToday,
       })
+      hasLoadedRef.current = true
+      setLastUpdated(new Date())
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Không tải được dữ liệu admin'
+      if (!hasLoadedRef.current || showSpinner) setError(message)
     } finally {
       setLoading(false)
+      setRefreshing(false)
     }
   }, [])
 
   useEffect(() => {
-    loadStats()
+    void loadStats(true)
   }, [loadStats])
+
+  useAdminPoll(() => loadStats(false), 'overview')
+
+  if (error && !hasLoadedRef.current) {
+    return <ApiErrorState message={error} onRetry={() => loadStats(true)} />
+  }
 
   return (
     <div className="space-y-8">
+      <AdminLiveBadge
+        lastUpdated={lastUpdated}
+        refreshing={refreshing}
+        onRefresh={() => loadStats(true)}
+      />
+
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Đơn chờ thanh toán" value={loading ? '…' : String(stats.pendingOrders)} href="/admin/orders" />
         <StatCard label="Lịch hẹn chờ duyệt" value={loading ? '…' : String(stats.pendingAppointments)} href="/admin/appointments" />

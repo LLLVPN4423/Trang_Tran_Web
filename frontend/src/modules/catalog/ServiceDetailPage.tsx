@@ -6,10 +6,8 @@ import {
   CATEGORY_LABELS,
   formatVnd,
   HAIR_SIZES,
-  resolveServicePrice,
   STYLIST_LABELS,
 } from '@/shared/api/types'
-import { useCartStore } from '@/shared/store/cartStore'
 import { ModuleErrorBoundary } from '@/shared/components/ModuleErrorBoundary'
 import { PageLayout } from '@/shared/components/PageLayout'
 import { LoadingState } from '@/shared/components/LoadingState'
@@ -17,6 +15,13 @@ import { ApiErrorState } from '@/shared/components/ApiErrorState'
 import { ProductGallery } from './components/ProductGallery'
 import { ProductVideo } from './components/ProductVideo'
 import { getCatalogGallery } from '@/shared/lib/productMedia'
+import {
+  formatServiceCardPrice,
+  formatServicePriceRange,
+  serviceNeedsHairSize,
+} from '@/shared/lib/servicePricing'
+import { useServiceCartStore } from '@/shared/store/serviceCartStore'
+import { selectServiceCartCount } from '@/shared/store/serviceCartSelectors'
 
 export function ServiceDetailPage() {
   return (
@@ -31,10 +36,10 @@ function ServiceDetailContent() {
   const [service, setService] = useState<ServiceResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [added, setAdded] = useState(false)
   const [hairSize, setHairSize] = useState<HairSize>('M')
-  const addService = useCartStore((s) => s.addService)
-  const itemCount = useCartStore((s) => s.itemCount())
+  const [feedback, setFeedback] = useState<string | null>(null)
+  const addService = useServiceCartStore((s) => s.addService)
+  const serviceCount = useServiceCartStore(selectServiceCartCount)
 
   useEffect(() => {
     if (!id) return
@@ -46,26 +51,27 @@ function ServiceDetailContent() {
       .finally(() => setLoading(false))
   }, [id])
 
-  const needsSize = service?.basePrice == null && service?.priceBySize != null
+  const needsSize = service ? serviceNeedsHairSize(service) : false
   const price = service
     ? needsSize
-      ? resolveServicePrice(service, hairSize)
+      ? (service.priceBySize?.[hairSize] ?? 0)
       : (service.basePrice ?? 0)
     : 0
+  const priceRange = service ? formatServicePriceRange(service) : null
   const gallery = service ? getCatalogGallery(service) : []
 
   const handleAdd = () => {
     if (!service) return
-    addService(service, needsSize ? hairSize : 'M')
-    setAdded(true)
-    setTimeout(() => setAdded(false), 1500)
+    const result = addService(service, hairSize)
+    setFeedback(result === 'duplicate' ? 'Đã có trong danh sách' : 'Đã thêm vào danh sách')
+    window.setTimeout(() => setFeedback(null), 2500)
   }
 
   return (
     <PageLayout>
       <div className="section-inner px-5 py-12 sm:px-8 sm:py-16">
         <Link to="/catalog" className="text-xs uppercase tracking-widest text-gold-muted hover:text-gold">
-          ← Quay lại catalog
+          ← Quay lại bảng giá
         </Link>
 
         {loading && (
@@ -98,9 +104,14 @@ function ServiceDetailContent() {
 
               {needsSize ? (
                 <div className="mt-6">
-                  <p className="text-xs uppercase tracking-widest text-zinc-500">Chọn độ dài tóc</p>
+                  {priceRange && (
+                    <p className="text-sm text-zinc-500">
+                      Khoảng giá: <span className="text-zinc-300">{priceRange}</span>
+                    </p>
+                  )}
+                  <p className="mt-4 text-xs uppercase tracking-widest text-zinc-500">Chọn size tóc</p>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {HAIR_SIZES.map((size) => (
+                    {HAIR_SIZES.filter((size) => service.priceBySize?.[size] != null).map((size) => (
                       <button
                         key={size}
                         type="button"
@@ -118,12 +129,16 @@ function ServiceDetailContent() {
                   <p className="mt-4 font-serif text-3xl text-gold">{formatVnd(price)}</p>
                 </div>
               ) : (
-                <p className="mt-4 font-serif text-3xl text-gold">{formatVnd(service.basePrice ?? 0)}</p>
+                <p className="mt-4 font-serif text-3xl text-gold">{formatServiceCardPrice(service)}</p>
               )}
 
               {service.durationMinutes && (
                 <p className="mt-2 text-sm text-zinc-500">Thời gian ước tính: ~{service.durationMinutes} phút</p>
               )}
+
+              <p className="mt-4 text-sm text-zinc-500">
+                Giá chốt tại tiệm sau khi tư vấn. Thanh toán khi làm dịch vụ — không thanh toán online.
+              </p>
 
               {needsSize && service.priceBySize && (
                 <div className="mt-6 border-t border-zinc-800/80 pt-6">
@@ -148,19 +163,20 @@ function ServiceDetailContent() {
                 </div>
               )}
 
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-wrap items-center gap-3">
                 <button type="button" onClick={handleAdd} className="btn-gold">
-                  {added ? 'Đã thêm ✓' : 'Thêm vào giỏ'}
+                  Thêm vào danh sách
                 </button>
-                <Link to="/booking" className="btn-editorial px-6 py-3">
-                  Đặt lịch tư vấn
-                </Link>
-                {itemCount > 0 && (
-                  <Link to="/booking" className="btn-editorial px-6 py-3">
-                    Thanh toán ({itemCount})
+                {serviceCount > 0 && (
+                  <Link to="/appointment" className="btn-editorial px-6 py-3">
+                    Xem & gửi lịch ({serviceCount})
                   </Link>
                 )}
+                <Link to="/shop" className="text-sm text-zinc-500 hover:text-gold">
+                  Mua Moroccanoil
+                </Link>
               </div>
+              {feedback && <p className="mt-3 text-sm text-gold">{feedback}</p>}
             </div>
           </div>
         )}

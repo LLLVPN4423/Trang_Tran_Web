@@ -147,7 +147,14 @@ Web có **3 loại ảnh**, cách cập nhật khác nhau:
 
 ### A6. Deploy production (khi lên web thật)
 
-| # | Việc làm | Cách làm cụ thể |
+**Hướng dẫn chi tiết:** [DEPLOY.md](./DEPLOY.md)
+
+| Giai đoạn | Phương án | Tóm tắt |
+|-----------|-----------|---------|
+| **Test trước** | B — ~0đ/tháng | Cloudflare Pages + Cloud Run + Firebase Spark |
+| **Go-live lâu dài** | A — VPS Docker | `npm run docker:prod` + domain + Cloudflare |
+
+| # | Việc làm (VPS / go-live) | Cách làm cụ thể |
 |---|----------|-----------------|
 | 1 | Copy env | `.env.production.example` → `.env`, điền đủ |
 | 2 | Domain + SSL | HTTPS bắt buộc (SePay webhook + Firebase authorized domain) |

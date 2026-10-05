@@ -1,14 +1,18 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/shared/lib/gsap'
-import { LOOKBOOK_ITEMS } from '../data/content'
+import { resolveProductImageUrl } from '@/shared/lib/productMedia'
+import { useSiteContent } from '../SiteContentContext'
+import type { LookbookAspect } from '@/shared/api/types'
 
-const TILE_CLASS = {
+const TILE_CLASS: Record<LookbookAspect, string> = {
   tall: 'col-span-1 aspect-[3/4] sm:aspect-[4/5] lg:row-span-2 lg:aspect-auto lg:min-h-[420px]',
   wide: 'col-span-2 aspect-[16/10]',
   square: 'col-span-1 aspect-[4/5]',
-} as const
+}
 
 export function LookbookSection() {
+  const { content } = useSiteContent()
+  const { lookbook } = content
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -43,24 +47,27 @@ export function LookbookSection() {
     }, section)
 
     return () => ctx.revert()
-  }, [])
+  }, [lookbook.items.length])
+
+  if (lookbook.items.length === 0) return null
 
   return (
     <section ref={sectionRef} id="lookbook" className="section-shell">
       <div className="section-inner-wide">
-        <p className="lookbook-heading section-eyebrow">Salon Tour</p>
-        <h2 className="lookbook-heading section-title">Lookbook</h2>
+        <p className="lookbook-heading section-eyebrow">{lookbook.eyebrow}</p>
+        <h2 className="lookbook-heading section-title">{lookbook.title}</h2>
 
         <div className="mt-12 grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-flow-dense lg:grid-cols-3 lg:gap-4">
-          {LOOKBOOK_ITEMS.map((item, index) => (
+          {lookbook.items.map((item, index) => (
             <article
-              key={item.id}
+              key={`${item.id}-${index}`}
               data-speed={item.speed}
               className={`lookbook-item group relative overflow-hidden rounded-sm will-change-transform ${TILE_CLASS[item.aspect]}`}
             >
               <img
-                src={encodeURI(item.image)}
+                src={resolveProductImageUrl(item.imageUrl)}
                 alt={item.label}
+                referrerPolicy="no-referrer"
                 className="media-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 loading={index < 4 ? 'eager' : 'lazy'}
               />

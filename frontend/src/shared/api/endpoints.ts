@@ -1,4 +1,7 @@
 import { apiClient } from './client'
+import { normalizeFulfillmentMethod, normalizePaymentMethod } from '@/shared/lib/orderLabels'
+import { normalizeFulfillmentStatus } from '@/shared/lib/orderFulfillment'
+import { DEFAULT_SITE_CONTENT } from '@/shared/lib/siteContentDefaults'
 import type {
   CreateOrderRequest,
   CreateProductRequest,
@@ -21,6 +24,12 @@ import type {
   CreateAppointmentRequest,
   AppointmentResponse,
   AppointmentStatus,
+  SubmitDisputeRequest,
+  UpdateShipmentRequest,
+  ShippingZoneOption,
+  SiteContentResponse,
+  UpdateSiteContentRequest,
+  LookbookAspect,
 } from './types'
 
 export async function fetchServices(): Promise<ServiceResponse[]> {
@@ -109,26 +118,152 @@ export async function deleteProduct(id: string): Promise<void> {
   await apiClient.delete(`/api/products/${id}`)
 }
 
+function normalizeOrder(order: OrderResponse): OrderResponse {
+  return {
+    ...order,
+    paymentMethod: normalizePaymentMethod(order.paymentMethod),
+    fulfillmentMethod: normalizeFulfillmentMethod(order.fulfillmentMethod),
+    deliveryAddress: order.deliveryAddress ?? null,
+    shippingFee: order.shippingFee ?? 0,
+    shippingZone: order.shippingZone ?? null,
+    fulfillmentStatus: normalizeFulfillmentStatus(order.fulfillmentStatus),
+    trackingCode: order.trackingCode ?? null,
+    trackingUrl: order.trackingUrl ?? null,
+    carrier: order.carrier ?? null,
+    approvedAt: order.approvedAt ?? null,
+    shippedAt: order.shippedAt ?? null,
+    deliveredAt: order.deliveredAt ?? null,
+    completedAt: order.completedAt ?? null,
+    disputeReason: order.disputeReason ?? null,
+    disputeNotes: order.disputeNotes ?? null,
+    disputedAt: order.disputedAt ?? null,
+  }
+}
+
 export async function createOrder(request: CreateOrderRequest): Promise<OrderResponse> {
   const { data } = await apiClient.post<OrderResponse>('/api/orders', request)
-  return data
+  return normalizeOrder(data)
 }
 
-export async function fetchOrder(id: string, accessToken?: string): Promise<OrderResponse> {
+export async function fetchOrder(
+  id: string,
+  accessToken?: string,
+  options?: { live?: boolean },
+): Promise<OrderResponse> {
   const { data } = await apiClient.get<OrderResponse>(`/api/orders/${encodeURIComponent(id)}`, {
-    params: accessToken ? { token: accessToken } : undefined,
+    params: {
+      ...(accessToken ? { token: accessToken } : {}),
+      ...(options?.live ? { _t: Date.now() } : {}),
+    },
+    headers: options?.live ? { 'Cache-Control': 'no-cache' } : undefined,
   })
-  return data
+  return normalizeOrder(data)
 }
 
-export async function fetchOrders(params?: { status?: OrderStatus; phone?: string }): Promise<OrderResponse[]> {
-  const { data } = await apiClient.get<OrderResponse[]>('/api/orders', { params })
-  return data
+export async function fetchOrders(
+  params?: { status?: OrderStatus; phone?: string; live?: boolean },
+): Promise<OrderResponse[]> {
+  const { live, ...query } = params ?? {}
+  const { data } = await apiClient.get<OrderResponse[]>('/api/orders', {
+    params: {
+      ...query,
+      ...(live ? { _t: Date.now() } : {}),
+    },
+    headers: live ? { 'Cache-Control': 'no-cache' } : undefined,
+  })
+  return data.map(normalizeOrder)
 }
 
 export async function updateOrderStatus(id: string, status: OrderStatus): Promise<OrderResponse> {
   const { data } = await apiClient.patch<OrderResponse>(`/api/orders/${id}/status`, { status })
+  return normalizeOrder(data)
+}
+
+export async function approveOrderFulfillment(id: string): Promise<OrderResponse> {
+  const { data } = await apiClient.post<OrderResponse>(`/api/orders/${id}/approve`)
+  return normalizeOrder(data)
+}
+
+export async function updateOrderShipment(id: string, request: UpdateShipmentRequest): Promise<OrderResponse> {
+  const { data } = await apiClient.patch<OrderResponse>(`/api/orders/${id}/shipment`, request)
+  return normalizeOrder(data)
+}
+
+export async function markOrderDelivered(id: string): Promise<OrderResponse> {
+  const { data } = await apiClient.post<OrderResponse>(`/api/orders/${id}/delivered`)
+  return normalizeOrder(data)
+}
+
+export async function confirmOrderReceived(id: string, accessToken?: string): Promise<OrderResponse> {
+  const { data } = await apiClient.post<OrderResponse>(`/api/orders/${encodeURIComponent(id)}/confirm-received`, null, {
+    params: accessToken ? { token: accessToken } : undefined,
+  })
+  return normalizeOrder(data)
+}
+
+export async function submitOrderDispute(
+  id: string,
+  request: SubmitDisputeRequest,
+  accessToken?: string,
+): Promise<OrderResponse> {
+  const { data } = await apiClient.post<OrderResponse>(`/api/orders/${encodeURIComponent(id)}/dispute`, request, {
+    params: accessToken ? { token: accessToken } : undefined,
+  })
+  return normalizeOrder(data)
+}
+
+export async function fetchShippingZones(): Promise<ShippingZoneOption[]> {
+  const { data } = await apiClient.get<ShippingZoneOption[]>('/api/shipping/zones')
   return data
+}
+
+export async function fetchSiteContent(): Promise<SiteContentResponse> {
+  const { data } = await apiClient.get<SiteContentResponse>('/api/site-content')
+  return normalizeSiteContent(data)
+}
+
+export async function updateSiteContent(request: UpdateSiteContentRequest): Promise<SiteContentResponse> {
+  const { data } = await apiClient.put<SiteContentResponse>('/api/site-content', request)
+  return normalizeSiteContent(data)
+}
+
+function normalizeSiteContent(content: SiteContentResponse): SiteContentResponse {
+  const defaults = DEFAULT_SITE_CONTENT
+  const contact = content.contact?.phone?.trim()
+    ? {
+        phone: content.contact.phone.trim(),
+        phoneRaw:
+          content.contact.phoneRaw?.trim() ||
+          content.contact.phone.replace(/\D/g, ''),
+        address: content.contact.address?.trim() ?? '',
+        note: content.contact.note?.trim() ?? '',
+      }
+    : defaults.contact
+
+  const socialLinks =
+    content.socialLinks?.filter((l) => l.label?.trim() && l.url?.trim()).map((l) => ({
+      label: l.label.trim(),
+      url: l.url.trim(),
+    })) ?? []
+
+  return {
+    hero: { ...defaults.hero, ...content.hero },
+    artist: {
+      ...defaults.artist,
+      ...content.artist,
+      statementLines: content.artist.statementLines ?? defaults.artist.statementLines,
+    },
+    lookbook: {
+      ...defaults.lookbook,
+      ...content.lookbook,
+      items: (content.lookbook.items ?? defaults.lookbook.items).map((item) => ({
+        ...item,
+        aspect: (['tall', 'wide', 'square'].includes(item.aspect) ? item.aspect : 'square') as LookbookAspect,
+      })),
+    },
+    contact,
+    socialLinks: socialLinks.length > 0 ? socialLinks : defaults.socialLinks,
+  }
 }
 
 export async function syncCustomer(request: SyncCustomerRequest): Promise<CustomerResponse> {
@@ -212,9 +347,16 @@ export async function fetchMyAppointments(): Promise<AppointmentResponse[]> {
   return data
 }
 
-export async function fetchAppointments(status?: AppointmentStatus): Promise<AppointmentResponse[]> {
+export async function fetchAppointments(
+  status?: AppointmentStatus,
+  options?: { live?: boolean },
+): Promise<AppointmentResponse[]> {
   const { data } = await apiClient.get<AppointmentResponse[]>('/api/appointments', {
-    params: status ? { status } : undefined,
+    params: {
+      ...(status ? { status } : {}),
+      ...(options?.live ? { _t: Date.now() } : {}),
+    },
+    headers: options?.live ? { 'Cache-Control': 'no-cache' } : undefined,
   })
   return data
 }

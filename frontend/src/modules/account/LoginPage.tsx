@@ -6,7 +6,7 @@ import { PageLayout } from '@/shared/components/PageLayout'
 import { GoogleSignInButton } from '@/shared/components/GoogleSignInButton'
 
 export function LoginPage() {
-  const { isConfigured, login, user } = useAuth()
+  const { isConfigured, login, user, isRedirectProcessing, redirectError, clearRedirectError } = useAuth()
 
   if (user) return <Navigate to="/account" replace />
 
@@ -30,6 +30,23 @@ export function LoginPage() {
   return (
     <PageLayout>
       <div className="mx-auto max-w-md px-6 py-16">
+        {isRedirectProcessing && (
+          <p className="mb-6 rounded-sm border border-zinc-800 bg-zinc-900/50 px-4 py-3 text-sm text-zinc-400">
+            Đang hoàn tất đăng nhập Google...
+          </p>
+        )}
+        {redirectError && (
+          <div className="mb-6 rounded-sm border border-red-900/50 bg-red-950/20 px-4 py-3 text-sm text-red-300">
+            <p>{redirectError}</p>
+            <button
+              type="button"
+              onClick={clearRedirectError}
+              className="mt-2 text-xs uppercase tracking-widest text-red-200/80 hover:text-red-100"
+            >
+              Thử lại
+            </button>
+          </div>
+        )}
         <AuthForm
           title="Đăng nhập"
           subtitle="Truy cập tài khoản, xem đơn hàng và tích điểm."

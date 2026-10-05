@@ -8,7 +8,6 @@ using TrangTranHair.Domain.Enums;
 namespace TrangTranHair.Application.Services;
 
 public sealed class OrderService(
-    IServiceRepository serviceRepository,
     IProductRepository productRepository,
     IOrderRepository orderRepository,
     IPromotionService promotionService,
@@ -16,6 +15,10 @@ public sealed class OrderService(
     ICustomerRepository customerRepository) : IOrderService
 {
     public const int StockReservationMinutes = 15;
+    public const int CodStockReservationMinutes = 48 * 60;
+
+    public static int GetReservationMinutes(PaymentMethod paymentMethod) =>
+        paymentMethod == PaymentMethod.COD ? CodStockReservationMinutes : StockReservationMinutes;
 
     public async Task<OrderResponse> CreateOrderAsync(CreateOrderRequest request, CancellationToken cancellationToken = default)
     {
@@ -28,13 +31,10 @@ public sealed class OrderService(
 
         foreach (var item in request.Items)
         {
-            var orderItem = item.ItemType switch
-            {
-                OrderItemType.Service => await BuildServiceItemAsync(item, cancellationToken),
-                OrderItemType.Product => await BuildProductItemAsync(item, cancellationToken),
-                _ => throw new ValidationException("itemType", "Invalid item type.")
-            };
+            if (item.ItemType != OrderItemType.Product)
+                throw new ValidationException("items", "Online checkout chỉ hỗ trợ sản phẩm. Dịch vụ vui lòng đặt lịch trên trang chủ.");
 
+            var orderItem = await BuildProductItemAsync(item, cancellationToken);
             orderItems.Add(orderItem);
             subtotal += orderItem.Subtotal;
         }
@@ -73,6 +73,24 @@ public sealed class OrderService(
         }
 
         var total = Math.Max(0, subtotalAfterPromo - pointsDiscount);
+        var shippingFee = 0m;
+        ShippingZone? shippingZone = null;
+        var fulfillmentStatus = FulfillmentStatus.None;
+
+        if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
+        {
+            if (request.ShippingZone is null)
+                throw new ValidationException("shippingZone", "Vui lòng chọn khu vực giao hàng.");
+
+            shippingZone = request.ShippingZone.Value;
+            shippingFee = ShippingCalculator.GetFee(shippingZone.Value);
+            total += shippingFee;
+
+            fulfillmentStatus = request.PaymentMethod == PaymentMethod.COD
+                ? FulfillmentStatus.AwaitingApproval
+                : FulfillmentStatus.None;
+        }
+
         var pointsEarned = loyaltyService.CalculateEarnPoints(total);
 
         var order = new Order
@@ -90,6 +108,14 @@ public sealed class OrderService(
             PointsEarned = pointsEarned,
             TotalAmount = total,
             Status = OrderStatus.Pending,
+            PaymentMethod = request.PaymentMethod,
+            FulfillmentMethod = request.FulfillmentMethod,
+            DeliveryAddress = request.FulfillmentMethod == FulfillmentMethod.Delivery
+                ? request.DeliveryAddress?.Trim()
+                : null,
+            ShippingFee = shippingFee,
+            ShippingZone = shippingZone,
+            FulfillmentStatus = fulfillmentStatus,
             PaymentCode = $"DH{Guid.NewGuid().ToString("N")[..8].ToUpperInvariant()}",
             AccessToken = AccessTokenGenerator.Create(),
         };
@@ -207,6 +233,13 @@ public sealed class OrderService(
         if (!string.IsNullOrWhiteSpace(sePayTransactionId))
             order.SePayTransactionId = sePayTransactionId;
 
+        if (order.FulfillmentMethod == FulfillmentMethod.Delivery
+            && order.FulfillmentStatus == FulfillmentStatus.None)
+        {
+            order.FulfillmentStatus = FulfillmentStatus.Approved;
+            order.ApprovedAt = DateTime.UtcNow;
+        }
+
         if (!order.StockReserved)
             await DeductStockForOrderAsync(order, cancellationToken);
         else
@@ -225,6 +258,139 @@ public sealed class OrderService(
         }
 
         return MapToResponse(order);
+    }
+
+    public async Task<OrderResponse> ApproveFulfillmentAsync(string id, CancellationToken cancellationToken = default)
+    {
+        var order = await orderRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException($"Order '{id}' not found.");
+
+        if (order.FulfillmentMethod != FulfillmentMethod.Delivery)
+            throw new ValidationException("fulfillmentMethod", "Chỉ đơn giao hàng mới cần duyệt.");
+
+        if (order.PaymentMethod != PaymentMethod.COD)
+            throw new ValidationException("paymentMethod", "Chỉ đơn COD cần duyệt trước khi giao.");
+
+        if (order.FulfillmentStatus != FulfillmentStatus.AwaitingApproval)
+            throw new ValidationException("fulfillmentStatus", "Đơn không ở trạng thái chờ duyệt.");
+
+        if (order.Status == OrderStatus.Cancelled)
+            throw new ValidationException("status", "Không thể duyệt đơn đã hủy.");
+
+        order.FulfillmentStatus = FulfillmentStatus.Approved;
+        order.ApprovedAt = DateTime.UtcNow;
+        order.UpdatedAt = DateTime.UtcNow;
+
+        var updated = await orderRepository.UpdateAsync(order, cancellationToken);
+        return MapToResponse(updated);
+    }
+
+    public async Task<OrderResponse> UpdateShipmentAsync(
+        string id,
+        UpdateShipmentRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var order = await orderRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException($"Order '{id}' not found.");
+
+        if (order.FulfillmentMethod != FulfillmentMethod.Delivery)
+            throw new ValidationException("fulfillmentMethod", "Chỉ đơn giao hàng mới có vận chuyển.");
+
+        if (order.FulfillmentStatus != FulfillmentStatus.Approved)
+            throw new ValidationException("fulfillmentStatus", "Đơn cần được duyệt trước khi giao hàng.");
+
+        if (string.IsNullOrWhiteSpace(request.TrackingCode))
+            throw new ValidationException("trackingCode", "Mã vận đơn là bắt buộc.");
+
+        order.TrackingCode = request.TrackingCode.Trim();
+        order.TrackingUrl = string.IsNullOrWhiteSpace(request.TrackingUrl) ? null : request.TrackingUrl.Trim();
+        order.Carrier = string.IsNullOrWhiteSpace(request.Carrier) ? null : request.Carrier.Trim();
+        order.FulfillmentStatus = FulfillmentStatus.Shipped;
+        order.ShippedAt = DateTime.UtcNow;
+        order.UpdatedAt = DateTime.UtcNow;
+
+        var updated = await orderRepository.UpdateAsync(order, cancellationToken);
+        return MapToResponse(updated);
+    }
+
+    public async Task<OrderResponse> MarkDeliveredAsync(string id, CancellationToken cancellationToken = default)
+    {
+        var order = await orderRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException($"Order '{id}' not found.");
+
+        if (order.FulfillmentMethod != FulfillmentMethod.Delivery)
+            throw new ValidationException("fulfillmentMethod", "Chỉ đơn giao hàng mới có trạng thái đã giao.");
+
+        if (order.FulfillmentStatus != FulfillmentStatus.Shipped)
+            throw new ValidationException("fulfillmentStatus", "Đơn cần ở trạng thái đang giao.");
+
+        order.FulfillmentStatus = FulfillmentStatus.Delivered;
+        order.DeliveredAt = DateTime.UtcNow;
+        order.UpdatedAt = DateTime.UtcNow;
+
+        var updated = await orderRepository.UpdateAsync(order, cancellationToken);
+        return MapToResponse(updated);
+    }
+
+    public async Task<OrderResponse> ConfirmReceivedAsync(
+        string id,
+        string? accessToken,
+        CancellationToken cancellationToken = default)
+    {
+        var order = await orderRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException($"Order '{id}' not found.");
+
+        EnsureCustomerAccess(order, accessToken);
+
+        if (order.FulfillmentStatus == FulfillmentStatus.Completed)
+            return MapToResponse(order);
+
+        if (order.FulfillmentMethod == FulfillmentMethod.Delivery)
+        {
+            if (order.FulfillmentStatus != FulfillmentStatus.Delivered)
+                throw new ValidationException("fulfillmentStatus", "Chỉ xác nhận khi đơn đã giao tới bạn.");
+        }
+        else if (order.Status != OrderStatus.Paid)
+        {
+            throw new ValidationException("status", "Đơn nhận tại salon cần thanh toán trước khi xác nhận.");
+        }
+
+        order.FulfillmentStatus = FulfillmentStatus.Completed;
+        order.CompletedAt = DateTime.UtcNow;
+        order.UpdatedAt = DateTime.UtcNow;
+
+        var updated = await orderRepository.UpdateAsync(order, cancellationToken);
+        return MapToResponse(updated);
+    }
+
+    public async Task<OrderResponse> SubmitDisputeAsync(
+        string id,
+        SubmitDisputeRequest request,
+        string? accessToken,
+        CancellationToken cancellationToken = default)
+    {
+        var order = await orderRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException($"Order '{id}' not found.");
+
+        EnsureCustomerAccess(order, accessToken);
+
+        if (order.FulfillmentMethod != FulfillmentMethod.Delivery)
+            throw new ValidationException("fulfillmentMethod", "Khiếu nại chỉ áp dụng cho đơn giao hàng.");
+
+        if (order.FulfillmentStatus is not (FulfillmentStatus.Shipped or FulfillmentStatus.Delivered))
+            throw new ValidationException("fulfillmentStatus", "Chỉ khiếu nại khi đơn đang giao hoặc đã giao.");
+
+        if (string.IsNullOrWhiteSpace(request.Reason))
+            throw new ValidationException("reason", "Vui lòng chọn lý do khiếu nại.");
+
+        order.DisputeReason = request.Reason.Trim();
+        order.DisputeNotes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim();
+        order.DisputedAt = DateTime.UtcNow;
+        order.FulfillmentStatus = FulfillmentStatus.Disputed;
+        order.UpdatedAt = DateTime.UtcNow;
+
+        var updated = await orderRepository.UpdateAsync(order, cancellationToken);
+        return MapToResponse(updated);
     }
 
     public async Task<int> LinkGuestOrdersAsync(string customerId, string phone, CancellationToken cancellationToken = default)
@@ -279,11 +445,16 @@ public sealed class OrderService(
 
     private async Task ReleaseExpiredPendingReservationsAsync(CancellationToken cancellationToken)
     {
-        var cutoff = DateTime.UtcNow.AddMinutes(-StockReservationMinutes);
         var pending = await orderRepository.GetAllAsync(OrderStatus.Pending, cancellationToken: cancellationToken);
+        var now = DateTime.UtcNow;
 
-        foreach (var order in pending.Where(o => o.StockReserved && o.CreatedAt < cutoff))
+        foreach (var order in pending.Where(o => o.StockReserved))
         {
+            var reservedAt = order.StockReservedAt ?? order.CreatedAt;
+            var expiresAt = reservedAt.AddMinutes(GetReservationMinutes(order.PaymentMethod));
+            if (expiresAt >= now)
+                continue;
+
             await ReleaseStockForOrderAsync(order, cancellationToken);
             order.StockReserved = false;
             order.StockReservedAt = null;
@@ -329,30 +500,13 @@ public sealed class OrderService(
 
         if (request.Items is null || request.Items.Count == 0)
             throw new ValidationException("items", "At least one item is required.");
-    }
 
-    private async Task<OrderItem> BuildServiceItemAsync(CreateOrderItemRequest item, CancellationToken cancellationToken)
-    {
-        var service = await serviceRepository.GetByIdAsync(item.ItemId, cancellationToken)
-            ?? throw new NotFoundException($"Service '{item.ItemId}' not found.");
+        if (request.Items.Any(i => i.ItemType != OrderItemType.Product))
+            throw new ValidationException("items", "Online checkout chỉ hỗ trợ sản phẩm. Dịch vụ vui lòng đặt lịch trên trang chủ.");
 
-        if (!service.IsActive)
-            throw new ValidationException("itemId", $"Service '{service.Name}' is not available.");
-
-        if (item.Quantity < 1)
-            throw new ValidationException("quantity", "Quantity must be at least 1.");
-
-        var unitPrice = service.ResolvePrice(item.HairSize);
-
-        return new OrderItem
-        {
-            ItemId = service.Id,
-            ItemType = OrderItemType.Service,
-            Name = service.Name,
-            Quantity = item.Quantity,
-            UnitPrice = unitPrice,
-            HairSize = item.HairSize,
-        };
+        if (request.FulfillmentMethod == FulfillmentMethod.Delivery
+            && string.IsNullOrWhiteSpace(request.DeliveryAddress))
+            throw new ValidationException("deliveryAddress", "Vui lòng nhập địa chỉ giao hàng.");
     }
 
     private async Task<OrderItem> BuildProductItemAsync(CreateOrderItemRequest item, CancellationToken cancellationToken)
@@ -379,6 +533,14 @@ public sealed class OrderService(
         };
     }
 
+    private static void EnsureCustomerAccess(Order order, string? accessToken)
+    {
+        if (AccessTokenGenerator.Matches(order.AccessToken, accessToken))
+            return;
+
+        throw new ValidationException("accessToken", "Không có quyền thực hiện thao tác này.");
+    }
+
     private static OrderResponse MapToResponse(Order order) =>
         new(
             order.Id,
@@ -396,6 +558,22 @@ public sealed class OrderService(
             order.PointsEarned,
             order.TotalAmount,
             order.Status,
+            order.PaymentMethod,
+            order.FulfillmentMethod,
+            order.DeliveryAddress,
+            order.ShippingFee,
+            order.ShippingZone,
+            order.FulfillmentStatus,
+            order.TrackingCode,
+            order.TrackingUrl,
+            order.Carrier,
+            order.ApprovedAt,
+            order.ShippedAt,
+            order.DeliveredAt,
+            order.CompletedAt,
+            order.DisputeReason,
+            order.DisputeNotes,
+            order.DisputedAt,
             order.PaymentCode,
             order.AccessToken,
             order.CreatedAt,

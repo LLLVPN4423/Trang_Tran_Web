@@ -1,5 +1,6 @@
 using TrangTranHair.Application.Common;
 using TrangTranHair.Application.DTOs;
+using TrangTranHair.Application.Exceptions;
 using TrangTranHair.Application.Services;
 using TrangTranHair.Domain.Entities;
 using TrangTranHair.Domain.Enums;
@@ -99,7 +100,7 @@ public class OrderServiceLinkTests
         var loyaltyRepo = new InMemoryLoyaltyRepository();
         var loyalty = new LoyaltyService(customers, loyaltyRepo, orders);
         var promotionService = new PromotionService(promotions);
-        var orderService = new OrderService(services, products, orders, promotionService, loyalty, customers);
+        var orderService = new OrderService(products, orders, promotionService, loyalty, customers);
 
         await orders.CreateAsync(new Order
         {
@@ -167,7 +168,7 @@ public class OrderServiceStockTests
         var loyaltyRepo = new InMemoryLoyaltyRepository();
         var loyalty = new LoyaltyService(customers, loyaltyRepo, orders);
         var promotionService = new PromotionService(promotions);
-        var orderService = new OrderService(services, products, orders, promotionService, loyalty, customers);
+        var orderService = new OrderService(products, orders, promotionService, loyalty, customers);
 
         await products.CreateAsync(new Product
         {
@@ -204,7 +205,7 @@ public class OrderServiceStockTests
         var loyaltyRepo = new InMemoryLoyaltyRepository();
         var loyalty = new LoyaltyService(customers, loyaltyRepo, orders);
         var promotionService = new PromotionService(promotions);
-        var orderService = new OrderService(services, products, orders, promotionService, loyalty, customers);
+        var orderService = new OrderService(products, orders, promotionService, loyalty, customers);
 
         await products.CreateAsync(new Product
         {
@@ -226,5 +227,36 @@ public class OrderServiceStockTests
 
         var product = await products.GetByIdAsync("prod-2");
         Assert.Equal(1, product!.Stock);
+    }
+
+    [Fact]
+    public async Task CreateOrder_rejects_service_items()
+    {
+        var services = new InMemoryServiceRepository();
+        var products = new InMemoryProductRepository();
+        var orders = new InMemoryOrderRepository();
+        var promotions = new InMemoryPromotionRepository();
+        var customers = new InMemoryCustomerRepository();
+        var loyaltyRepo = new InMemoryLoyaltyRepository();
+        var loyalty = new LoyaltyService(customers, loyaltyRepo, orders);
+        var promotionService = new PromotionService(promotions);
+        var orderService = new OrderService(products, orders, promotionService, loyalty, customers);
+
+        await services.CreateAsync(new Service
+        {
+            Id = "svc-1",
+            Name = "Cut",
+            Category = ServiceCategory.Cut,
+            BasePrice = 100_000,
+            IsActive = true,
+        });
+
+        await Assert.ThrowsAsync<ValidationException>(() =>
+            orderService.CreateOrderAsync(new CreateOrderRequest(
+                "C",
+                "0907777777",
+                null,
+                null,
+                [new CreateOrderItemRequest("svc-1", OrderItemType.Service, 1, HairSize.M)])));
     }
 }

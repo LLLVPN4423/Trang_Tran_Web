@@ -20,7 +20,7 @@ Website chính thức cho **Trang Tran Hair Salon** (Sóc Trăng): portfolio sal
 | Admin Portal (CRUD dịch vụ/SP/KM, đơn, lịch, khách) | ✅ Hoàn thiện |
 | Trừ tồn kho + tích điểm khi đơn Paid | ✅ Hoàn thiện |
 | Responsive mobile / desktop | ✅ Hoàn thiện |
-| Production deploy (Docker) | ✅ Sẵn sàng (cần cấu hình Firebase + domain) |
+| Production deploy | ✅ [Phương án B ~0đ](./DEPLOY.md) · [VPS Docker dài hạn](./DEPLOY.md#phần-2--phương-án-dài-hạn-vận-hành--mở-rộng) |
 | Email/SMS thông báo tự động | ⏳ Chưa có — salon gọi điện / Zalo |
 | Đặt lịch chọn giờ slot tự động | ⏳ Chưa có — admin gọi xác nhận giờ |
 
@@ -35,7 +35,7 @@ Website chính thức cho **Trang Tran Hair Salon** (Sóc Trăng): portfolio sal
 | Frontend | React 19, Vite 6, TypeScript, Tailwind CSS 4, Zustand, Firebase Auth |
 | Backend | .NET 10, Clean Architecture, Firebase JWT, Firestore |
 | Thanh toán | SePay webhook (chuyển khoản) |
-| Deploy | Docker Compose, nginx |
+| Deploy | Cloudflare Pages + Cloud Run (test) · Docker Compose VPS (lâu dài) |
 
 ---
 
@@ -77,7 +77,9 @@ curl -X POST "http://localhost:5000/api/seed/dev?force=true"
 | [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) | Cấu hình Firebase (Auth Google, Firestore, Storage, Admin) |
 | [HUONG_DAN_VAN_HANH.md](./HUONG_DAN_VAN_HANH.md) | **Checklist việc bạn cần làm + vận hành salon hàng ngày** |
 | [.env.example](./.env.example) | Biến môi trường mẫu |
-| [.env.production.example](./.env.production.example) | Deploy production |
+| [DEPLOY.md](./DEPLOY.md) | **Deploy Phương án B (test) + đề xuất dài hạn** |
+| [.env.plan-b.example](./.env.plan-b.example) | Env mẫu Cloud Run + Cloudflare Pages |
+| [.env.production.example](./.env.production.example) | Deploy VPS Docker |
 
 ---
 

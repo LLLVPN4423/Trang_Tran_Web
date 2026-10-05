@@ -1,39 +1,46 @@
-import { lazy, Suspense, type ReactNode } from 'react'
+import { Suspense, type ReactNode } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from '@/shared/auth/AuthProvider'
 import { PortfolioPage } from '@/modules/portfolio'
 import { CatalogPage } from '@/modules/catalog'
+import { ShopPage } from '@/modules/shop'
 import { ProductDetailPage } from '@/modules/catalog/ProductDetailPage'
 import { ServiceDetailPage } from '@/modules/catalog/ServiceDetailPage'
 import { BookingPage } from '@/modules/booking'
+import { AppointmentPage } from '@/modules/appointment'
+import { OrderDetailPage } from '@/modules/orders'
 import { LoginPage, RegisterPage, AccountPage, LoyaltyPage } from '@/modules/account'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { NotFoundPage } from '@/shared/components/NotFoundPage'
 import { ModuleErrorBoundary } from '@/shared/components/ModuleErrorBoundary'
+import { lazyWithRetry } from '@/shared/utils/lazyWithRetry'
 
-const AdminLayout = lazy(() =>
+const AdminLayout = lazyWithRetry(() =>
   import('@/modules/admin/AdminLayout').then((m) => ({ default: m.AdminLayout })),
 )
-const AdminOverview = lazy(() =>
+const AdminOverview = lazyWithRetry(() =>
   import('@/modules/admin/AdminLayout').then((m) => ({ default: m.AdminOverview })),
 )
-const OrdersAdminPanel = lazy(() =>
+const OrdersAdminPanel = lazyWithRetry(() =>
   import('@/modules/admin/components/OrdersAdminPanel').then((m) => ({ default: m.OrdersAdminPanel })),
 )
-const AppointmentsAdminPanel = lazy(() =>
+const AppointmentsAdminPanel = lazyWithRetry(() =>
   import('@/modules/admin/components/AppointmentsAdminPanel').then((m) => ({ default: m.AppointmentsAdminPanel })),
 )
-const ServicesAdminPanel = lazy(() =>
+const ServicesAdminPanel = lazyWithRetry(() =>
   import('@/modules/admin/components/ServicesAdminPanel').then((m) => ({ default: m.ServicesAdminPanel })),
 )
-const ProductsAdminPanel = lazy(() =>
+const ProductsAdminPanel = lazyWithRetry(() =>
   import('@/modules/admin/components/ProductsAdminPanel').then((m) => ({ default: m.ProductsAdminPanel })),
 )
-const PromotionsAdminPanel = lazy(() =>
+const PromotionsAdminPanel = lazyWithRetry(() =>
   import('@/modules/admin/components/PromotionsAdminPanel').then((m) => ({ default: m.PromotionsAdminPanel })),
 )
-const CustomersAdminPanel = lazy(() =>
+const CustomersAdminPanel = lazyWithRetry(() =>
   import('@/modules/admin/components/CustomersAdminPanel').then((m) => ({ default: m.CustomersAdminPanel })),
+)
+const SiteContentAdminPanel = lazyWithRetry(() =>
+  import('@/modules/admin/components/SiteContentAdminPanel').then((m) => ({ default: m.SiteContentAdminPanel })),
 )
 
 function AdminRoute({ children }: { children: ReactNode }) {
@@ -51,9 +58,19 @@ export function App() {
         <Routes>
           <Route path="/" element={<PortfolioPage />} />
           <Route path="/catalog" element={<CatalogPage />} />
+          <Route path="/shop" element={<ShopPage />} />
           <Route path="/catalog/product/:id" element={<ProductDetailPage />} />
           <Route path="/catalog/service/:id" element={<ServiceDetailPage />} />
+          <Route path="/appointment" element={<AppointmentPage />} />
           <Route path="/booking" element={<BookingPage />} />
+          <Route
+            path="/orders/:id"
+            element={
+              <ModuleErrorBoundary moduleName="Orders">
+                <OrderDetailPage />
+              </ModuleErrorBoundary>
+            }
+          />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route
@@ -73,20 +90,14 @@ export function App() {
               </AdminRoute>
             }
           >
-            <Route
-              index
-              element={
-                <AdminRoute>
-                  <AdminOverview />
-                </AdminRoute>
-              }
-            />
-            <Route path="orders" element={<AdminRoute><OrdersAdminPanel /></AdminRoute>} />
-            <Route path="appointments" element={<AdminRoute><AppointmentsAdminPanel /></AdminRoute>} />
-            <Route path="services" element={<AdminRoute><ServicesAdminPanel /></AdminRoute>} />
-            <Route path="products" element={<AdminRoute><ProductsAdminPanel /></AdminRoute>} />
-            <Route path="promotions" element={<AdminRoute><PromotionsAdminPanel /></AdminRoute>} />
-            <Route path="customers" element={<AdminRoute><CustomersAdminPanel /></AdminRoute>} />
+            <Route index element={<AdminOverview />} />
+            <Route path="orders" element={<OrdersAdminPanel />} />
+            <Route path="appointments" element={<AppointmentsAdminPanel />} />
+            <Route path="services" element={<ServicesAdminPanel />} />
+            <Route path="products" element={<ProductsAdminPanel />} />
+            <Route path="site-content" element={<SiteContentAdminPanel />} />
+            <Route path="promotions" element={<PromotionsAdminPanel />} />
+            <Route path="customers" element={<CustomersAdminPanel />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

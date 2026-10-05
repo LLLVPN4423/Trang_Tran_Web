@@ -13,6 +13,7 @@
     "build:frontend": "npm run build --prefix frontend",
     "test:backend": "dotnet test backend/TrangTranHair.slnx -c Release",
     "ci": "npm run build:frontend && npm run build:backend && npm run test:backend",
+    "smoke:prod": "node scripts/smoke-test-production.js",
     "docker:prod": "docker compose -f docker-compose.prod.yml up -d --build",
     "docker:dev": "docker compose up --build"
   },

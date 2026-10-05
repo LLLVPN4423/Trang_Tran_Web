@@ -1,8 +1,11 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/shared/lib/gsap'
-import { HERO_IMAGE, SALON_TAGLINE } from '../data/content'
+import { resolveProductImageUrl } from '@/shared/lib/productMedia'
+import { useSiteContent } from '../SiteContentContext'
 
 export function HeroSection() {
+  const { content } = useSiteContent()
+  const { hero } = content
   const sectionRef = useRef<HTMLElement>(null)
   const bgRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -10,8 +13,8 @@ export function HeroSection() {
   useEffect(() => {
     const section = sectionRef.current
     const bg = bgRef.current
-    const content = contentRef.current
-    if (!section || !bg || !content) return
+    const contentEl = contentRef.current
+    if (!section || !bg || !contentEl) return
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reducedMotion) return
@@ -29,7 +32,7 @@ export function HeroSection() {
         },
       })
 
-      gsap.to(content, {
+      gsap.to(contentEl, {
         yPercent: -12,
         opacity: 0,
         ease: 'none',
@@ -70,10 +73,11 @@ export function HeroSection() {
     >
       <div ref={bgRef} className="absolute inset-0 will-change-transform">
         <img
-          src={encodeURI(HERO_IMAGE)}
+          src={resolveProductImageUrl(hero.imageUrl)}
           alt="Trang Tran Hair Salon"
           fetchPriority="high"
           decoding="async"
+          referrerPolicy="no-referrer"
           className="media-cover min-h-[115%] min-w-full object-[center_22%]"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/35 via-zinc-950/55 to-zinc-950" />
@@ -85,21 +89,21 @@ export function HeroSection() {
         className="relative z-10 flex min-h-[100dvh] flex-col items-center justify-center px-5 pb-16 pt-[calc(var(--header-height)+2rem)] text-center sm:px-8"
       >
         <p className="hero-tagline mb-5 section-eyebrow tracking-[0.36em]">
-          Hair Salon · Editorial
+          {hero.eyebrow}
         </p>
         <h1 className="overflow-hidden">
           <span
             className="hero-title-line block font-serif font-light text-zinc-50"
             style={{ fontSize: 'clamp(2.75rem, 7vw + 0.5rem, 5.5rem)' }}
           >
-            Trang Tran
+            {hero.title}
           </span>
         </h1>
         <p
           className="hero-tagline mt-5 max-w-md font-serif italic text-zinc-300/90"
           style={{ fontSize: 'clamp(1.0625rem, 1.5vw + 0.75rem, 1.5rem)' }}
         >
-          {SALON_TAGLINE}
+          {hero.tagline}
         </p>
         <div className="hero-tagline mt-14">
           <span className="mx-auto block h-10 w-px bg-gradient-to-b from-gold/50 to-transparent" />

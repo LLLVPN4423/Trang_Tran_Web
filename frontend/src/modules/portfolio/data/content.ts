@@ -42,20 +42,12 @@ export const LOOKBOOK_ITEMS = [
   { id: 11, label: 'Trải nghiệm salon', aspect: 'wide', speed: 0.13, image: '/images/salon-tour/Salon Tour10.jpg' },
 ] as const
 
-export const SERVICE_HIGHLIGHTS = [
-  { name: 'Cắt tóc', range: '200K — 300K' },
-  { name: 'Gội & Tạo kiểu', range: '50K — 150K' },
-  { name: 'Uốn / Duỗi', range: '350K — 1.6M' },
-  { name: 'Nhuộm / Tẩy', range: '450K — 1.6M' },
-  { name: 'Balayage', range: '4M — 6M' },
-  { name: 'Phục hồi', range: '300K — 1.8M' },
-]
-
 export const SOCIAL_LINKS = {
   facebook: 'https://www.facebook.com/trang.tran.352944?locale=vi_VN',
   instagram: 'https://www.instagram.com/trang_tran_hair',
   threads: 'https://www.threads.com/@trang_tran_hair',
   tiktok: 'https://www.tiktok.com/@trangtranhair',
+  about: 'https://trang-tran-portfolio.vercel.app/',
 } as const
 
 export const CONTACT = {

@@ -1,6 +1,9 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '@/shared/auth/AuthProvider'
 import { useCartStore } from '@/shared/store/cartStore'
+import { selectCartItemCount } from '@/shared/store/cartSelectors'
+import { useServiceCartStore } from '@/shared/store/serviceCartStore'
+import { selectServiceCartCount } from '@/shared/store/serviceCartSelectors'
 
 export interface SidebarNavItem {
   to: string
@@ -13,8 +16,10 @@ export interface SidebarNavItem {
 
 const MAIN_NAV: SidebarNavItem[] = [
   { to: '/', label: 'Trang chủ', end: true },
-  { to: '/catalog', label: 'Bảng giá' },
-  { to: '/booking', label: 'Giỏ hàng & Thanh toán' },
+  { to: '/catalog', label: 'Bảng giá dịch vụ' },
+  { to: '/appointment', label: 'Đặt lịch dịch vụ' },
+  { to: '/shop', label: 'Mua sản phẩm' },
+  { to: '/booking', label: 'Thanh toán' },
   { to: '/account', label: 'Tài khoản', guestOnly: false },
   { to: '/account/loyalty', label: 'Tích điểm' },
 ]
@@ -25,6 +30,7 @@ const ADMIN_NAV: SidebarNavItem[] = [
   { to: '/admin/appointments', label: 'Lịch hẹn', adminOnly: true },
   { to: '/admin/services', label: 'Dịch vụ', adminOnly: true },
   { to: '/admin/products', label: 'Sản phẩm', adminOnly: true },
+  { to: '/admin/site-content', label: 'Trang chủ', adminOnly: true },
   { to: '/admin/promotions', label: 'Khuyến mãi', adminOnly: true },
   { to: '/admin/customers', label: 'Khách hàng', adminOnly: true },
 ]
@@ -36,7 +42,8 @@ interface Props {
 
 export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
   const { user, isAdmin, logout } = useAuth()
-  const itemCount = useCartStore((s) => s.itemCount())
+  const itemCount = useCartStore(selectCartItemCount)
+  const serviceCount = useServiceCartStore(selectServiceCartCount)
 
   const items = variant === 'admin' ? ADMIN_NAV : MAIN_NAV
 
@@ -67,7 +74,8 @@ export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
             )
           }
 
-          const badge = item.to === '/booking' ? itemCount : item.badge
+          const badge =
+            item.to === '/booking' ? itemCount : item.to === '/appointment' ? serviceCount : item.badge
 
           return (
             <NavLink

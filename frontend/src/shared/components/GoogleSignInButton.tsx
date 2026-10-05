@@ -1,35 +1,48 @@
 import { useState } from 'react'
 import { useAuth } from '@/shared/auth/AuthProvider'
 import { getAuthErrorMessage } from '@/shared/auth/authErrors'
+import { isInAppBrowser } from '@/shared/auth/firebase'
 
 export function GoogleSignInButton() {
-  const { loginWithGoogle } = useAuth()
+  const { loginWithGoogle, isRedirectProcessing } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const inApp = isInAppBrowser()
 
   const handleClick = async () => {
     setError(null)
     setLoading(true)
     try {
       await loginWithGoogle()
+      setLoading(false)
     } catch (err) {
       setError(getAuthErrorMessage(err))
-    } finally {
       setLoading(false)
     }
   }
 
+  const busy = loading || isRedirectProcessing
+
   return (
     <div>
+      {inApp && (
+        <p className="mb-3 rounded-sm border border-amber-900/50 bg-amber-950/20 px-4 py-3 text-sm text-amber-200">
+          Bạn đang mở link trong app Zalo/Facebook. Google không cho đăng nhập ở đây — bấm <strong>⋯</strong> →{' '}
+          <strong>Mở bằng Chrome/Safari</strong>, hoặc gõ <strong>trangtran-hair.pages.dev</strong> vào trình duyệt.
+        </p>
+      )}
+
       <button
         type="button"
         onClick={handleClick}
-        disabled={loading}
+        disabled={busy || inApp}
         className="flex w-full items-center justify-center gap-3 border border-zinc-700 bg-zinc-900/50 py-4 text-xs font-medium uppercase tracking-[0.25em] text-zinc-200 transition hover:border-zinc-600 hover:bg-zinc-900 disabled:opacity-50"
       >
         <GoogleIcon />
-        {loading ? 'Đang kết nối...' : 'Tiếp tục với Google'}
+        {busy ? 'Đang kết nối Google...' : 'Tiếp tục với Google'}
       </button>
+
       {error && (
         <p className="mt-3 rounded-sm border border-red-900/50 bg-red-950/20 px-4 py-3 text-sm text-red-300">
           {error}

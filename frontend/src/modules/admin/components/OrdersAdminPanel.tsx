@@ -1,9 +1,24 @@
-import { useCallback, useEffect, useState } from 'react'
-import { fetchOrders, updateOrderStatus } from '@/shared/api/endpoints'
+import { useCallback, useState } from 'react'
+import {
+  approveOrderFulfillment,
+  fetchOrders,
+  markOrderDelivered,
+  updateOrderShipment,
+  updateOrderStatus,
+} from '@/shared/api/endpoints'
 import type { OrderResponse, OrderStatus } from '@/shared/api/types'
 import { formatVnd } from '@/shared/api/types'
+import {
+  FULFILLMENT_METHOD_LABELS,
+  normalizeFulfillmentMethod,
+  normalizePaymentMethod,
+  PAYMENT_METHOD_LABELS,
+} from '@/shared/lib/orderLabels'
+import { FULFILLMENT_STATUS_LABELS, getShippingLabel } from '@/shared/lib/orderFulfillment'
 import { ApiErrorState } from '@/shared/components/ApiErrorState'
 import { LoadingState } from '@/shared/components/LoadingState'
+import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
+import { AdminLiveBadge, AdminNewItemsBanner } from './AdminLiveBadge'
 
 const STATUS_OPTIONS: { value: OrderStatus | ''; label: string }[] = [
   { value: '', label: 'Tất cả' },
@@ -19,46 +34,123 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
 }
 
 export function OrdersAdminPanel() {
-  const [orders, setOrders] = useState<OrderResponse[]>([])
   const [status, setStatus] = useState<OrderStatus | ''>('')
   const [phone, setPhone] = useState('')
   const [expandedId, setExpandedId] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [updatingId, setUpdatingId] = useState<string | null>(null)
+  const [trackingDrafts, setTrackingDrafts] = useState<Record<string, { code: string; url: string; carrier: string }>>({})
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      setOrders(await fetchOrders({
+  const fetchFn = useCallback(
+    () =>
+      fetchOrders({
         status: status || undefined,
         phone: phone.trim() || undefined,
-      }))
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Lỗi tải đơn hàng')
-    } finally {
-      setLoading(false)
-    }
-  }, [status, phone])
+        live: true,
+      }),
+    [status, phone],
+  )
 
-  useEffect(() => {
-    load()
-  }, [load])
+  const {
+    items: orders,
+    initialLoading,
+    refreshing,
+    error,
+    lastUpdated,
+    newIds,
+    refresh,
+    dismissNew,
+    dismissAllNew,
+    setItems: setOrders,
+  } = useAdminLiveRefresh(fetchFn, `${status}|${phone.trim()}`)
 
   const handleStatusChange = async (id: string, next: OrderStatus) => {
+    setUpdatingId(id)
     try {
-      await updateOrderStatus(id, next)
-      load()
+      const updated = await updateOrderStatus(id, next)
+      dismissNew(id)
+      setOrders((prev) => {
+        if (status && status !== next) {
+          return prev.filter((o) => o.id !== id)
+        }
+        return prev.map((o) => (o.id === id ? updated : o))
+      })
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Không thể cập nhật')
+    } finally {
+      setUpdatingId(null)
     }
   }
 
-  if (loading) return <LoadingState label="Đang tải đơn hàng..." />
-  if (error) return <ApiErrorState message={error} onRetry={load} />
+  const patchOrder = (updated: OrderResponse) => {
+    dismissNew(updated.id)
+    setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)))
+  }
+
+  const handleApprove = async (id: string) => {
+    setUpdatingId(id)
+    try {
+      patchOrder(await approveOrderFulfillment(id))
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Không thể duyệt')
+    } finally {
+      setUpdatingId(null)
+    }
+  }
+
+  const handleShipment = async (id: string) => {
+    const draft = trackingDrafts[id]
+    if (!draft?.code.trim()) {
+      alert('Nhập mã vận đơn')
+      return
+    }
+    setUpdatingId(id)
+    try {
+      patchOrder(
+        await updateOrderShipment(id, {
+          trackingCode: draft.code.trim(),
+          trackingUrl: draft.url.trim() || null,
+          carrier: draft.carrier.trim() || null,
+        }),
+      )
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Không thể cập nhật vận đơn')
+    } finally {
+      setUpdatingId(null)
+    }
+  }
+
+  const handleDelivered = async (id: string) => {
+    setUpdatingId(id)
+    try {
+      patchOrder(await markOrderDelivered(id))
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Không thể đánh dấu đã giao')
+    } finally {
+      setUpdatingId(null)
+    }
+  }
+
+  const applyFilters = () => void refresh(true)
+
+  if (initialLoading) return <LoadingState label="Đang tải đơn hàng..." />
+  if (error) return <ApiErrorState message={error} onRetry={() => refresh(true)} />
 
   return (
     <div className="space-y-6">
+      <AdminLiveBadge
+        lastUpdated={lastUpdated}
+        refreshing={refreshing}
+        newCount={newIds.size}
+        onRefresh={() => refresh(true)}
+        onDismissNew={dismissAllNew}
+      />
+
+      <AdminNewItemsBanner
+        count={newIds.size}
+        label="đơn hàng"
+        onDismiss={dismissAllNew}
+      />
+
       <div className="flex flex-wrap gap-4">
         <select
           value={status}
@@ -72,10 +164,11 @@ export function OrdersAdminPanel() {
         <input
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
           placeholder="Lọc SĐT..."
           className="border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300"
         />
-        <button type="button" onClick={load} className="text-xs uppercase tracking-widest text-gold">
+        <button type="button" onClick={applyFilters} className="text-xs uppercase tracking-widest text-gold">
           Lọc
         </button>
       </div>
@@ -83,58 +176,198 @@ export function OrdersAdminPanel() {
       <p className="text-sm text-zinc-500">{orders.length} đơn hàng</p>
 
       <div className="space-y-3">
-        {orders.map((order) => (
-          <article key={order.id} className="border border-zinc-800">
-            <button
-              type="button"
-              onClick={() => setExpandedId(expandedId === order.id ? null : order.id)}
-              className="flex w-full flex-wrap items-center justify-between gap-3 px-4 py-4 text-left hover:bg-zinc-900/30"
+        {orders.map((order) => {
+          const isNew = newIds.has(order.id)
+          return (
+            <article
+              key={order.id}
+              className={`border transition-colors ${
+                isNew
+                  ? 'border-emerald-700/60 bg-emerald-950/20 ring-1 ring-emerald-700/30'
+                  : 'border-zinc-800'
+              }`}
             >
-              <div>
-                <p className="font-mono text-sm text-gold-muted">{order.paymentCode}</p>
-                <p className="mt-1 text-zinc-200">{order.customerName} · {order.customerPhone}</p>
-              </div>
-              <div className="text-right">
-                <p className="font-serif text-lg text-zinc-100">{formatVnd(order.totalAmount)}</p>
-                <p className="text-xs text-zinc-500">{STATUS_LABELS[order.status]}</p>
-              </div>
-            </button>
-
-            {expandedId === order.id && (
-              <div className="border-t border-zinc-800 px-4 py-4 text-sm text-zinc-400">
-                <p className="text-xs text-zinc-600">
-                  {new Date(order.createdAt).toLocaleString('vi-VN')}
-                  {order.customerEmail ? ` · ${order.customerEmail}` : ''}
-                </p>
-                <ul className="mt-3 space-y-1">
-                  {order.items.map((item) => (
-                    <li key={`${item.itemId}-${item.hairSize}`}>
-                      {item.name} × {item.quantity}
-                      {item.hairSize ? ` (${item.hairSize})` : ''} — {formatVnd(item.subtotal)}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-3 flex flex-wrap gap-4 text-xs">
-                  {order.promotionCode && <span>Mã KM: {order.promotionCode}</span>}
-                  {order.discountAmount > 0 && <span>Giảm: {formatVnd(order.discountAmount)}</span>}
-                  {order.pointsRedeemed > 0 && <span>Dùng {order.pointsRedeemed} điểm</span>}
-                  {order.pointsEarned > 0 && order.status === 'Paid' && <span>+{order.pointsEarned} điểm</span>}
-                </div>
-                {order.notes && <p className="mt-3 text-zinc-500">Ghi chú: {order.notes}</p>}
-                {order.status === 'Pending' && (
-                  <div className="mt-4 flex gap-3">
-                    <button type="button" onClick={() => handleStatusChange(order.id, 'Paid')} className="text-xs text-emerald-400 hover:underline">
-                      Xác nhận đã thanh toán
-                    </button>
-                    <button type="button" onClick={() => handleStatusChange(order.id, 'Cancelled')} className="text-xs text-red-400 hover:underline">
-                      Hủy đơn
-                    </button>
+              <button
+                type="button"
+                onClick={() => {
+                  dismissNew(order.id)
+                  setExpandedId(expandedId === order.id ? null : order.id)
+                }}
+                className="flex w-full flex-wrap items-center justify-between gap-3 px-4 py-4 text-left hover:bg-zinc-900/30"
+              >
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-mono text-sm text-gold-muted">{order.paymentCode}</p>
+                    {isNew && (
+                      <span className="rounded-sm bg-emerald-900/60 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-emerald-400">
+                        Mới
+                      </span>
+                    )}
                   </div>
-                )}
-              </div>
-            )}
-          </article>
-        ))}
+                  <p className="mt-1 text-zinc-200">{order.customerName} · {order.customerPhone}</p>
+                  <p className="mt-1 text-xs text-zinc-600">
+                    {PAYMENT_METHOD_LABELS[normalizePaymentMethod(order.paymentMethod)]}
+                    {' · '}
+                    {FULFILLMENT_METHOD_LABELS[normalizeFulfillmentMethod(order.fulfillmentMethod)]}
+                    {order.fulfillmentMethod === 'Delivery' && order.fulfillmentStatus !== 'None' && (
+                      <> · {FULFILLMENT_STATUS_LABELS[order.fulfillmentStatus]}</>
+                    )}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-serif text-lg text-zinc-100">{formatVnd(order.totalAmount)}</p>
+                  <p className="text-xs text-zinc-500">{STATUS_LABELS[order.status]}</p>
+                </div>
+              </button>
+
+              {expandedId === order.id && (
+                <div className="border-t border-zinc-800 px-4 py-4 text-sm text-zinc-400">
+                  <p className="text-xs text-zinc-600">
+                    {new Date(order.createdAt).toLocaleString('vi-VN')}
+                    {order.customerEmail ? ` · ${order.customerEmail}` : ''}
+                  </p>
+                  <ul className="mt-3 space-y-1">
+                    {order.items.map((item) => (
+                      <li key={`${item.itemId}-${item.hairSize}`}>
+                        {item.name} × {item.quantity}
+                        {item.hairSize ? ` (${item.hairSize})` : ''} — {formatVnd(item.subtotal)}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-3 flex flex-wrap gap-4 text-xs">
+                    {order.promotionCode && <span>Mã KM: {order.promotionCode}</span>}
+                    {order.discountAmount > 0 && <span>Giảm: {formatVnd(order.discountAmount)}</span>}
+                    {order.pointsRedeemed > 0 && <span>Dùng {order.pointsRedeemed} điểm</span>}
+                    {order.pointsEarned > 0 && order.status === 'Paid' && <span>+{order.pointsEarned} điểm</span>}
+                  </div>
+                  {order.notes && <p className="mt-3 text-zinc-500">Ghi chú: {order.notes}</p>}
+                  {order.deliveryAddress && (
+                    <p className="mt-2 text-zinc-500">Địa chỉ giao: {order.deliveryAddress}</p>
+                  )}
+                  {order.shippingFee > 0 && (
+                    <p className="mt-2 text-zinc-500">
+                      Phí ship: {formatVnd(order.shippingFee)}
+                      {order.shippingZone ? ` · ${getShippingLabel(order.shippingZone)}` : ''}
+                    </p>
+                  )}
+                  {order.trackingCode && (
+                    <p className="mt-2 text-zinc-500">
+                      Vận đơn: {order.carrier ? `${order.carrier} · ` : ''}
+                      <span className="font-mono text-zinc-400">{order.trackingCode}</span>
+                      {order.trackingUrl && (
+                        <>
+                          {' · '}
+                          <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="text-gold hover:underline">
+                            Link
+                          </a>
+                        </>
+                      )}
+                    </p>
+                  )}
+                  {order.fulfillmentStatus === 'Disputed' && (
+                    <p className="mt-2 text-red-400">
+                      Khiếu nại: {order.disputeReason}
+                      {order.disputeNotes ? ` — ${order.disputeNotes}` : ''}
+                    </p>
+                  )}
+
+                  {order.fulfillmentMethod === 'Delivery' && order.fulfillmentStatus === 'AwaitingApproval' && (
+                    <div className="mt-4">
+                      <button
+                        type="button"
+                        disabled={updatingId === order.id}
+                        onClick={() => void handleApprove(order.id)}
+                        className="text-xs text-amber-300 hover:underline disabled:opacity-50"
+                      >
+                        Duyệt COD — sẵn sàng giao
+                      </button>
+                    </div>
+                  )}
+
+                  {order.fulfillmentMethod === 'Delivery' && order.fulfillmentStatus === 'Approved' && (
+                    <div className="mt-4 space-y-2">
+                      <p className="text-xs uppercase tracking-widest text-zinc-600">Nhập vận đơn & giao hàng</p>
+                      <input
+                        placeholder="Mã vận đơn SPX"
+                        value={trackingDrafts[order.id]?.code ?? ''}
+                        onChange={(e) =>
+                          setTrackingDrafts((prev) => ({
+                            ...prev,
+                            [order.id]: {
+                              code: e.target.value,
+                              url: prev[order.id]?.url ?? '',
+                              carrier: prev[order.id]?.carrier ?? 'SPX',
+                            },
+                          }))
+                        }
+                        className="w-full border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300"
+                      />
+                      <input
+                        placeholder="Link theo dõi (tuỳ chọn)"
+                        value={trackingDrafts[order.id]?.url ?? ''}
+                        onChange={(e) =>
+                          setTrackingDrafts((prev) => ({
+                            ...prev,
+                            [order.id]: {
+                              code: prev[order.id]?.code ?? '',
+                              url: e.target.value,
+                              carrier: prev[order.id]?.carrier ?? 'SPX',
+                            },
+                          }))
+                        }
+                        className="w-full border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300"
+                      />
+                      <button
+                        type="button"
+                        disabled={updatingId === order.id}
+                        onClick={() => void handleShipment(order.id)}
+                        className="text-xs text-emerald-400 hover:underline disabled:opacity-50"
+                      >
+                        Xác nhận đã giao cho đơn vị vận chuyển
+                      </button>
+                    </div>
+                  )}
+
+                  {order.fulfillmentMethod === 'Delivery' && order.fulfillmentStatus === 'Shipped' && (
+                    <div className="mt-4">
+                      <button
+                        type="button"
+                        disabled={updatingId === order.id}
+                        onClick={() => void handleDelivered(order.id)}
+                        className="text-xs text-emerald-400 hover:underline disabled:opacity-50"
+                      >
+                        Đánh dấu đã giao tới khách
+                      </button>
+                    </div>
+                  )}
+
+                  {order.status === 'Pending' && (
+                    <div className="mt-4 flex gap-3">
+                      <button
+                        type="button"
+                        disabled={updatingId === order.id}
+                        onClick={() => handleStatusChange(order.id, 'Paid')}
+                        className="text-xs text-emerald-400 hover:underline disabled:opacity-50"
+                      >
+                        {normalizePaymentMethod(order.paymentMethod) === 'COD'
+                          ? 'Xác nhận đã thu tiền (COD)'
+                          : 'Xác nhận đã chuyển khoản'}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={updatingId === order.id}
+                        onClick={() => handleStatusChange(order.id, 'Cancelled')}
+                        className="text-xs text-red-400 hover:underline disabled:opacity-50"
+                      >
+                        Hủy đơn
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </article>
+          )
+        })}
       </div>
     </div>
   )

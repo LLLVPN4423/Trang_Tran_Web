@@ -1,8 +1,11 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { fetchAppointments, updateAppointmentStatus } from '@/shared/api/endpoints'
-import type { AppointmentResponse, AppointmentStatus } from '@/shared/api/types'
+import type { AppointmentStatus } from '@/shared/api/types'
 import { ApiErrorState } from '@/shared/components/ApiErrorState'
 import { LoadingState } from '@/shared/components/LoadingState'
+import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
+import { AdminLiveBadge, AdminNewItemsBanner } from './AdminLiveBadge'
+import { AppointmentNotesView } from '@/shared/lib/appointmentNotes'
 
 const STATUS_OPTIONS: { value: AppointmentStatus | ''; label: string }[] = [
   { value: '', label: 'Tất cả' },
@@ -21,41 +24,64 @@ const SERVICE_LABELS: Record<string, string> = {
 }
 
 export function AppointmentsAdminPanel() {
-  const [items, setItems] = useState<AppointmentResponse[]>([])
   const [status, setStatus] = useState<AppointmentStatus | ''>('Pending')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [updatingId, setUpdatingId] = useState<string | null>(null)
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      setItems(await fetchAppointments(status || undefined))
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Lỗi tải lịch hẹn')
-    } finally {
-      setLoading(false)
-    }
-  }, [status])
+  const fetchFn = useCallback(
+    () => fetchAppointments(status || undefined, { live: true }),
+    [status],
+  )
 
-  useEffect(() => {
-    load()
-  }, [load])
+  const {
+    items,
+    initialLoading,
+    refreshing,
+    error,
+    lastUpdated,
+    newIds,
+    refresh,
+    dismissNew,
+    dismissAllNew,
+    setItems,
+  } = useAdminLiveRefresh(fetchFn, status)
 
   const handleStatus = async (id: string, next: AppointmentStatus) => {
+    setUpdatingId(id)
     try {
       await updateAppointmentStatus(id, next)
-      load()
+      dismissNew(id)
+      setItems((prev) => {
+        if (status && status !== next) {
+          return prev.filter((a) => a.id !== id)
+        }
+        return prev.map((a) => (a.id === id ? { ...a, status: next } : a))
+      })
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Không thể cập nhật')
+    } finally {
+      setUpdatingId(null)
     }
   }
 
-  if (loading) return <LoadingState label="Đang tải lịch hẹn..." />
-  if (error) return <ApiErrorState message={error} onRetry={load} />
+  if (initialLoading) return <LoadingState label="Đang tải lịch hẹn..." />
+  if (error) return <ApiErrorState message={error} onRetry={() => refresh(true)} />
 
   return (
     <div className="space-y-6">
+      <AdminLiveBadge
+        lastUpdated={lastUpdated}
+        refreshing={refreshing}
+        newCount={newIds.size}
+        onRefresh={() => refresh(true)}
+        onDismissNew={dismissAllNew}
+      />
+
+      <AdminNewItemsBanner
+        count={newIds.size}
+        label="lịch hẹn"
+        onDismiss={dismissAllNew}
+      />
+
       <div className="flex flex-wrap items-center gap-4">
         <select
           value={status}
@@ -71,39 +97,71 @@ export function AppointmentsAdminPanel() {
 
       <div className="space-y-4">
         {items.length === 0 && <p className="text-zinc-500">Không có lịch hẹn.</p>}
-        {items.map((item) => (
-          <article key={item.id} className="border border-zinc-800 p-4 sm:p-6">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="font-serif text-xl text-zinc-200">{item.customerName}</p>
-                <p className="mt-1 text-sm text-zinc-400">{item.customerPhone}</p>
-                <p className="mt-2 text-sm text-gold-muted">
-                  {SERVICE_LABELS[item.serviceInterest] ?? item.serviceInterest}
-                </p>
-                {item.notes && <p className="mt-2 text-sm text-zinc-500">{item.notes}</p>}
-                <p className="mt-2 text-xs text-zinc-600">
-                  {new Date(item.createdAt).toLocaleString('vi-VN')}
-                </p>
+        {items.map((item) => {
+          const isNew = newIds.has(item.id)
+          return (
+            <article
+              key={item.id}
+              className={`border p-4 transition-colors sm:p-6 ${
+                isNew
+                  ? 'border-emerald-700/60 bg-emerald-950/20 ring-1 ring-emerald-700/30'
+                  : 'border-zinc-800'
+              }`}
+            >
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-serif text-xl text-zinc-200">{item.customerName}</p>
+                    {isNew && (
+                      <span className="rounded-sm bg-emerald-900/60 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-emerald-400">
+                        Mới
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1 text-sm text-zinc-400">{item.customerPhone}</p>
+                  <p className="mt-2 text-sm text-gold-muted">
+                    {SERVICE_LABELS[item.serviceInterest] ?? item.serviceInterest}
+                  </p>
+                  {item.notes && <AppointmentNotesView notes={item.notes} className="mt-3" />}
+                  <p className="mt-2 text-xs text-zinc-600">
+                    {new Date(item.createdAt).toLocaleString('vi-VN')}
+                  </p>
+                </div>
+                <span className="text-xs uppercase tracking-wider text-zinc-500">{item.status}</span>
               </div>
-              <span className="text-xs uppercase tracking-wider text-zinc-500">{item.status}</span>
-            </div>
-            {item.status === 'Pending' && (
-              <div className="mt-4 flex flex-wrap gap-3">
-                <button type="button" onClick={() => handleStatus(item.id, 'Confirmed')} className="text-xs uppercase tracking-widest text-emerald-400">
-                  Xác nhận
+              {item.status === 'Pending' && (
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    disabled={updatingId === item.id}
+                    onClick={() => handleStatus(item.id, 'Confirmed')}
+                    className="text-xs uppercase tracking-widest text-emerald-400 disabled:opacity-50"
+                  >
+                    Xác nhận
+                  </button>
+                  <button
+                    type="button"
+                    disabled={updatingId === item.id}
+                    onClick={() => handleStatus(item.id, 'Cancelled')}
+                    className="text-xs uppercase tracking-widest text-red-400 disabled:opacity-50"
+                  >
+                    Từ chối
+                  </button>
+                </div>
+              )}
+              {item.status === 'Confirmed' && (
+                <button
+                  type="button"
+                  disabled={updatingId === item.id}
+                  onClick={() => handleStatus(item.id, 'Completed')}
+                  className="mt-4 text-xs uppercase tracking-widest text-gold disabled:opacity-50"
+                >
+                  Đánh dấu hoàn tất
                 </button>
-                <button type="button" onClick={() => handleStatus(item.id, 'Cancelled')} className="text-xs uppercase tracking-widest text-red-400">
-                  Từ chối
-                </button>
-              </div>
-            )}
-            {item.status === 'Confirmed' && (
-              <button type="button" onClick={() => handleStatus(item.id, 'Completed')} className="mt-4 text-xs uppercase tracking-widest text-gold">
-                Đánh dấu hoàn tất
-              </button>
-            )}
-          </article>
-        ))}
+              )}
+            </article>
+          )
+        })}
       </div>
     </div>
   )

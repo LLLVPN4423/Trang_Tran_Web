@@ -1,7 +1,7 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
 import type { ApiErrorResponse } from './types'
 
-const TIMEOUT_MS = 15_000
+const TIMEOUT_MS = 30_000
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? '',
@@ -29,9 +29,23 @@ apiClient.interceptors.request.use(async (config: InternalAxiosRequestConfig) =>
 
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: AxiosError<ApiErrorResponse>) => {
+  async (error: AxiosError<ApiErrorResponse>) => {
+    const config = error.config as (InternalAxiosRequestConfig & { _coldStartRetry?: boolean }) | undefined
+
+    // Cloud Run scale-to-zero: first request may timeout — retry GET once.
+    if (
+      config &&
+      !config._coldStartRetry &&
+      error.code === 'ECONNABORTED' &&
+      (config.method ?? 'get').toLowerCase() === 'get'
+    ) {
+      config._coldStartRetry = true
+      await new Promise((resolve) => setTimeout(resolve, 2500))
+      return apiClient.request(config)
+    }
+
     if (error.code === 'ECONNABORTED') {
-      return Promise.reject(new Error('Kết nối quá thời gian chờ. Vui lòng thử lại.'))
+      return Promise.reject(new Error('Kết nối quá thời gian chờ. API đang khởi động — thử lại sau vài giây.'))
     }
     if (!error.response) {
       return Promise.reject(new Error('Không thể kết nối máy chủ. Kiểm tra mạng hoặc thử lại sau.'))

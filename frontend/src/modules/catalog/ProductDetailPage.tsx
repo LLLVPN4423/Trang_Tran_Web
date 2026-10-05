@@ -4,6 +4,7 @@ import { fetchProduct } from '@/shared/api/endpoints'
 import type { ProductResponse } from '@/shared/api/types'
 import { formatVnd } from '@/shared/api/types'
 import { useCartStore } from '@/shared/store/cartStore'
+import { selectCartItemCount } from '@/shared/store/cartSelectors'
 import { ModuleErrorBoundary } from '@/shared/components/ModuleErrorBoundary'
 import { PageLayout } from '@/shared/components/PageLayout'
 import { LoadingState } from '@/shared/components/LoadingState'
@@ -27,7 +28,7 @@ function ProductDetailContent() {
   const [error, setError] = useState<string | null>(null)
   const [added, setAdded] = useState(false)
   const addProduct = useCartStore((s) => s.addProduct)
-  const itemCount = useCartStore((s) => s.itemCount())
+  const itemCount = useCartStore(selectCartItemCount)
 
   useEffect(() => {
     if (!id) return
@@ -52,8 +53,8 @@ function ProductDetailContent() {
   return (
     <PageLayout>
       <div className="section-inner px-5 py-12 sm:px-8 sm:py-16">
-        <Link to="/catalog" className="text-xs uppercase tracking-widest text-gold-muted hover:text-gold">
-          ← Quay lại catalog
+        <Link to="/shop" className="text-xs uppercase tracking-widest text-gold-muted hover:text-gold">
+          ← Quay lại cửa hàng Moroccanoil
         </Link>
 
         {loading && <div className="mt-10"><LoadingState label="Đang tải sản phẩm..." /></div>}

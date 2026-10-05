@@ -262,6 +262,13 @@ Script `set-admin.js` (xem OPERATIONS_GUIDE.md mục 3). User phải **đăng xu
 
 ## 10. Deploy production
 
+| Phương án | Tài liệu |
+|-----------|----------|
+| **B — Test / ~0đ** (Cloudflare Pages + Cloud Run) | [DEPLOY.md](./DEPLOY.md#phần-1--phương-án-b-deploy-test--0đ) |
+| **A — Dài hạn** (VPS + Docker) | [DEPLOY.md — Phần 2](./DEPLOY.md#phần-2--phương-án-dài-hạn-vận-hành--mở-rộng) |
+
+**VPS Docker (tóm tắt):**
+
 ```bash
 copy .env.production.example .env
 # Điền Firebase, SePay, domain

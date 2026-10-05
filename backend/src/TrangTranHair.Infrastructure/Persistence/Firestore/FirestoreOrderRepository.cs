@@ -90,6 +90,30 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
             PointsEarned = doc.PointsEarned,
             TotalAmount = (decimal)doc.TotalAmount,
             Status = Enum.Parse<OrderStatus>(doc.Status),
+            PaymentMethod = string.IsNullOrWhiteSpace(doc.PaymentMethod)
+                ? PaymentMethod.BankTransfer
+                : Enum.Parse<PaymentMethod>(doc.PaymentMethod),
+            FulfillmentMethod = string.IsNullOrWhiteSpace(doc.FulfillmentMethod)
+                ? FulfillmentMethod.Pickup
+                : Enum.Parse<FulfillmentMethod>(doc.FulfillmentMethod),
+            DeliveryAddress = doc.DeliveryAddress,
+            ShippingFee = doc.ShippingFee != 0 ? (decimal)doc.ShippingFee : 0,
+            ShippingZone = string.IsNullOrWhiteSpace(doc.ShippingZone)
+                ? null
+                : Enum.Parse<ShippingZone>(doc.ShippingZone),
+            FulfillmentStatus = string.IsNullOrWhiteSpace(doc.FulfillmentStatus)
+                ? FulfillmentStatus.None
+                : Enum.Parse<FulfillmentStatus>(doc.FulfillmentStatus),
+            TrackingCode = doc.TrackingCode,
+            TrackingUrl = doc.TrackingUrl,
+            Carrier = doc.Carrier,
+            ApprovedAt = doc.ApprovedAt is null ? null : FirestoreMapper.FromTimestamp(doc.ApprovedAt),
+            ShippedAt = doc.ShippedAt is null ? null : FirestoreMapper.FromTimestamp(doc.ShippedAt),
+            DeliveredAt = doc.DeliveredAt is null ? null : FirestoreMapper.FromTimestamp(doc.DeliveredAt),
+            CompletedAt = doc.CompletedAt is null ? null : FirestoreMapper.FromTimestamp(doc.CompletedAt),
+            DisputeReason = doc.DisputeReason,
+            DisputeNotes = doc.DisputeNotes,
+            DisputedAt = doc.DisputedAt is null ? null : FirestoreMapper.FromTimestamp(doc.DisputedAt),
             PaymentCode = doc.PaymentCode,
             AccessToken = doc.AccessToken ?? string.Empty,
             StockReserved = doc.StockReserved,
@@ -125,6 +149,22 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
             PointsEarned = order.PointsEarned,
             TotalAmount = (double)order.TotalAmount,
             Status = order.Status.ToString(),
+            PaymentMethod = order.PaymentMethod.ToString(),
+            FulfillmentMethod = order.FulfillmentMethod.ToString(),
+            DeliveryAddress = order.DeliveryAddress,
+            ShippingFee = (double)order.ShippingFee,
+            ShippingZone = order.ShippingZone?.ToString(),
+            FulfillmentStatus = order.FulfillmentStatus.ToString(),
+            TrackingCode = order.TrackingCode,
+            TrackingUrl = order.TrackingUrl,
+            Carrier = order.Carrier,
+            ApprovedAt = order.ApprovedAt is null ? null : FirestoreMapper.ToTimestamp(order.ApprovedAt.Value),
+            ShippedAt = order.ShippedAt is null ? null : FirestoreMapper.ToTimestamp(order.ShippedAt.Value),
+            DeliveredAt = order.DeliveredAt is null ? null : FirestoreMapper.ToTimestamp(order.DeliveredAt.Value),
+            CompletedAt = order.CompletedAt is null ? null : FirestoreMapper.ToTimestamp(order.CompletedAt.Value),
+            DisputeReason = order.DisputeReason,
+            DisputeNotes = order.DisputeNotes,
+            DisputedAt = order.DisputedAt is null ? null : FirestoreMapper.ToTimestamp(order.DisputedAt.Value),
             PaymentCode = order.PaymentCode,
             AccessToken = order.AccessToken,
             StockReserved = order.StockReserved,
@@ -180,6 +220,54 @@ internal sealed class OrderDocument
 
     [FirestoreProperty]
     public string Status { get; set; } = OrderStatus.Pending.ToString();
+
+    [FirestoreProperty]
+    public string? PaymentMethod { get; set; }
+
+    [FirestoreProperty]
+    public string? FulfillmentMethod { get; set; }
+
+    [FirestoreProperty]
+    public string? DeliveryAddress { get; set; }
+
+    [FirestoreProperty]
+    public double ShippingFee { get; set; }
+
+    [FirestoreProperty]
+    public string? ShippingZone { get; set; }
+
+    [FirestoreProperty]
+    public string? FulfillmentStatus { get; set; }
+
+    [FirestoreProperty]
+    public string? TrackingCode { get; set; }
+
+    [FirestoreProperty]
+    public string? TrackingUrl { get; set; }
+
+    [FirestoreProperty]
+    public string? Carrier { get; set; }
+
+    [FirestoreProperty]
+    public Timestamp? ApprovedAt { get; set; }
+
+    [FirestoreProperty]
+    public Timestamp? ShippedAt { get; set; }
+
+    [FirestoreProperty]
+    public Timestamp? DeliveredAt { get; set; }
+
+    [FirestoreProperty]
+    public Timestamp? CompletedAt { get; set; }
+
+    [FirestoreProperty]
+    public string? DisputeReason { get; set; }
+
+    [FirestoreProperty]
+    public string? DisputeNotes { get; set; }
+
+    [FirestoreProperty]
+    public Timestamp? DisputedAt { get; set; }
 
     [FirestoreProperty]
     public string PaymentCode { get; set; } = string.Empty;

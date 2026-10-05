@@ -18,6 +18,9 @@ import type {
   OrderResponse,
 } from '@/shared/api/types'
 import { formatVnd } from '@/shared/api/types'
+import { AppointmentNotesView } from '@/shared/lib/appointmentNotes'
+import { FULFILLMENT_STATUS_LABELS } from '@/shared/lib/orderFulfillment'
+import { FULFILLMENT_METHOD_LABELS, normalizeFulfillmentMethod } from '@/shared/lib/orderLabels'
 import { PageLayout } from '@/shared/components/PageLayout'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { ApiErrorState } from '@/shared/components/ApiErrorState'
@@ -491,7 +494,7 @@ function AppointmentsSection({
     <div className="mt-8">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="font-serif text-2xl text-zinc-200">Lịch hẹn của tôi</h2>
-        <Link to="/#contact" className="text-xs uppercase tracking-widest text-gold-muted hover:text-gold">
+        <Link to="/appointment" className="text-xs uppercase tracking-widest text-gold-muted hover:text-gold">
           Đặt lịch mới →
         </Link>
       </div>
@@ -500,8 +503,10 @@ function AppointmentsSection({
 
       {!loading && appointments.length === 0 && (
         <p className="text-zinc-500">
-          Chưa có lịch hẹn. Gửi yêu cầu tại form{' '}
-          <Link to="/#contact" className="text-gold-muted hover:text-gold">Đặt lịch</Link> trên trang chủ.
+          Chưa có lịch hẹn. Chọn dịch vụ tại{' '}
+          <Link to="/catalog" className="text-gold-muted hover:text-gold">bảng giá</Link>
+          {' '}và gửi lịch tại{' '}
+          <Link to="/appointment" className="text-gold-muted hover:text-gold">trang đặt lịch</Link>.
         </p>
       )}
 
@@ -513,7 +518,7 @@ function AppointmentsSection({
                 <p className="font-serif text-lg text-zinc-200">
                   {APPOINTMENT_SERVICE_LABELS[item.serviceInterest] ?? item.serviceInterest}
                 </p>
-                {item.notes && <p className="mt-2 text-sm text-zinc-500">{item.notes}</p>}
+                {item.notes && <AppointmentNotesView notes={item.notes} className="mt-3" />}
                 <dl className="mt-3 grid gap-1 text-xs text-zinc-600 sm:grid-cols-2">
                   <div>
                     <dt className="inline">Gửi lúc: </dt>
@@ -595,6 +600,13 @@ function OrderCard({
         <StatusBadge status={order.status} />
       </div>
 
+      {order.fulfillmentMethod === 'Delivery' && order.fulfillmentStatus !== 'None' && (
+        <p className="mt-2 text-xs text-zinc-500">
+          {FULFILLMENT_METHOD_LABELS[normalizeFulfillmentMethod(order.fulfillmentMethod)]}:{' '}
+          {FULFILLMENT_STATUS_LABELS[order.fulfillmentStatus]}
+        </p>
+      )}
+
       <ul className={`space-y-2 text-sm text-zinc-400 ${compact ? 'mt-3' : 'mt-5'}`}>
         {order.items.map((item) => (
           <li key={`${item.itemId}-${item.hairSize}`} className="flex flex-wrap justify-between gap-2">
@@ -631,6 +643,12 @@ function OrderCard({
               <dd>−</dd>
             </div>
           )}
+          {order.shippingFee > 0 && (
+            <div className="flex justify-between text-zinc-500">
+              <dt>Phí giao hàng</dt>
+              <dd className="tabular-nums">{formatVnd(order.shippingFee)}</dd>
+            </div>
+          )}
           <div className="flex justify-between font-serif text-lg text-zinc-100">
             <dt>Tổng cộng</dt>
             <dd className="tabular-nums">{formatVnd(order.totalAmount)}</dd>
@@ -658,6 +676,15 @@ function OrderCard({
           <span className="ml-auto font-serif text-lg tabular-nums text-zinc-200">{formatVnd(order.totalAmount)}</span>
         )}
       </div>
+
+      {!compact && (
+        <Link
+          to={`/orders/${order.id}`}
+          className="mt-4 inline-block text-xs uppercase tracking-widest text-gold-muted hover:text-gold"
+        >
+          Chi tiết & theo dõi
+        </Link>
+      )}
     </article>
   )
 }

@@ -30,6 +30,7 @@ public static class DependencyInjection
             services.AddSingleton<IPromotionRepository, FirestorePromotionRepository>();
             services.AddSingleton<ILoyaltyRepository, FirestoreLoyaltyRepository>();
             services.AddSingleton<IAppointmentRepository, FirestoreAppointmentRepository>();
+            services.AddSingleton<ISiteContentRepository, FirestoreSiteContentRepository>();
         }
         else
         {
@@ -42,6 +43,7 @@ public static class DependencyInjection
             services.AddSingleton<IPromotionRepository, InMemoryPromotionRepository>();
             services.AddSingleton<ILoyaltyRepository, InMemoryLoyaltyRepository>();
             services.AddSingleton<IAppointmentRepository, InMemoryAppointmentRepository>();
+            services.AddSingleton<ISiteContentRepository, InMemorySiteContentRepository>();
         }
 
         return services;

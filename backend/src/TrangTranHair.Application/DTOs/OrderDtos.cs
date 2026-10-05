@@ -16,7 +16,25 @@ public sealed record CreateOrderRequest(
     List<CreateOrderItemRequest> Items,
     string? PromoCode = null,
     int PointsToRedeem = 0,
-    string? CustomerId = null);
+    string? CustomerId = null,
+    PaymentMethod PaymentMethod = PaymentMethod.BankTransfer,
+    FulfillmentMethod FulfillmentMethod = FulfillmentMethod.Pickup,
+    string? DeliveryAddress = null,
+    ShippingZone? ShippingZone = null);
+
+public sealed record ShippingZoneOption(
+    ShippingZone Zone,
+    string Label,
+    decimal Fee);
+
+public sealed record UpdateShipmentRequest(
+    string TrackingCode,
+    string? TrackingUrl = null,
+    string? Carrier = null);
+
+public sealed record SubmitDisputeRequest(
+    string Reason,
+    string? Notes = null);
 
 public sealed record OrderItemResponse(
     string ItemId,
@@ -42,6 +60,22 @@ public sealed record OrderResponse(
     int PointsEarned,
     decimal TotalAmount,
     OrderStatus Status,
+    PaymentMethod PaymentMethod,
+    FulfillmentMethod FulfillmentMethod,
+    string? DeliveryAddress,
+    decimal ShippingFee,
+    ShippingZone? ShippingZone,
+    FulfillmentStatus FulfillmentStatus,
+    string? TrackingCode,
+    string? TrackingUrl,
+    string? Carrier,
+    DateTime? ApprovedAt,
+    DateTime? ShippedAt,
+    DateTime? DeliveredAt,
+    DateTime? CompletedAt,
+    string? DisputeReason,
+    string? DisputeNotes,
+    DateTime? DisputedAt,
     string PaymentCode,
     string AccessToken,
     DateTime CreatedAt,

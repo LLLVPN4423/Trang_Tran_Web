@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useCartStore } from '@/shared/store/cartStore'
+import { selectCartItemCount } from '@/shared/store/cartSelectors'
+import { useServiceCartStore } from '@/shared/store/serviceCartStore'
+import { selectServiceCartCount } from '@/shared/store/serviceCartSelectors'
 import { useAuth } from '@/shared/auth/AuthProvider'
 
 interface Props {
@@ -8,7 +11,8 @@ interface Props {
 }
 
 export function SiteHeader({ onMenuClick, showMenuButton = true }: Props) {
-  const itemCount = useCartStore((s) => s.itemCount())
+  const itemCount = useCartStore(selectCartItemCount)
+  const serviceCount = useServiceCartStore(selectServiceCartCount)
   const { user, customerProfile } = useAuth()
 
   return (
@@ -34,10 +38,21 @@ export function SiteHeader({ onMenuClick, showMenuButton = true }: Props) {
 
         <nav className="hidden items-center gap-5 text-[0.6875rem] font-medium uppercase tracking-[0.22em] md:flex">
           <Link to="/catalog" className="text-zinc-500 transition hover:text-gold">
-            Menu
+            Bảng giá
+          </Link>
+          <Link to="/appointment" className="relative text-zinc-500 transition hover:text-gold">
+            Đặt lịch
+            {serviceCount > 0 && (
+              <span className="absolute -right-4 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-medium text-zinc-950">
+                {serviceCount}
+              </span>
+            )}
+          </Link>
+          <Link to="/shop" className="text-zinc-500 transition hover:text-gold">
+            Moroccanoil
           </Link>
           <Link to="/booking" className="relative text-zinc-500 transition hover:text-gold">
-            Giỏ hàng
+            Thanh toán
             {itemCount > 0 && (
               <span className="absolute -right-4 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-medium text-zinc-950">
                 {itemCount}
@@ -49,23 +64,28 @@ export function SiteHeader({ onMenuClick, showMenuButton = true }: Props) {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-3 md:hidden">
+        <div className="flex items-center gap-2 md:hidden">
           {user && customerProfile && (
             <Link to="/account/loyalty" className="text-[10px] uppercase tracking-wider text-gold-muted">
               {customerProfile.loyaltyPoints} điểm
             </Link>
           )}
-          <Link
-            to="/booking"
-            className="relative rounded-sm border border-zinc-800 px-3 py-1.5 text-[10px] uppercase tracking-wider text-zinc-400"
-          >
-            Giỏ
-            {itemCount > 0 && (
-              <span className="ml-1 text-gold">{itemCount}</span>
-            )}
-          </Link>
+          <HeaderQuickLink to="/appointment" label="Lịch" count={serviceCount} />
+          <HeaderQuickLink to="/booking" label="Giỏ" count={itemCount} />
         </div>
       </div>
     </header>
+  )
+}
+
+function HeaderQuickLink({ to, label, count }: { to: string; label: string; count: number }) {
+  return (
+    <Link
+      to={to}
+      className="rounded-sm border border-zinc-800 px-3 py-1.5 text-[10px] uppercase tracking-wider text-zinc-400"
+    >
+      {label}
+      {count > 0 && <span className="ml-1 text-gold">{count}</span>}
+    </Link>
   )
 }

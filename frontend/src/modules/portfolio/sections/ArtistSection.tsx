@@ -1,8 +1,11 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/shared/lib/gsap'
-import { ARTIST_IMAGES, ARTIST_STATEMENT } from '../data/content'
+import { resolveProductImageUrl } from '@/shared/lib/productMedia'
+import { useSiteContent } from '../SiteContentContext'
 
 export function ArtistSection() {
+  const { content } = useSiteContent()
+  const { artist } = content
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -58,36 +61,35 @@ export function ArtistSection() {
     return () => ctx.revert()
   }, [])
 
-  const marqueeText = ARTIST_STATEMENT.join('  ·  ')
+  const marqueeText = artist.statementLines.join('  ·  ')
 
   return (
     <section ref={sectionRef} id="artist" className="section-shell relative overflow-hidden">
       <div className="section-inner grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-14">
         <div>
-          <p className="artist-heading section-eyebrow">The Artist</p>
+          <p className="artist-heading section-eyebrow">{artist.eyebrow}</p>
           <h2 className="artist-heading section-title">
-            Nghệ thuật trên từng<span className="italic text-gold"> sợi tóc</span>
+            {artist.heading}
+            <span className="italic text-gold">{artist.headingAccent}</span>
           </h2>
-          <p className="artist-bio section-body mt-6 max-w-xl">
-            Mr. Trang Trần — Master Stylist với hơn một thập kỷ kinh nghiệm trong
-            nghệ thuật tạo kiểu editorial. Mỗi tác phẩm là sự kết hợp giữa kỹ thuật
-            thuần túy và cảm hứng thời trang, biến mái tóc thành canvas sống động.
-          </p>
+          <p className="artist-bio section-body mt-6 max-w-xl">{artist.bio}</p>
         </div>
 
         <div className="artist-photo relative mx-auto w-full max-w-md lg:max-w-none">
           <div className="media-frame aspect-[4/5] w-full">
             <img
-              src={encodeURI(ARTIST_IMAGES.main)}
+              src={resolveProductImageUrl(artist.mainImageUrl)}
               alt="Mr. Trang Trần — Master Stylist"
+              referrerPolicy="no-referrer"
               className="media-cover"
               loading="lazy"
             />
           </div>
           <div className="media-frame absolute -bottom-5 -right-1 w-[38%] shadow-2xl sm:-right-4 sm:w-[40%]">
             <img
-              src={encodeURI(ARTIST_IMAGES.secondary)}
+              src={resolveProductImageUrl(artist.secondaryImageUrl)}
               alt="Trang Tran Hair — nghệ thuật tạo kiểu"
+              referrerPolicy="no-referrer"
               className="aspect-[3/4] w-full object-cover object-center"
               loading="lazy"
             />
@@ -95,19 +97,21 @@ export function ArtistSection() {
         </div>
       </div>
 
-      <div className="artist-marquee mt-16 overflow-hidden whitespace-nowrap md:mt-20">
-        <div className="artist-marquee-track inline-flex will-change-transform">
-          {[0, 1].map((i) => (
-            <span
-              key={i}
-              className="inline-block px-6 font-serif text-4xl italic text-zinc-800/90 md:text-6xl"
-              aria-hidden={i === 1}
-            >
-              {marqueeText}&nbsp;&nbsp;&nbsp;
-            </span>
-          ))}
+      {marqueeText.trim() && (
+        <div className="artist-marquee mt-16 overflow-hidden whitespace-nowrap md:mt-20">
+          <div className="artist-marquee-track inline-flex will-change-transform">
+            {[0, 1].map((i) => (
+              <span
+                key={i}
+                className="inline-block px-6 font-serif text-4xl italic text-zinc-800/90 md:text-6xl"
+                aria-hidden={i === 1}
+              >
+                {marqueeText}&nbsp;&nbsp;&nbsp;
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </section>
   )
 }

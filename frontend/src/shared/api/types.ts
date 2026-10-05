@@ -17,6 +17,31 @@ export type OrderItemType = 'Service' | 'Product'
 
 export type OrderStatus = 'Pending' | 'Paid' | 'Cancelled'
 
+export type PaymentMethod = 'BankTransfer' | 'COD'
+
+export type FulfillmentMethod = 'Pickup' | 'Delivery'
+
+export type FulfillmentStatus =
+  | 'None'
+  | 'AwaitingApproval'
+  | 'Approved'
+  | 'Shipped'
+  | 'Delivered'
+  | 'Completed'
+  | 'Disputed'
+
+export type ShippingZone =
+  | 'SocTrangCity'
+  | 'SocTrangProvince'
+  | 'MekongNearby'
+  | 'Nationwide'
+
+export interface ShippingZoneOption {
+  zone: ShippingZone
+  label: string
+  fee: number
+}
+
 export interface ServiceResponse {
   id: string
   name: string
@@ -70,6 +95,21 @@ export interface CreateOrderRequest {
   items: CreateOrderItemRequest[]
   promoCode?: string | null
   pointsToRedeem?: number
+  paymentMethod?: PaymentMethod
+  fulfillmentMethod?: FulfillmentMethod
+  deliveryAddress?: string | null
+  shippingZone?: ShippingZone | null
+}
+
+export interface UpdateShipmentRequest {
+  trackingCode: string
+  trackingUrl?: string | null
+  carrier?: string | null
+}
+
+export interface SubmitDisputeRequest {
+  reason: string
+  notes?: string | null
 }
 
 export interface OrderResponse {
@@ -87,6 +127,22 @@ export interface OrderResponse {
   pointsEarned: number
   totalAmount: number
   status: OrderStatus
+  paymentMethod: PaymentMethod
+  fulfillmentMethod: FulfillmentMethod
+  deliveryAddress: string | null
+  shippingFee: number
+  shippingZone: ShippingZone | null
+  fulfillmentStatus: FulfillmentStatus
+  trackingCode: string | null
+  trackingUrl: string | null
+  carrier: string | null
+  approvedAt: string | null
+  shippedAt: string | null
+  deliveredAt: string | null
+  completedAt: string | null
+  disputeReason: string | null
+  disputeNotes: string | null
+  disputedAt: string | null
   paymentCode: string
   accessToken: string
   createdAt: string
@@ -281,6 +337,61 @@ export interface UpdateCustomerRequest {
   phone: string
   email?: string | null
 }
+
+export type LookbookAspect = 'tall' | 'wide' | 'square'
+
+export interface LookbookItemContent {
+  id: number
+  label: string
+  imageUrl: string
+  aspect: LookbookAspect
+  speed: number
+}
+
+export interface HeroContent {
+  imageUrl: string
+  eyebrow: string
+  title: string
+  tagline: string
+}
+
+export interface ArtistContent {
+  mainImageUrl: string
+  secondaryImageUrl: string
+  eyebrow: string
+  heading: string
+  headingAccent: string
+  bio: string
+  statementLines: string[]
+}
+
+export interface LookbookSectionContent {
+  eyebrow: string
+  title: string
+  items: LookbookItemContent[]
+}
+
+export interface ContactContent {
+  phone: string
+  phoneRaw: string
+  address: string
+  note: string
+}
+
+export interface SocialLinkContent {
+  label: string
+  url: string
+}
+
+export interface SiteContentResponse {
+  hero: HeroContent
+  artist: ArtistContent
+  lookbook: LookbookSectionContent
+  contact: ContactContent
+  socialLinks: SocialLinkContent[]
+}
+
+export type UpdateSiteContentRequest = SiteContentResponse
 
 export function resolveServicePrice(service: ServiceResponse, hairSize: HairSize): number {
   if (service.basePrice != null) return service.basePrice

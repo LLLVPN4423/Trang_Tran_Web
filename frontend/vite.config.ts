@@ -19,6 +19,11 @@ export default defineConfig({
         target: 'http://localhost:5000',
         changeOrigin: true,
       },
+      '/__/auth': {
+        target: 'https://trangtranhairsalon-872c5.firebaseapp.com',
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
 })

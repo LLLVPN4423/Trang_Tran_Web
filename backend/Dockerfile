@@ -10,7 +10,7 @@ WORKDIR /app
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* \
-    && adduser --disabled-password --gecos "" appuser \
+    && useradd --system --no-create-home appuser \
     && chown -R appuser /app
 
 USER appuser

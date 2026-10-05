@@ -30,7 +30,7 @@ const ADMIN_NAV: SidebarNavItem[] = [
   { to: '/admin/appointments', label: 'Lịch hẹn', adminOnly: true },
   { to: '/admin/services', label: 'Dịch vụ', adminOnly: true },
   { to: '/admin/products', label: 'Sản phẩm', adminOnly: true },
-  { to: '/admin/site-content', label: 'Trang chủ', adminOnly: true },
+  { to: '/admin/site-content', label: 'Nội dung & liên hệ', adminOnly: true },
   { to: '/admin/promotions', label: 'Khuyến mãi', adminOnly: true },
   { to: '/admin/customers', label: 'Khách hàng', adminOnly: true },
 ]

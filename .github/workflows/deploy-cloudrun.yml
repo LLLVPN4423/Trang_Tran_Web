@@ -11,7 +11,7 @@ jobs:
   deploy:
     name: Cloud Run trangtran-api
     runs-on: ubuntu-latest
-    if: github.repository == 'LLLVPN4423/Trang_Tran_Web'
+    if: github.repository == 'LLLVPN4423/Trang_Tran_Web' && secrets.GCP_SA_KEY != '' && secrets.GCP_PROJECT_ID != ''
     permissions:
       contents: read
       id-token: write

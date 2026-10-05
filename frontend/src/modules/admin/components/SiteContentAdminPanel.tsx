@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { apiClient } from '@/shared/api/client'
-import { fetchSiteContent, updateSiteContent } from '@/shared/api/endpoints'
+import { updateSiteContent } from '@/shared/api/endpoints'
 import type {
   LookbookAspect,
   LookbookItemContent,
@@ -167,26 +167,30 @@ export function SiteContentAdminPanel() {
       {message && <p className="text-sm text-emerald-400">{message}</p>}
       {error && <ApiErrorState message={error} />}
 
-      <div className="flex flex-wrap gap-2 border-b border-zinc-800 pb-4">
-        {(
-          [
-            ['hero', 'Hero'],
-            ['artist', 'The Artist'],
-            ['lookbook', 'Salon Tour / Lookbook'],
-            ['contact', 'Liên hệ & Mạng xã hội'],
-          ] as const
-        ).map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setTab(id)}
-            className={`px-3 py-2 text-xs uppercase tracking-widest ${
-              tab === id ? 'bg-gold/10 text-gold' : 'text-zinc-500 hover:text-zinc-300'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
+      <div className="-mx-1 overflow-x-auto border-b border-zinc-800 pb-4">
+        <div className="flex min-w-max gap-2 px-1">
+          {(
+            [
+              ['contact', 'Liên hệ & MXH', 'Liên hệ & Mạng xã hội'],
+              ['hero', 'Hero', 'Hero'],
+              ['artist', 'Artist', 'The Artist'],
+              ['lookbook', 'Lookbook', 'Salon Tour / Lookbook'],
+            ] as const
+          ).map(([id, shortLabel, longLabel]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setTab(id)}
+              title={longLabel}
+              className={`shrink-0 px-3 py-2.5 text-xs uppercase tracking-widest ${
+                tab === id ? 'bg-gold/10 text-gold' : 'text-zinc-500 hover:text-zinc-300'
+              }`}
+            >
+              <span className="sm:hidden">{shortLabel}</span>
+              <span className="hidden sm:inline">{longLabel}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">

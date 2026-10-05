@@ -7,6 +7,7 @@ namespace TrangTranHair.Api.Controllers;
 
 [ApiController]
 [Route("api/site-content")]
+// Homepage CMS: hero, artist, lookbook, contact, social links
 public class SiteContentController(ISiteContentService siteContentService) : ControllerBase
 {
     [HttpGet]

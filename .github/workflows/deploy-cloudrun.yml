@@ -5,9 +5,7 @@ name: Deploy Cloud Run API
 on:
   push:
     branches: [main]
-    paths:
-      - 'backend/**'
-      - '.github/workflows/deploy-cloudrun.yml'
+  workflow_dispatch:
 
 jobs:
   deploy:

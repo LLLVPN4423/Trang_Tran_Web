@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { apiClient } from '@/shared/api/client'
 import { fetchSiteContent, updateSiteContent } from '@/shared/api/endpoints'
 import type {
   LookbookAspect,
@@ -49,12 +50,15 @@ export function SiteContentAdminPanel() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+  const [needsApiUpdate, setNeedsApiUpdate] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
-      setForm(mergeSiteContentForm(await fetchSiteContent()))
+      const { data } = await apiClient.get<SiteContentResponse>('/api/site-content')
+      setNeedsApiUpdate(!Object.prototype.hasOwnProperty.call(data, 'contact'))
+      setForm(mergeSiteContentForm(data))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Không tải được nội dung trang chủ')
       setForm(mergeSiteContentForm(DEFAULT_SITE_CONTENT))
@@ -151,6 +155,14 @@ export function SiteContentAdminPanel() {
       </p>
 
       <p className="text-xs text-zinc-500">{GOOGLE_DRIVE_SHARE_HINT}</p>
+
+      {needsApiUpdate && (
+        <p className="rounded-sm border border-amber-900/50 bg-amber-950/30 px-4 py-3 text-sm text-amber-200/90">
+          API production chưa bản mới — bạn vẫn chỉnh và xem trước tại đây, nhưng{' '}
+          <strong className="text-amber-100">lưu liên hệ / Portfolio</strong> cần deploy Cloud Run (hoặc bật GitHub
+          secret <code className="text-amber-100/80">GCP_SA_KEY</code>). Hero / Lookbook vẫn lưu được.
+        </p>
+      )}
 
       {message && <p className="text-sm text-emerald-400">{message}</p>}
       {error && <ApiErrorState message={error} />}

@@ -24,10 +24,10 @@ jobs:
         run: |
           if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] || [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Deploy skipped — add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID"
-          else
-            echo "configured=true" >> "$GITHUB_OUTPUT"
+            echo "::error::Thiếu CLOUDFLARE_API_TOKEN hoặc CLOUDFLARE_ACCOUNT_ID — xem docs/GITHUB_DEPLOY_SECRETS.md"
+            exit 1
           fi
+          echo "configured=true" >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-node@v4
         if: steps.preflight.outputs.configured == 'true'

@@ -12,23 +12,34 @@ jobs:
   deploy:
     name: Pages trangtran-hair
     runs-on: ubuntu-latest
-    if: github.repository == 'LLLVPN4423/Trang_Tran_Web' && secrets.CLOUDFLARE_API_TOKEN != ''
+    if: github.repository == 'LLLVPN4423/Trang_Tran_Web'
     permissions:
       contents: read
       deployments: write
     steps:
       - uses: actions/checkout@v4
 
+      - name: Preflight Cloudflare secrets
+        id: preflight
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] || [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Deploy skipped — add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-node@v4
+        if: steps.preflight.outputs.configured == 'true'
         with:
           node-version: "22"
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install & build
+        if: steps.preflight.outputs.configured == 'true'
         run: npm run install:all && npm run build:frontend:pages
         env:
-          # Mặc định Cloud Run — không phụ thuộc Cloudflare Functions /api proxy
           VITE_API_URL: ${{ vars.VITE_API_URL || 'https://trangtran-api-327982031536.asia-southeast1.run.app' }}
           VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -39,6 +50,7 @@ jobs:
           VITE_SEPAY_ACCOUNT_NAME: ${{ vars.VITE_SEPAY_ACCOUNT_NAME }}
 
       - name: Publish to Cloudflare Pages (dist + functions proxy)
+        if: steps.preflight.outputs.configured == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

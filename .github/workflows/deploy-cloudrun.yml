@@ -11,21 +11,34 @@ jobs:
   deploy:
     name: Cloud Run trangtran-api
     runs-on: ubuntu-latest
-    if: github.repository == 'LLLVPN4423/Trang_Tran_Web' && secrets.GCP_SA_KEY != '' && secrets.GCP_PROJECT_ID != ''
+    if: github.repository == 'LLLVPN4423/Trang_Tran_Web'
     permissions:
       contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v4
 
+      - name: Preflight GCP secrets
+        id: preflight
+        run: |
+          if [ -z "${{ secrets.GCP_SA_KEY }}" ] || [ -z "${{ secrets.GCP_PROJECT_ID }}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Deploy skipped — add repository secrets GCP_SA_KEY and GCP_PROJECT_ID"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - id: auth
+        if: steps.preflight.outputs.configured == 'true'
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - uses: google-github-actions/setup-gcloud@v2
+        if: steps.preflight.outputs.configured == 'true'
 
       - name: Deploy to Cloud Run
+        if: steps.preflight.outputs.configured == 'true'
         run: |
           gcloud run deploy trangtran-api \
             --source ./backend \

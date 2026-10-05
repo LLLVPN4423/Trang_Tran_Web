@@ -18,6 +18,10 @@ function trimUrl(url: string | undefined): string {
 export function getApiBaseUrl(): string {
   const fromEnv = trimUrl(import.meta.env.VITE_API_URL)
   if (fromEnv) return fromEnv
+  // Production: /api trên cùng domain → Cloudflare Functions proxy → Cloud Run (tránh CORS).
+  if (import.meta.env.PROD && typeof window !== 'undefined') {
+    return window.location.origin
+  }
   if (import.meta.env.PROD) return PRODUCTION.apiUrl
   return ''
 }

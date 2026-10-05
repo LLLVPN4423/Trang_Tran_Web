@@ -191,6 +191,7 @@ Endpoint: `POST /api/seed?force=true` — yêu cầu policy **Admin**.
 | **Root directory** | `/` (repo root) |
 | **Build command** | `npm run install:all && npm run build:frontend` |
 | **Build output directory** | `frontend/dist` |
+| **Functions directory** | `frontend/functions` (bắt buộc — proxy `/api` → Cloud Run) |
 | **Node version** | 20+ |
 
 ### 3.3 Biến môi trường build (Settings → Environment variables)

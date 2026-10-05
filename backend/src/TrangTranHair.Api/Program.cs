@@ -38,11 +38,21 @@ builder.Services.AddRateLimiter(options =>
 
 builder.Services.AddCors(options =>
 {
+    var configuredOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>()
+        ?? ["http://localhost:5173"];
+    var originSet = new HashSet<string>(configuredOrigins, StringComparer.OrdinalIgnoreCase);
+
     options.AddPolicy("Frontend", policy =>
     {
-        policy.WithOrigins(
-                builder.Configuration.GetSection("Cors:Origins").Get<string[]>()
-                ?? ["http://localhost:5173"])
+        policy.SetIsOriginAllowed(origin =>
+            {
+                if (string.IsNullOrWhiteSpace(origin)) return false;
+                if (originSet.Contains(origin)) return true;
+                if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri)) return false;
+                if (uri.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase)) return true;
+                if (uri.Host.EndsWith(".pages.dev", StringComparison.OrdinalIgnoreCase)) return true;
+                return false;
+            })
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();

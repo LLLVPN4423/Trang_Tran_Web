@@ -31,17 +31,24 @@ apiClient.interceptors.request.use(async (config: InternalAxiosRequestConfig) =>
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<ApiErrorResponse>) => {
-    const config = error.config as (InternalAxiosRequestConfig & { _coldStartRetry?: boolean }) | undefined
+    const config = error.config as (InternalAxiosRequestConfig & {
+      _coldStartRetry?: boolean
+      _networkRetry?: boolean
+    }) | undefined
+
+    const isGet = (config?.method ?? 'get').toLowerCase() === 'get'
 
     // Cloud Run scale-to-zero: first request may timeout — retry GET once.
-    if (
-      config &&
-      !config._coldStartRetry &&
-      error.code === 'ECONNABORTED' &&
-      (config.method ?? 'get').toLowerCase() === 'get'
-    ) {
+    if (config && !config._coldStartRetry && error.code === 'ECONNABORTED' && isGet) {
       config._coldStartRetry = true
       await new Promise((resolve) => setTimeout(resolve, 2500))
+      return apiClient.request(config)
+    }
+
+    // Mạng/CORS tạm thời — thử lại GET một lần.
+    if (config && !config._networkRetry && !error.response && isGet) {
+      config._networkRetry = true
+      await new Promise((resolve) => setTimeout(resolve, 2000))
       return apiClient.request(config)
     }
 
@@ -49,7 +56,11 @@ apiClient.interceptors.response.use(
       return Promise.reject(new Error('Kết nối quá thời gian chờ. API đang khởi động — thử lại sau vài giây.'))
     }
     if (!error.response) {
-      return Promise.reject(new Error('Không thể kết nối máy chủ. Kiểm tra mạng hoặc thử lại sau.'))
+      return Promise.reject(
+        new Error(
+          'Không thể kết nối máy chủ. Kiểm tra mạng, thử Ctrl+F5, hoặc đợi vài giây (API Cloud Run đang bật).',
+        ),
+      )
     }
     if (error.response.status === 401) {
       return Promise.reject(

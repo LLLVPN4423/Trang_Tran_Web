@@ -37,9 +37,10 @@ jobs:
           VITE_SEPAY_ACCOUNT_NUMBER: ${{ vars.VITE_SEPAY_ACCOUNT_NUMBER }}
           VITE_SEPAY_ACCOUNT_NAME: ${{ vars.VITE_SEPAY_ACCOUNT_NAME }}
 
-      - name: Publish to Cloudflare Pages
+      - name: Publish to Cloudflare Pages (dist + functions proxy)
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy frontend/dist --project-name=trangtran-hair --branch=main
+          workingDirectory: frontend
+          command: pages deploy dist --project-name=trangtran-hair --branch=main

@@ -267,11 +267,13 @@ export function ServiceInvoicesAdminPanel() {
 
       if (editingId) {
         const updated = await updateServiceInvoice(editingId, payload)
+        dismissNew(updated.id)
         setInvoices((prev) => prev.map((o) => (o.id === updated.id ? updated : o)))
         setCreatedLink(updated.status === 'Pending' ? updated : null)
         resetForm()
       } else {
         const created = await createServiceInvoice(payload)
+        dismissNew(created.id)
         setInvoices((prev) => [created, ...prev])
         setCreatedLink(created.status === 'Pending' ? created : null)
         resetForm()
@@ -566,6 +568,7 @@ export function ServiceInvoicesAdminPanel() {
                         variant="primary"
                         onClick={async () => {
                           const u = await updateOrderStatus(inv.id, 'Paid')
+                          dismissNew(u.id)
                           setInvoices((prev) => prev.map((o) => (o.id === u.id ? u : o)))
                         }}
                       >

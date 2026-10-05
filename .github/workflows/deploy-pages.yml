@@ -26,9 +26,10 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install & build
-        run: npm run install:all && npm run build:frontend
+        run: npm run install:all && npm run build:frontend:pages
         env:
-          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          # Mặc định Cloud Run — không phụ thuộc Cloudflare Functions /api proxy
+          VITE_API_URL: ${{ vars.VITE_API_URL || 'https://trangtran-api-327982031536.asia-southeast1.run.app' }}
           VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
           VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}

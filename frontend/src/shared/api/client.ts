@@ -1,5 +1,5 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
-import { getApiBaseUrl } from '@/shared/config/env'
+import { getApiBaseUrl, getProductionApiUrl } from '@/shared/config/env'
 import type { ApiErrorResponse } from './types'
 
 const TIMEOUT_MS = 30_000
@@ -16,7 +16,12 @@ export function setAuthTokenProvider(provider: () => Promise<string | null>) {
   tokenProvider = provider
 }
 
+function isSpaHtmlPayload(data: unknown): boolean {
+  return typeof data === 'string' && /^\s*<!doctype html/i.test(data)
+}
+
 apiClient.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
+  config.baseURL = getApiBaseUrl()
   if (tokenProvider) {
     try {
       const token = await tokenProvider()
@@ -29,12 +34,39 @@ apiClient.interceptors.request.use(async (config: InternalAxiosRequestConfig) =>
 })
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  async (response) => {
+    const config = response.config as InternalAxiosRequestConfig & { _directApiFallback?: boolean }
+    if (
+      import.meta.env.PROD &&
+      config &&
+      !config._directApiFallback &&
+      isSpaHtmlPayload(response.data) &&
+      getApiBaseUrl() !== getProductionApiUrl()
+    ) {
+      config._directApiFallback = true
+      config.baseURL = getProductionApiUrl()
+      return apiClient.request(config)
+    }
+    return response
+  },
   async (error: AxiosError<ApiErrorResponse>) => {
     const config = error.config as (InternalAxiosRequestConfig & {
       _coldStartRetry?: boolean
       _networkRetry?: boolean
+      _directApiFallback?: boolean
     }) | undefined
+
+    if (
+      config &&
+      !config._directApiFallback &&
+      error.response &&
+      isSpaHtmlPayload(error.response.data) &&
+      getApiBaseUrl() !== getProductionApiUrl()
+    ) {
+      config._directApiFallback = true
+      config.baseURL = getProductionApiUrl()
+      return apiClient.request(config)
+    }
 
     const isGet = (config?.method ?? 'get').toLowerCase() === 'get'
 

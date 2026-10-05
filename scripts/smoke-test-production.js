@@ -377,6 +377,9 @@ async function testFrontend() {
     if (!js.includes('trangtran-api') && !js.includes('327982031536')) {
       throw new Error('VITE_API_URL not embedded in bundle')
     }
+    if (/typeof window[^;]{0,40}\?window\.location\.origin[^:]{0,80}:.+?apiUrl/.test(js)) {
+      throw new Error('bundle uses Pages /api (window.location.origin) — catalog will break without Functions')
+    }
     if (!js.includes('Moroccanoil') && !js.includes('paymentMethod')) {
       throw new Error('checkout P1 strings not in bundle')
     }

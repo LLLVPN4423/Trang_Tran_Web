@@ -15,15 +15,30 @@ function trimUrl(url: string | undefined): string {
   return (url ?? '').trim().replace(/\/$/, '')
 }
 
+/**
+ * URL API cho axios.
+ * - Dev: để trống → Vite proxy `/api` → localhost:5000
+ * - Docker/nginx prod: build với `VITE_API_URL=` (chuỗi rỗng) → cùng origin `/api`
+ * - Cloudflare Pages: không set env → gọi thẳng Cloud Run (CORS *.pages.dev trên backend)
+ */
 export function getApiBaseUrl(): string {
-  const fromEnv = trimUrl(import.meta.env.VITE_API_URL)
+  const raw = import.meta.env.VITE_API_URL as string | undefined
+  const fromEnv = trimUrl(raw)
   if (fromEnv) return fromEnv
-  // Production: /api trên cùng domain → Cloudflare Functions proxy → Cloud Run (tránh CORS).
-  if (import.meta.env.PROD && typeof window !== 'undefined') {
-    return window.location.origin
+
+  if (import.meta.env.PROD) {
+    if (raw === '') {
+      if (typeof window !== 'undefined') return window.location.origin
+      return ''
+    }
+    return PRODUCTION.apiUrl
   }
-  if (import.meta.env.PROD) return PRODUCTION.apiUrl
+
   return ''
+}
+
+export function getProductionApiUrl(): string {
+  return PRODUCTION.apiUrl
 }
 
 export function getFirebaseProjectId(): string {

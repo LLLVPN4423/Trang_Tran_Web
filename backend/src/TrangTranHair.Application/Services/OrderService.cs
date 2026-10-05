@@ -478,6 +478,28 @@ public sealed partial class OrderService(
             order.UpdatedAt = DateTime.UtcNow;
             await orderRepository.UpdateAsync(order, cancellationToken);
         }
+
+        foreach (var order in pending.Where(o =>
+                     o.Kind == OrderKind.ServiceInvoice &&
+                     !o.StockReserved &&
+                     o.PaymentMethod == PaymentMethod.BankTransfer))
+        {
+            if (order.CreatedAt.Add(OrderService.ServiceInvoicePendingExpiry) >= now)
+                continue;
+
+            if (!string.IsNullOrWhiteSpace(order.CustomerId) && order.PointsRedeemed > 0)
+            {
+                await loyaltyService.RefundRedeemedPointsAsync(
+                    order.CustomerId,
+                    order.PointsRedeemed,
+                    order.Id,
+                    cancellationToken);
+            }
+
+            order.Status = OrderStatus.Cancelled;
+            order.UpdatedAt = DateTime.UtcNow;
+            await orderRepository.UpdateAsync(order, cancellationToken);
+        }
     }
 
     private async Task DeductStockForOrderAsync(Order order, CancellationToken cancellationToken)
@@ -554,6 +576,7 @@ public sealed partial class OrderService(
             order.AppointmentId,
             order.InternalNotes,
             order.ManualDiscountAmount,
+            order.CreatedByAdminUid,
             order.CustomerId,
             order.CustomerName,
             order.CustomerPhone,

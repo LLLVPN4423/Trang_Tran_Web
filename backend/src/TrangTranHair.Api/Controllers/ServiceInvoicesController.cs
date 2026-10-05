@@ -20,17 +20,24 @@ namespace TrangTranHair.Api.Controllers;
 
 [Authorize(Policy = "Admin")]
 
-public class ServiceInvoicesController(IOrderService orderService) : ControllerBase
+public class ServiceInvoicesController(IOrderService orderService, ICurrentUserService currentUser) : ControllerBase
 
 {
 
     [HttpPost]
+
     public async Task<ActionResult<OrderResponse>> Create(
+
         [FromBody] CreateServiceInvoiceRequest request,
+
         CancellationToken ct)
+
     {
-        var order = await orderService.CreateServiceInvoiceAsync(request, ct);
+
+        var order = await orderService.CreateServiceInvoiceAsync(request, currentUser.UserId, ct);
+
         return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
+
     }
 
 

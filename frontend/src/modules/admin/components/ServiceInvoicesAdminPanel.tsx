@@ -33,6 +33,11 @@ import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
 import { AdminLiveBadge, AdminNewItemsBanner } from './AdminLiveBadge'
 import { AdminButton, AdminPanelHeader, adminInputClass } from './AdminFormUi'
 import { AdminFilterChips } from './AdminFilterChips'
+import {
+  computeRevenueBreakdown,
+  exportInvoicesCsv,
+  finalizeBreakdown,
+} from '@/modules/admin/lib/salonRevenue'
 
 const HAIR_SIZES: HairSize[] = ['S', 'M', 'L', 'XL']
 
@@ -196,6 +201,16 @@ export function ServiceInvoicesAdminPanel() {
   )
 
   useEffect(() => {
+    setCreatedLink((c) => {
+      if (!c) return c
+      const fresh = invoices.find((i) => i.id === c.id)
+      if (!fresh) return c
+      if (fresh.status === 'Pending') return fresh
+      return null
+    })
+  }, [invoices])
+
+  useEffect(() => {
     const fromAppt = searchParams.get('appointmentId')
     if (!fromAppt || appointments.length === 0 || services.length === 0) return
     if (appliedApptFromUrl.current === fromAppt) return
@@ -204,6 +219,11 @@ export function ServiceInvoicesAdminPanel() {
     appliedApptFromUrl.current = fromAppt
     applyAppointmentToForm(appt)
   }, [searchParams, appointments, services, applyAppointmentToForm])
+
+  const revenueSummary = useMemo(
+    () => finalizeBreakdown(computeRevenueBreakdown([], invoices)),
+    [invoices],
+  )
 
   const subtotalPreview = useMemo(() => lines.reduce((s, l) => s + lineSubtotal(l), 0), [lines])
   const discountPreview = Math.max(0, Number(manualDiscount) || 0)
@@ -365,11 +385,49 @@ export function ServiceInvoicesAdminPanel() {
 
   return (
     <div className="space-y-10">
-      <AdminPanelHeader title="Hóa đơn dịch vụ" count={invoices.length} />
+      <AdminPanelHeader
+        title="Hóa đơn dịch vụ"
+        count={invoices.length}
+        action={
+          <AdminButton
+            onClick={() => {
+              const csv = exportInvoicesCsv(invoices)
+              const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+              const url = URL.createObjectURL(blob)
+              const a = document.createElement('a')
+              a.href = url
+              a.download = `hoa-don-dich-vu-${new Date().toISOString().slice(0, 10)}.csv`
+              a.click()
+              URL.revokeObjectURL(url)
+            }}
+          >
+            Xuất CSV
+          </AdminButton>
+        }
+      />
+
+      <div className="rounded-sm border border-zinc-800 bg-zinc-950/50 p-4 text-sm text-zinc-400">
+        <p className="text-zinc-300">
+          Hóa đơn lưu trong Firebase Firestore, collection <code className="text-gold">orders</code>, mã{' '}
+          <strong className="text-zinc-200">HD…</strong> (khác đơn shop <strong>DH…</strong>).
+        </p>
+        <p className="mt-2">
+          Đã thu (tất cả HD Paid):{' '}
+          <strong className="text-gold">{formatVnd(revenueSummary.paidServiceAllTime)}</strong>
+          {' · '}
+          Hôm nay: <strong className="text-zinc-200">{formatVnd(revenueSummary.servicePaidToday)}</strong>
+          {' · '}
+          Chờ TT: <strong className="text-amber-300">{revenueSummary.pendingService}</strong> hóa đơn
+        </p>
+        <p className="mt-2 text-xs text-zinc-500">
+          Quy tắc: giảm giá &gt;50% cần ghi chú nội bộ; giá dịch vụ &lt;75% bảng giá bị chặn; hóa đơn CK chờ quá 72h tự hủy;
+          mọi hóa đơn ghi UID admin tạo.
+        </p>
+      </div>
 
       {formError && <ApiErrorState message={formError} onRetry={() => setFormError(null)} />}
 
-      {createdLink && (
+      {createdLink?.status === 'Pending' && (
         <div className="rounded-sm border border-gold/30 bg-gold/5 p-4 text-sm text-zinc-300">
           <p className="font-serif text-lg text-gold">Hóa đơn {createdLink.paymentCode}</p>
           <p className="mt-1">Tổng: {formatVnd(createdLink.totalAmount)}</p>
@@ -613,6 +671,13 @@ export function ServiceInvoicesAdminPanel() {
                     {inv.customerName} · {inv.customerPhone}
                   </p>
                   <p className="text-lg text-zinc-100">{formatVnd(inv.totalAmount)} · {inv.status}</p>
+                  {inv.createdByAdminUid && (
+                    <p className="mt-1 font-mono text-[10px] text-zinc-600">Admin: {inv.createdByAdminUid}</p>
+                  )}
+                  <p className="text-xs text-zinc-600">
+                    {new Date(inv.createdAt).toLocaleString('vi-VN')}
+                    {inv.paidAt ? ` → TT ${new Date(inv.paidAt).toLocaleString('vi-VN')}` : ''}
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {inv.status === 'Pending' && (
@@ -627,6 +692,7 @@ export function ServiceInvoicesAdminPanel() {
                           const u = await updateOrderStatus(inv.id, 'Paid')
                           dismissNew(u.id)
                           setInvoices((prev) => prev.map((o) => (o.id === u.id ? u : o)))
+                          setCreatedLink((c) => (c?.id === u.id ? null : c))
                         }}
                       >
                         Đã CK

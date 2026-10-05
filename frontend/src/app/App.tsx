@@ -47,6 +47,9 @@ const ServiceInvoicesAdminPanel = lazyWithRetry(() =>
     default: m.ServiceInvoicesAdminPanel,
   })),
 )
+const RevenueAdminPanel = lazyWithRetry(() =>
+  import('@/modules/admin/components/RevenueAdminPanel').then((m) => ({ default: m.RevenueAdminPanel })),
+)
 
 function AdminRoute({ children }: { children: ReactNode }) {
   return (
@@ -98,6 +101,7 @@ export function App() {
             <Route index element={<AdminOverview />} />
             <Route path="orders" element={<OrdersAdminPanel />} />
             <Route path="service-invoices" element={<ServiceInvoicesAdminPanel />} />
+            <Route path="revenue" element={<RevenueAdminPanel />} />
             <Route path="appointments" element={<AppointmentsAdminPanel />} />
             <Route path="services" element={<ServicesAdminPanel />} />
             <Route path="products" element={<ProductsAdminPanel />} />

@@ -139,6 +139,26 @@ export interface CreateServiceInvoiceRequest {
   markPaidImmediately?: boolean
 }
 
+export interface RevenuePeriodTotals {
+  totalService: number
+  totalRetail: number
+  total: number
+  orderCount: number
+}
+
+export interface RevenueSummaryResponse {
+  fromLocal: string
+  toLocal: string
+  current: RevenuePeriodTotals
+  comparison: {
+    previous: RevenuePeriodTotals
+    percentChangeTotal: number | null
+  }
+  daily: { dateLocal: string; service: number; retail: number; total: number }[]
+  byPaymentMethod: { paymentMethod: string; amount: number; orderCount: number }[]
+  topItems: { name: string; itemType: string; quantity: number; revenue: number }[]
+}
+
 export interface UpdateServiceInvoiceRequest {
   customerName: string
   customerPhone: string
@@ -160,6 +180,7 @@ export interface OrderResponse {
   appointmentId: string | null
   internalNotes: string | null
   manualDiscountAmount: number
+  createdByAdminUid: string | null
   customerId: string | null
   customerName: string
   customerPhone: string

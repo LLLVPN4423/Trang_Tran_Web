@@ -51,6 +51,7 @@ public sealed record OrderResponse(
     string? AppointmentId,
     string? InternalNotes,
     decimal ManualDiscountAmount,
+    string? CreatedByAdminUid,
     string? CustomerId,
     string CustomerName,
     string CustomerPhone,

@@ -28,6 +28,7 @@ const ADMIN_NAV: SidebarNavItem[] = [
   { to: '/admin', label: 'Tổng quan', end: true, adminOnly: true },
   { to: '/admin/orders', label: 'Đơn hàng', adminOnly: true },
   { to: '/admin/service-invoices', label: 'Hóa đơn DV', adminOnly: true },
+  { to: '/admin/revenue', label: 'Doanh thu', adminOnly: true },
   { to: '/admin/appointments', label: 'Lịch hẹn', adminOnly: true },
   { to: '/admin/services', label: 'Dịch vụ', adminOnly: true },
   { to: '/admin/products', label: 'Sản phẩm', adminOnly: true },

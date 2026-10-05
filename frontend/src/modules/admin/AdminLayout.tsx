@@ -8,8 +8,14 @@ import {
   fetchAllCustomers,
   fetchAppointments,
   fetchOrders,
+  fetchServiceInvoices,
   seedAdminData,
 } from '@/shared/api/endpoints'
+import {
+  appointmentsMissingInvoice,
+  computeRevenueBreakdown,
+  finalizeBreakdown,
+} from '@/modules/admin/lib/salonRevenue'
 import { formatVnd } from '@/shared/api/types'
 import { FirebaseStatusBanner } from './components/FirebaseStatusBanner'
 import { AdminLiveBadge } from './components/AdminLiveBadge'
@@ -19,6 +25,7 @@ const TITLES: Record<string, string> = {
   '/admin': 'Tổng quan',
   '/admin/orders': 'Đơn hàng',
   '/admin/service-invoices': 'Hóa đơn dịch vụ',
+  '/admin/revenue': 'Doanh thu',
   '/admin/appointments': 'Lịch hẹn',
   '/admin/services': 'Dịch vụ',
   '/admin/products': 'Sản phẩm',
@@ -110,10 +117,14 @@ export function AdminLayout() {
 
 export function AdminOverview() {
   const [stats, setStats] = useState({
-    pendingOrders: 0,
+    pendingRetail: 0,
+    pendingServiceInvoices: 0,
     pendingAppointments: 0,
     customers: 0,
-    revenueToday: 0,
+    revenueTodayTotal: 0,
+    revenueTodayService: 0,
+    revenueTodayRetail: 0,
+    missingInvoiceCount: 0,
   })
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -129,25 +140,26 @@ export function AdminOverview() {
     if (isFirst || showSpinner) setError(null)
 
     try {
-      const [orders, appointments, customers] = await Promise.all([
-        fetchOrders({ live: !showSpinner }),
+      const [retailOrders, serviceInvoices, appointments, customers] = await Promise.all([
+        fetchOrders({ kind: 'Retail', live: !showSpinner }),
+        fetchServiceInvoices({ live: !showSpinner }),
         fetchAppointments(undefined, { live: !showSpinner }),
         fetchAllCustomers(),
       ])
-      const today = new Date().toDateString()
-      const revenueToday = (orders ?? [])
-        .filter(
-          (o) =>
-            o.status === 'Paid' &&
-            new Date(o.paidAt ?? o.createdAt).toDateString() === today,
-        )
-        .reduce((sum, o) => sum + o.totalAmount, 0)
+      const rev = finalizeBreakdown(
+        computeRevenueBreakdown(retailOrders ?? [], serviceInvoices ?? []),
+      )
+      const missing = appointmentsMissingInvoice(appointments ?? [], serviceInvoices ?? [])
 
       setStats({
-        pendingOrders: (orders ?? []).filter((o) => o.status === 'Pending').length,
+        pendingRetail: rev.pendingRetail,
+        pendingServiceInvoices: rev.pendingService,
         pendingAppointments: (appointments ?? []).filter((a) => a.status === 'Pending').length,
         customers: (customers ?? []).length,
-        revenueToday,
+        revenueTodayTotal: rev.totalPaidToday,
+        revenueTodayService: rev.servicePaidToday,
+        revenueTodayRetail: rev.retailPaidToday,
+        missingInvoiceCount: missing.length,
       })
       hasLoadedRef.current = true
       setLastUpdated(new Date())
@@ -178,12 +190,35 @@ export function AdminOverview() {
         onRefresh={() => loadStats(true)}
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Đơn chờ thanh toán" value={loading ? '…' : String(stats.pendingOrders)} href="/admin/orders" />
-        <StatCard label="Lịch hẹn chờ duyệt" value={loading ? '…' : String(stats.pendingAppointments)} href="/admin/appointments" />
-        <StatCard label="Khách hàng" value={loading ? '…' : String(stats.customers)} href="/admin/customers" />
-        <StatCard label="Doanh thu hôm nay" value={loading ? '…' : formatVnd(stats.revenueToday)} />
+      {stats.missingInvoiceCount > 0 && (
+        <div className="rounded-sm border border-amber-900/40 bg-amber-950/20 px-4 py-3 text-sm text-amber-100/90">
+          <strong>{stats.missingInvoiceCount}</strong> lịch đã xác nhận/hoàn tất nhưng{' '}
+          <strong>chưa có hóa đơn HD</strong> —{' '}
+          <Link to="/admin/appointments" className="text-gold underline">
+            kiểm tra lịch hẹn → Tạo hóa đơn
+          </Link>
+        </div>
+      )}
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <StatCard
+          label="Hóa đơn DV chờ TT"
+          value={loading ? '…' : String(stats.pendingServiceInvoices)}
+          href="/admin/service-invoices"
+        />
+        <StatCard label="Đơn SP chờ TT" value={loading ? '…' : String(stats.pendingRetail)} href="/admin/orders" />
+        <StatCard label="Lịch chờ duyệt" value={loading ? '…' : String(stats.pendingAppointments)} href="/admin/appointments" />
+        <StatCard label="Thu dịch vụ hôm nay" value={loading ? '…' : formatVnd(stats.revenueTodayService)} href="/admin/service-invoices" />
+        <StatCard label="Thu bán SP hôm nay" value={loading ? '…' : formatVnd(stats.revenueTodayRetail)} href="/admin/orders" />
+        <StatCard label="Tổng thu hôm nay" value={loading ? '…' : formatVnd(stats.revenueTodayTotal)} href="/admin/revenue" />
       </div>
+
+      <p className="text-sm text-zinc-500">
+        <Link to="/admin/revenue" className="text-gold underline">
+          Báo cáo doanh thu chi tiết
+        </Link>{' '}
+        — lọc theo ngày, so sánh kỳ trước, xuất CSV.
+      </p>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[

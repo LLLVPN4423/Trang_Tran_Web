@@ -83,6 +83,7 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
             AppointmentId = doc.AppointmentId,
             InternalNotes = doc.InternalNotes,
             ManualDiscountAmount = doc.ManualDiscountAmount != 0 ? (decimal)doc.ManualDiscountAmount : 0,
+            CreatedByAdminUid = doc.CreatedByAdminUid,
             CustomerId = doc.CustomerId,
             CustomerName = doc.CustomerName,
             CustomerPhone = doc.CustomerPhone,
@@ -146,6 +147,7 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
             AppointmentId = order.AppointmentId,
             InternalNotes = order.InternalNotes,
             ManualDiscountAmount = (double)order.ManualDiscountAmount,
+            CreatedByAdminUid = order.CreatedByAdminUid,
             CustomerId = order.CustomerId,
             CustomerName = order.CustomerName,
             CustomerPhone = order.CustomerPhone,
@@ -211,6 +213,9 @@ internal sealed class OrderDocument
 
     [FirestoreProperty]
     public double ManualDiscountAmount { get; set; }
+
+    [FirestoreProperty]
+    public string? CreatedByAdminUid { get; set; }
 
     [FirestoreProperty]
     public string? CustomerId { get; set; }

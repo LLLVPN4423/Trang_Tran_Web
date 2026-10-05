@@ -8,6 +8,8 @@ public class Order : Common.BaseEntity
     public string? AppointmentId { get; set; }
     public string? InternalNotes { get; set; }
     public decimal ManualDiscountAmount { get; set; }
+    /// <summary>Firebase UID admin tạo hóa đơn dịch vụ (audit).</summary>
+    public string? CreatedByAdminUid { get; set; }
     public string? CustomerId { get; set; }
     public string CustomerName { get; set; } = string.Empty;
     public string CustomerPhone { get; set; } = string.Empty;

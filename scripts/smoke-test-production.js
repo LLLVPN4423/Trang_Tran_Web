@@ -180,6 +180,7 @@ async function testApi() {
     ['GET /api/health/admin (no auth)', '/api/health/admin'],
     ['GET /api/customers/me (no auth)', '/api/customers/me'],
     ['GET /api/appointments/me (no auth)', '/api/appointments/me'],
+    ['GET /api/admin/revenue/summary (no auth)', '/api/admin/revenue/summary?from=2026-01-01&to=2026-01-07'],
   ]) {
     try {
       const res = await request('GET', path)
@@ -350,7 +351,7 @@ async function testFrontend() {
     fail('GET / (SPA shell)', e.message)
   }
 
-  const routes = ['/catalog', '/shop', '/booking', '/appointment', '/login', '/register', '/admin', '/account']
+  const routes = ['/catalog', '/shop', '/booking', '/appointment', '/login', '/register', '/admin', '/admin/revenue', '/account']
   for (const route of routes) {
     try {
       const res = await fetch(`${FRONTEND}${route}`)

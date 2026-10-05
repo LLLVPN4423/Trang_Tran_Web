@@ -21,11 +21,18 @@ public interface IOrderService
     Task<OrderResponse> ConfirmReceivedAsync(string id, string? accessToken, CancellationToken cancellationToken = default);
     Task<OrderResponse> SubmitDisputeAsync(string id, SubmitDisputeRequest request, string? accessToken, CancellationToken cancellationToken = default);
     Task<int> LinkGuestOrdersAsync(string customerId, string phone, CancellationToken cancellationToken = default);
-    Task<OrderResponse> CreateServiceInvoiceAsync(CreateServiceInvoiceRequest request, CancellationToken cancellationToken = default);
+    Task<OrderResponse> CreateServiceInvoiceAsync(
+        CreateServiceInvoiceRequest request,
+        string? createdByAdminUid = null,
+        CancellationToken cancellationToken = default);
     Task<OrderResponse> UpdateServiceInvoiceAsync(string id, UpdateServiceInvoiceRequest request, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<OrderResponse>> ListServiceInvoicesAsync(
         OrderStatus? status = null,
         string? phone = null,
         string? appointmentId = null,
+        CancellationToken cancellationToken = default);
+    Task<RevenueSummaryResponse> GetRevenueSummaryAsync(
+        DateOnly fromLocal,
+        DateOnly toLocal,
         CancellationToken cancellationToken = default);
 }

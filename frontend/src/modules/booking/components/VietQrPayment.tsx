@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { formatVnd, type OrderResponse } from '@/shared/api/types'
+import { normalizePaymentMethod } from '@/shared/lib/orderLabels'
 import { buildVietQrImageUrl, formatBankDisplayName, getVietQrConfigFromEnv } from '@/shared/lib/vietqr'
 
 interface Props {
@@ -8,15 +9,23 @@ interface Props {
 
 export function VietQrPayment({ order }: Props) {
   const config = useMemo(() => getVietQrConfigFromEnv(), [])
+  const paymentMethod = normalizePaymentMethod(order.paymentMethod)
+  const showQr = order.status === 'Pending' && paymentMethod === 'BankTransfer'
   const qrUrl = useMemo(
     () =>
-      buildVietQrImageUrl(config, {
-        amount: order.totalAmount,
-        paymentCode: order.paymentCode,
-      }),
-    [config, order.paymentCode, order.totalAmount],
+      showQr
+        ? buildVietQrImageUrl(config, {
+            amount: order.totalAmount,
+            paymentCode: order.paymentCode,
+          })
+        : null,
+    [config, order.paymentCode, order.totalAmount, showQr],
   )
   const [qrFailed, setQrFailed] = useState(false)
+
+  if (!showQr) {
+    return null
+  }
 
   return (
     <div className="space-y-4">

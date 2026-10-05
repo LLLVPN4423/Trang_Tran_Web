@@ -128,6 +128,7 @@ function normalizeOrder(order: OrderResponse): OrderResponse {
     appointmentId: order.appointmentId ?? null,
     internalNotes: order.internalNotes ?? null,
     manualDiscountAmount: order.manualDiscountAmount ?? 0,
+    createdByAdminUid: order.createdByAdminUid ?? null,
     paymentMethod: normalizePaymentMethod(order.paymentMethod),
     fulfillmentMethod: normalizeFulfillmentMethod(order.fulfillmentMethod),
     deliveryAddress: order.deliveryAddress ?? null,
@@ -211,6 +212,14 @@ export async function updateServiceInvoice(
 ): Promise<OrderResponse> {
   const { data } = await apiClient.put<OrderResponse>(`/api/admin/service-invoices/${id}`, request)
   return normalizeOrder(data)
+}
+
+export async function fetchRevenueSummary(params: {
+  from: string
+  to: string
+}): Promise<import('./types').RevenueSummaryResponse> {
+  const { data } = await apiClient.get('/api/admin/revenue/summary', { params })
+  return data as import('./types').RevenueSummaryResponse
 }
 
 export async function approveOrderFulfillment(id: string): Promise<OrderResponse> {

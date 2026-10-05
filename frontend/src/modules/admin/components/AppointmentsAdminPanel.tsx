@@ -6,6 +6,7 @@ import { ApiErrorState } from '@/shared/components/ApiErrorState'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
 import { AdminLiveBadge, AdminNewItemsBanner } from './AdminLiveBadge'
+import { AdminFilterChips } from './AdminFilterChips'
 import { AppointmentNotesView } from '@/shared/lib/appointmentNotes'
 
 const STATUS_OPTIONS: { value: AppointmentStatus | ''; label: string }[] = [
@@ -83,16 +84,13 @@ export function AppointmentsAdminPanel() {
         onDismiss={dismissAllNew}
       />
 
-      <div className="flex flex-wrap items-center gap-4">
-        <select
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <AdminFilterChips
           value={status}
-          onChange={(e) => setStatus(e.target.value as AppointmentStatus | '')}
-          className="border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300"
-        >
-          {STATUS_OPTIONS.map((opt) => (
-            <option key={opt.label} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
+          onChange={setStatus}
+          options={STATUS_OPTIONS}
+          aria-label="Lọc trạng thái lịch hẹn"
+        />
         <span className="text-sm text-zinc-500">{items.length} lịch hẹn</span>
       </div>
 

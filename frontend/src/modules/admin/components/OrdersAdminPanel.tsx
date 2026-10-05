@@ -19,6 +19,7 @@ import { ApiErrorState } from '@/shared/components/ApiErrorState'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
 import { AdminLiveBadge, AdminNewItemsBanner } from './AdminLiveBadge'
+import { AdminFilterChips } from './AdminFilterChips'
 
 const STATUS_OPTIONS: { value: OrderStatus | ''; label: string }[] = [
   { value: '', label: 'Tất cả' },
@@ -131,8 +132,6 @@ export function OrdersAdminPanel() {
     }
   }
 
-  const applyFilters = () => void refresh(true)
-
   if (initialLoading) return <LoadingState label="Đang tải đơn hàng..." />
   if (error) return <ApiErrorState message={error} onRetry={() => refresh(true)} />
 
@@ -152,26 +151,19 @@ export function OrdersAdminPanel() {
         onDismiss={dismissAllNew}
       />
 
-      <div className="flex flex-wrap gap-4">
-        <select
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <AdminFilterChips
           value={status}
-          onChange={(e) => setStatus(e.target.value as OrderStatus | '')}
-          className="border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300"
-        >
-          {STATUS_OPTIONS.map((opt) => (
-            <option key={opt.label} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
+          onChange={setStatus}
+          options={STATUS_OPTIONS}
+          aria-label="Lọc trạng thái đơn hàng"
+        />
         <input
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
           placeholder="Lọc SĐT..."
-          className="border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300"
+          className="w-full border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300 sm:max-w-xs"
         />
-        <button type="button" onClick={applyFilters} className="text-xs uppercase tracking-widest text-gold">
-          Lọc
-        </button>
       </div>
 
       <p className="text-sm text-zinc-500">{orders.length} đơn hàng</p>

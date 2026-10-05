@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import {
   createServiceInvoice,
@@ -22,12 +22,17 @@ import type {
   ServiceResponse,
 } from '@/shared/api/types'
 import { formatVnd, resolveServicePrice } from '@/shared/api/types'
+import {
+  buildInvoiceLinesFromAppointment,
+  extractCustomerNotesFromAppointment,
+} from '@/shared/lib/appointmentInvoicePrefill'
 import { buildVietQrImageUrl, getVietQrConfigFromEnv } from '@/shared/lib/vietqr'
 import { ApiErrorState } from '@/shared/components/ApiErrorState'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
 import { AdminLiveBadge, AdminNewItemsBanner } from './AdminLiveBadge'
 import { AdminButton, AdminPanelHeader, adminInputClass } from './AdminFormUi'
+import { AdminFilterChips } from './AdminFilterChips'
 
 const HAIR_SIZES: HairSize[] = ['S', 'M', 'L', 'XL']
 
@@ -59,19 +64,52 @@ function lineSubtotal(line: LineDraft): number {
   return price * Math.max(1, line.quantity)
 }
 
+function validateInvoiceLines(lines: LineDraft[]): string | null {
+  const active = lines.filter(
+    (l) =>
+      l.itemType === 'Custom' ||
+      (l.itemType === 'Service' && l.itemId) ||
+      (l.itemType === 'Product' && l.itemId),
+  )
+  if (active.length === 0) return 'Thêm ít nhất một dòng dịch vụ/sản phẩm (chọn tên trong danh sách).'
+
+  for (const l of active) {
+    if (l.itemType === 'Service' && !l.itemId) return `Chọn dịch vụ trong danh sách (dòng: ${l.name || 'trống'}).`
+    if (l.itemType === 'Product' && !l.itemId) return 'Chọn sản phẩm trong danh sách.'
+    if (l.itemType === 'Custom' && !l.name.trim()) return 'Nhập tên phí phát sinh.'
+    if (!(Number(l.unitPrice) > 0)) return `Nhập đơn giá > 0 (${l.name || 'dòng hóa đơn'}).`
+  }
+  return null
+}
+
 function toRequestLines(lines: LineDraft[]): ServiceInvoiceLineRequest[] {
-  return lines.map((l) => ({
+  return lines
+    .filter(
+      (l) =>
+        l.itemType === 'Custom' ||
+        (l.itemType === 'Service' && l.itemId) ||
+        (l.itemType === 'Product' && l.itemId),
+    )
+    .map((l) => ({
     itemType: l.itemType,
     itemId: l.itemId || null,
     name: l.name || null,
     hairSize: l.hairSize || null,
     quantity: l.quantity,
     unitPrice: l.unitPrice ? Number(l.unitPrice) : null,
-  }))
+    }))
 }
+
+const INVOICE_STATUS_CHIPS: { value: OrderStatus | ''; label: string }[] = [
+  { value: '', label: 'Tất cả' },
+  { value: 'Pending', label: 'Chờ thanh toán' },
+  { value: 'Paid', label: 'Đã thanh toán' },
+  { value: 'Cancelled', label: 'Đã hủy' },
+]
 
 export function ServiceInvoicesAdminPanel() {
   const [searchParams] = useSearchParams()
+  const appliedApptFromUrl = useRef<string | null>(null)
   const [status, setStatus] = useState<OrderStatus | ''>('Pending')
   const [phoneFilter, setPhoneFilter] = useState('')
 
@@ -139,17 +177,33 @@ export function ServiceInvoicesAdminPanel() {
     })()
   }, [])
 
+  const applyAppointmentToForm = useCallback(
+    (appt: AppointmentResponse) => {
+      setAppointmentId(appt.id)
+      setCustomerName(appt.customerName)
+      setCustomerPhone(appt.customerPhone)
+      if (appt.customerId) setCustomerId(appt.customerId)
+
+      const prefill = buildInvoiceLinesFromAppointment(appt, services)
+      if (prefill.length > 0) {
+        setLines(prefill.map((p) => newLine(p)))
+      }
+
+      const customerNote = extractCustomerNotesFromAppointment(appt.notes)
+      setNotes(customerNote || appt.serviceInterest)
+    },
+    [services],
+  )
+
   useEffect(() => {
     const fromAppt = searchParams.get('appointmentId')
-    if (!fromAppt || appointments.length === 0) return
+    if (!fromAppt || appointments.length === 0 || services.length === 0) return
+    if (appliedApptFromUrl.current === fromAppt) return
     const appt = appointments.find((a) => a.id === fromAppt)
     if (!appt) return
-    setAppointmentId(appt.id)
-    setCustomerName(appt.customerName)
-    setCustomerPhone(appt.customerPhone)
-    setNotes(appt.serviceInterest)
-    if (appt.customerId) setCustomerId(appt.customerId)
-  }, [searchParams, appointments])
+    appliedApptFromUrl.current = fromAppt
+    applyAppointmentToForm(appt)
+  }, [searchParams, appointments, services, applyAppointmentToForm])
 
   const subtotalPreview = useMemo(() => lines.reduce((s, l) => s + lineSubtotal(l), 0), [lines])
   const discountPreview = Math.max(0, Number(manualDiscount) || 0)
@@ -247,6 +301,11 @@ export function ServiceInvoicesAdminPanel() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setFormError(null)
+    const lineError = validateInvoiceLines(lines)
+    if (lineError) {
+      setFormError(lineError)
+      return
+    }
     setSubmitting(true)
     try {
       const payload = {
@@ -344,14 +403,12 @@ export function ServiceInvoicesAdminPanel() {
               value={appointmentId}
               onChange={(e) => {
                 const id = e.target.value
-                setAppointmentId(id)
-                const appt = appointments.find((a) => a.id === id)
-                if (appt) {
-                  setCustomerName(appt.customerName)
-                  setCustomerPhone(appt.customerPhone)
-                  if (appt.customerId) setCustomerId(appt.customerId)
-                  if (!notes) setNotes(appt.serviceInterest)
+                if (!id) {
+                  setAppointmentId('')
+                  return
                 }
+                const appt = appointments.find((a) => a.id === id)
+                if (appt) applyAppointmentToForm(appt)
               }}
             >
               <option value="">— Walk-in / không từ lịch —</option>
@@ -533,15 +590,15 @@ export function ServiceInvoicesAdminPanel() {
         <ApiErrorState message={error} onRetry={() => refresh(true)} />
       ) : (
         <div className="space-y-3">
-          <div className="flex flex-wrap gap-2">
-            <select className={adminInputClass} value={status} onChange={(e) => setStatus(e.target.value as OrderStatus | '')}>
-              <option value="">Tất cả</option>
-              <option value="Pending">Chờ thanh toán</option>
-              <option value="Paid">Đã thanh toán</option>
-              <option value="Cancelled">Đã hủy</option>
-            </select>
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+            <AdminFilterChips
+              value={status}
+              onChange={setStatus}
+              options={INVOICE_STATUS_CHIPS}
+              aria-label="Lọc trạng thái hóa đơn"
+            />
             <input
-              className={adminInputClass}
+              className={`${adminInputClass} w-full sm:max-w-xs`}
               placeholder="Lọc SĐT"
               value={phoneFilter}
               onChange={(e) => setPhoneFilter(e.target.value)}

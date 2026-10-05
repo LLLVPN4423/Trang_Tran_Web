@@ -15,6 +15,23 @@ function trimUrl(url: string | undefined): string {
   return (url ?? '').trim().replace(/\/$/, '')
 }
 
+/** Cloudflare hay copy nhầm .env local — localhost trên trình duyệt khách không bao giờ chạy được. */
+function isLocalOnlyApiUrl(url: string): boolean {
+  try {
+    const host = new URL(url).hostname
+    return host === 'localhost' || host === '127.0.0.1' || host === '[::1]'
+  } catch {
+    return false
+  }
+}
+
+function resolveConfiguredApiUrl(raw: string | undefined): string {
+  const trimmed = trimUrl(raw)
+  if (!trimmed) return ''
+  if (import.meta.env.PROD && isLocalOnlyApiUrl(trimmed)) return ''
+  return trimmed
+}
+
 /**
  * URL API cho axios.
  * - Dev: để trống → Vite proxy `/api` → localhost:5000
@@ -23,7 +40,7 @@ function trimUrl(url: string | undefined): string {
  */
 export function getApiBaseUrl(): string {
   const raw = import.meta.env.VITE_API_URL as string | undefined
-  const fromEnv = trimUrl(raw)
+  const fromEnv = resolveConfiguredApiUrl(raw)
   if (fromEnv) return fromEnv
 
   if (import.meta.env.PROD) {
@@ -62,5 +79,5 @@ export function getFirebaseWebConfig() {
 }
 
 export function isUsingProductionApiFallback(): boolean {
-  return import.meta.env.PROD && !trimUrl(import.meta.env.VITE_API_URL)
+  return import.meta.env.PROD && !resolveConfiguredApiUrl(import.meta.env.VITE_API_URL)
 }

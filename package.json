@@ -12,6 +12,7 @@
     "build:backend": "dotnet build backend/TrangTranHair.slnx -c Release",
     "build:frontend": "npm run build --prefix frontend && node scripts/verify-frontend-dist.js",
     "build:frontend:pages": "npm run build --prefix frontend && node scripts/verify-frontend-dist.js && node scripts/verify-production-api-bundle.js",
+    "build:cloudflare": "npm run install:all && npm run build:frontend:pages",
     "test:backend": "dotnet test backend/TrangTranHair.slnx -c Release",
     "ci": "npm run build:frontend && npm run build:backend && npm run test:backend",
     "smoke:prod": "node scripts/smoke-test-production.js",

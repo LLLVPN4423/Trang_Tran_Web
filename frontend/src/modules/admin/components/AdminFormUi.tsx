@@ -99,6 +99,8 @@ export function AdminField({
 export const adminInputClass =
   'w-full border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 outline-none focus:border-gold/60'
 
+export const adminSelectClass = adminInputClass
+
 export function AdminFormActions({
   onCancel,
   submitLabel,

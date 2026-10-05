@@ -27,6 +27,8 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
         OrderStatus? status = null,
         string? phone = null,
         string? customerId = null,
+        OrderKind? kind = null,
+        string? appointmentId = null,
         CancellationToken cancellationToken = default)
     {
         Query query = Collection;
@@ -36,6 +38,12 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
 
         if (!string.IsNullOrWhiteSpace(customerId))
             query = query.WhereEqualTo("CustomerId", customerId);
+
+        if (kind is not null)
+            query = query.WhereEqualTo("Kind", kind.ToString());
+
+        if (!string.IsNullOrWhiteSpace(appointmentId))
+            query = query.WhereEqualTo("AppointmentId", appointmentId);
 
         var snapshot = await query.GetSnapshotAsync(cancellationToken);
         var orders = snapshot.Documents
@@ -69,6 +77,12 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
         new()
         {
             Id = doc.Id,
+            Kind = string.IsNullOrWhiteSpace(doc.Kind)
+                ? OrderKind.Retail
+                : Enum.Parse<OrderKind>(doc.Kind),
+            AppointmentId = doc.AppointmentId,
+            InternalNotes = doc.InternalNotes,
+            ManualDiscountAmount = doc.ManualDiscountAmount != 0 ? (decimal)doc.ManualDiscountAmount : 0,
             CustomerId = doc.CustomerId,
             CustomerName = doc.CustomerName,
             CustomerPhone = doc.CustomerPhone,
@@ -128,6 +142,10 @@ public sealed class FirestoreOrderRepository(FirestoreDb db) : IOrderRepository
         new()
         {
             Id = order.Id,
+            Kind = order.Kind.ToString(),
+            AppointmentId = order.AppointmentId,
+            InternalNotes = order.InternalNotes,
+            ManualDiscountAmount = (double)order.ManualDiscountAmount,
             CustomerId = order.CustomerId,
             CustomerName = order.CustomerName,
             CustomerPhone = order.CustomerPhone,
@@ -181,6 +199,18 @@ internal sealed class OrderDocument
 {
     [FirestoreDocumentId]
     public string Id { get; set; } = string.Empty;
+
+    [FirestoreProperty]
+    public string? Kind { get; set; }
+
+    [FirestoreProperty]
+    public string? AppointmentId { get; set; }
+
+    [FirestoreProperty]
+    public string? InternalNotes { get; set; }
+
+    [FirestoreProperty]
+    public double ManualDiscountAmount { get; set; }
 
     [FirestoreProperty]
     public string? CustomerId { get; set; }

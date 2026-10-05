@@ -24,6 +24,7 @@ import {
   normalizePaymentMethod,
   PAYMENT_METHOD_LABELS,
 } from '@/shared/lib/orderLabels'
+import { PaymentCancelled, PaymentPending, PaymentSuccess } from '@/modules/booking/components/PaymentPanel'
 import { useAuth } from '@/shared/auth/AuthProvider'
 
 export function OrderDetailPage() {
@@ -108,6 +109,11 @@ export function OrderDetailPage() {
 
   const paymentMethod = normalizePaymentMethod(order.paymentMethod)
   const fulfillmentMethod = normalizeFulfillmentMethod(order.fulfillmentMethod)
+  const isServiceInvoice = order.kind === 'ServiceInvoice'
+  const showServicePayment =
+    isServiceInvoice &&
+    (order.status === 'Pending' || order.status === 'Paid' || order.status === 'Cancelled') &&
+    paymentMethod === 'BankTransfer'
   const timeline = buildFulfillmentTimeline({
     ...order,
     paidAt: order.paidAt ?? null,
@@ -118,11 +124,36 @@ export function OrderDetailPage() {
   return (
     <PageLayout>
       <div className="mx-auto max-w-2xl px-6 py-16">
-        <p className="text-xs uppercase tracking-[0.35em] text-gold-muted">Theo dõi đơn hàng</p>
+        <p className="text-xs uppercase tracking-[0.35em] text-gold-muted">
+          {isServiceInvoice ? 'Hóa đơn dịch vụ' : 'Theo dõi đơn hàng'}
+        </p>
         <h1 className="mt-3 font-serif text-4xl text-zinc-100">{order.paymentCode}</h1>
         <p className="mt-2 text-sm text-zinc-500">
-          {PAYMENT_METHOD_LABELS[paymentMethod]} · {FULFILLMENT_METHOD_LABELS[fulfillmentMethod]}
+          {PAYMENT_METHOD_LABELS[paymentMethod]}
+          {!isServiceInvoice && <> · {FULFILLMENT_METHOD_LABELS[fulfillmentMethod]}</>}
         </p>
+
+        {showServicePayment && order.status === 'Pending' && (
+          <div className="mt-8">
+            <PaymentPending order={order} />
+          </div>
+        )}
+        {showServicePayment && order.status === 'Paid' && (
+          <div className="mt-8">
+            <PaymentSuccess order={order} />
+          </div>
+        )}
+        {showServicePayment && order.status === 'Cancelled' && (
+          <div className="mt-8">
+            <PaymentCancelled order={order} />
+          </div>
+        )}
+
+        {isServiceInvoice && paymentMethod === 'CashAtSalon' && order.status === 'Paid' && (
+          <div className="mt-8 rounded-sm border border-emerald-900/40 bg-emerald-950/20 p-6 text-sm text-zinc-300">
+            Salon đã xác nhận thanh toán tại quầy. Cảm ơn bạn!
+          </div>
+        )}
 
         <div className="mt-8 rounded-sm border border-zinc-800 p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -178,6 +209,7 @@ export function OrderDetailPage() {
           )}
         </div>
 
+        {!isServiceInvoice && (
         <section className="mt-10">
           <h2 className="text-xs uppercase tracking-widest text-zinc-500">Tiến trình</h2>
           <ol className="mt-4 space-y-4">
@@ -200,9 +232,12 @@ export function OrderDetailPage() {
             ))}
           </ol>
         </section>
+        )}
 
         <section className="mt-10">
-          <h2 className="text-xs uppercase tracking-widest text-zinc-500">Sản phẩm</h2>
+          <h2 className="text-xs uppercase tracking-widest text-zinc-500">
+            {isServiceInvoice ? 'Chi tiết dịch vụ' : 'Sản phẩm'}
+          </h2>
           <ul className="mt-4 space-y-2 text-sm text-zinc-400">
             {order.items.map((item) => (
               <li key={`${item.itemId}-${item.hairSize}`} className="flex justify-between gap-3">
@@ -221,7 +256,7 @@ export function OrderDetailPage() {
           </div>
         )}
 
-        {showConfirm && (
+        {!isServiceInvoice && showConfirm && (
           <div className="mt-10 rounded-sm border border-emerald-900/40 bg-emerald-950/20 p-6">
             <p className="text-sm text-zinc-300">Bạn đã nhận đủ hàng và hài lòng?</p>
             <button
@@ -235,7 +270,7 @@ export function OrderDetailPage() {
           </div>
         )}
 
-        {showDispute && (
+        {!isServiceInvoice && showDispute && (
           <div className="mt-6 rounded-sm border border-amber-900/40 bg-amber-950/20 p-6">
             <p className="text-sm text-zinc-300">Có vấn đề với đơn hàng?</p>
             <select

@@ -18,6 +18,7 @@ import { useAdminPoll } from './hooks/useAdminLiveRefresh'
 const TITLES: Record<string, string> = {
   '/admin': 'Tổng quan',
   '/admin/orders': 'Đơn hàng',
+  '/admin/service-invoices': 'Hóa đơn dịch vụ',
   '/admin/appointments': 'Lịch hẹn',
   '/admin/services': 'Dịch vụ',
   '/admin/products': 'Sản phẩm',
@@ -187,6 +188,7 @@ export function AdminOverview() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[
           { to: '/admin/orders', label: 'Theo dõi đơn hàng', desc: 'Xem chi tiết, xác nhận thanh toán CK' },
+          { to: '/admin/service-invoices', label: 'Hóa đơn dịch vụ', desc: 'Tạo bill sau khi làm tóc — CK hoặc tiền mặt' },
           { to: '/admin/appointments', label: 'Lịch hẹn', desc: 'Duyệt yêu cầu đặt lịch từ website' },
           { to: '/admin/services', label: 'Quản lý dịch vụ', desc: 'Thêm/sửa bảng giá, bật/tắt dịch vụ' },
           { to: '/admin/products', label: 'Sản phẩm retail', desc: 'Moroccanoil — giá, tồn kho, ảnh' },

@@ -45,6 +45,7 @@ export function OrdersAdminPanel() {
       fetchOrders({
         status: status || undefined,
         phone: phone.trim() || undefined,
+        kind: 'Retail',
         live: true,
       }),
     [status, phone],

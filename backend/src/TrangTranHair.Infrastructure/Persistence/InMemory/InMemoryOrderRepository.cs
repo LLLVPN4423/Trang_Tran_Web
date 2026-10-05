@@ -43,6 +43,8 @@ public sealed class InMemoryOrderRepository : IOrderRepository
         OrderStatus? status = null,
         string? phone = null,
         string? customerId = null,
+        OrderKind? kind = null,
+        string? appointmentId = null,
         CancellationToken cancellationToken = default)
     {
         IEnumerable<Order> query = _store.Values;
@@ -55,6 +57,12 @@ public sealed class InMemoryOrderRepository : IOrderRepository
 
         if (!string.IsNullOrWhiteSpace(customerId))
             query = query.Where(o => o.CustomerId == customerId);
+
+        if (kind is not null)
+            query = query.Where(o => o.Kind == kind);
+
+        if (!string.IsNullOrWhiteSpace(appointmentId))
+            query = query.Where(o => o.AppointmentId == appointmentId);
 
         return Task.FromResult<IReadOnlyList<Order>>(query.OrderByDescending(o => o.CreatedAt).ToList());
     }

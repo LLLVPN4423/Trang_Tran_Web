@@ -4,6 +4,10 @@ namespace TrangTranHair.Domain.Entities;
 
 public class Order : Common.BaseEntity
 {
+    public OrderKind Kind { get; set; } = OrderKind.Retail;
+    public string? AppointmentId { get; set; }
+    public string? InternalNotes { get; set; }
+    public decimal ManualDiscountAmount { get; set; }
     public string? CustomerId { get; set; }
     public string CustomerName { get; set; } = string.Empty;
     public string CustomerPhone { get; set; } = string.Empty;

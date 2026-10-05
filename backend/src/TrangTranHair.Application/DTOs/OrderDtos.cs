@@ -47,6 +47,10 @@ public sealed record OrderItemResponse(
 
 public sealed record OrderResponse(
     string Id,
+    OrderKind Kind,
+    string? AppointmentId,
+    string? InternalNotes,
+    decimal ManualDiscountAmount,
     string? CustomerId,
     string CustomerName,
     string CustomerPhone,

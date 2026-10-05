@@ -7,12 +7,14 @@ using TrangTranHair.Domain.Enums;
 
 namespace TrangTranHair.Application.Services;
 
-public sealed class OrderService(
+public sealed partial class OrderService(
     IProductRepository productRepository,
+    IServiceRepository serviceRepository,
     IOrderRepository orderRepository,
     IPromotionService promotionService,
     ILoyaltyService loyaltyService,
-    ICustomerRepository customerRepository) : IOrderService
+    ICustomerRepository customerRepository,
+    IAppointmentRepository appointmentRepository) : IOrderService
 {
     public const int StockReservationMinutes = 15;
     public const int CodStockReservationMinutes = 48 * 60;
@@ -95,6 +97,7 @@ public sealed class OrderService(
 
         var order = new Order
         {
+            Kind = OrderKind.Retail,
             CustomerId = request.CustomerId,
             CustomerName = request.CustomerName.Trim(),
             CustomerPhone = request.CustomerPhone.Trim(),
@@ -153,9 +156,10 @@ public sealed class OrderService(
         OrderStatus? status = null,
         string? phone = null,
         string? customerId = null,
+        OrderKind? kind = null,
         CancellationToken cancellationToken = default)
     {
-        var orders = await orderRepository.GetAllAsync(status, phone, customerId, cancellationToken);
+        var orders = await orderRepository.GetAllAsync(status, phone, customerId, kind, appointmentId: null, cancellationToken);
         return orders
             .OrderByDescending(o => o.CreatedAt)
             .Select(MapToResponse)
@@ -256,6 +260,8 @@ public sealed class OrderService(
                 order.TotalAmount,
                 cancellationToken);
         }
+
+        await CompleteLinkedAppointmentIfNeededAsync(order, cancellationToken);
 
         return MapToResponse(order);
     }
@@ -544,6 +550,10 @@ public sealed class OrderService(
     private static OrderResponse MapToResponse(Order order) =>
         new(
             order.Id,
+            order.Kind,
+            order.AppointmentId,
+            order.InternalNotes,
+            order.ManualDiscountAmount,
             order.CustomerId,
             order.CustomerName,
             order.CustomerPhone,

@@ -4,4 +4,6 @@ public enum PaymentMethod
 {
     BankTransfer,
     COD,
+    CashAtSalon,
 }
+

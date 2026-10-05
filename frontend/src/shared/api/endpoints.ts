@@ -1,5 +1,5 @@
 import { apiClient } from './client'
-import { normalizeFulfillmentMethod, normalizePaymentMethod } from '@/shared/lib/orderLabels'
+import { normalizeFulfillmentMethod, normalizeOrderKind, normalizePaymentMethod } from '@/shared/lib/orderLabels'
 import { normalizeFulfillmentStatus } from '@/shared/lib/orderFulfillment'
 import { mergeSiteContentForm } from '@/shared/lib/siteContentDefaults'
 import type {
@@ -12,6 +12,9 @@ import type {
   LoyaltyTransactionResponse,
   OrderResponse,
   OrderStatus,
+  OrderKind,
+  CreateServiceInvoiceRequest,
+  UpdateServiceInvoiceRequest,
   ProductResponse,
   PromotionResponse,
   ServiceResponse,
@@ -121,6 +124,10 @@ export async function deleteProduct(id: string): Promise<void> {
 function normalizeOrder(order: OrderResponse): OrderResponse {
   return {
     ...order,
+    kind: normalizeOrderKind(order.kind),
+    appointmentId: order.appointmentId ?? null,
+    internalNotes: order.internalNotes ?? null,
+    manualDiscountAmount: order.manualDiscountAmount ?? 0,
     paymentMethod: normalizePaymentMethod(order.paymentMethod),
     fulfillmentMethod: normalizeFulfillmentMethod(order.fulfillmentMethod),
     deliveryAddress: order.deliveryAddress ?? null,
@@ -161,7 +168,7 @@ export async function fetchOrder(
 }
 
 export async function fetchOrders(
-  params?: { status?: OrderStatus; phone?: string; live?: boolean },
+  params?: { status?: OrderStatus; phone?: string; kind?: OrderKind; live?: boolean },
 ): Promise<OrderResponse[]> {
   const { live, ...query } = params ?? {}
   const { data } = await apiClient.get<OrderResponse[]>('/api/orders', {
@@ -176,6 +183,33 @@ export async function fetchOrders(
 
 export async function updateOrderStatus(id: string, status: OrderStatus): Promise<OrderResponse> {
   const { data } = await apiClient.patch<OrderResponse>(`/api/orders/${id}/status`, { status })
+  return normalizeOrder(data)
+}
+
+export async function fetchServiceInvoices(params?: {
+  status?: OrderStatus
+  phone?: string
+  appointmentId?: string
+  live?: boolean
+}): Promise<OrderResponse[]> {
+  const { live, ...query } = params ?? {}
+  const { data } = await apiClient.get<OrderResponse[]>('/api/admin/service-invoices', {
+    params: { ...query, ...(live ? { _t: Date.now() } : {}) },
+    headers: live ? { 'Cache-Control': 'no-cache' } : undefined,
+  })
+  return data.map(normalizeOrder)
+}
+
+export async function createServiceInvoice(request: CreateServiceInvoiceRequest): Promise<OrderResponse> {
+  const { data } = await apiClient.post<OrderResponse>('/api/admin/service-invoices', request)
+  return normalizeOrder(data)
+}
+
+export async function updateServiceInvoice(
+  id: string,
+  request: UpdateServiceInvoiceRequest,
+): Promise<OrderResponse> {
+  const { data } = await apiClient.put<OrderResponse>(`/api/admin/service-invoices/${id}`, request)
   return normalizeOrder(data)
 }
 

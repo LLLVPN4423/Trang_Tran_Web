@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useCallback, useState } from 'react'
 import { fetchAppointments, updateAppointmentStatus } from '@/shared/api/endpoints'
 import type { AppointmentStatus } from '@/shared/api/types'
@@ -149,16 +150,24 @@ export function AppointmentsAdminPanel() {
                   </button>
                 </div>
               )}
-              {item.status === 'Confirmed' && (
-                <button
-                  type="button"
-                  disabled={updatingId === item.id}
-                  onClick={() => handleStatus(item.id, 'Completed')}
-                  className="mt-4 text-xs uppercase tracking-widest text-gold disabled:opacity-50"
+              <div className="mt-4 flex flex-wrap gap-4">
+                <Link
+                  to={`/admin/service-invoices?appointmentId=${encodeURIComponent(item.id)}`}
+                  className="text-xs uppercase tracking-widest text-gold hover:text-gold-muted"
                 >
-                  Đánh dấu hoàn tất
-                </button>
-              )}
+                  Tạo hóa đơn
+                </Link>
+                {item.status === 'Confirmed' && (
+                  <button
+                    type="button"
+                    disabled={updatingId === item.id}
+                    onClick={() => handleStatus(item.id, 'Completed')}
+                    className="text-xs uppercase tracking-widest text-zinc-400 hover:text-gold disabled:opacity-50"
+                  >
+                    Đánh dấu hoàn tất
+                  </button>
+                )}
+              </div>
             </article>
           )
         })}

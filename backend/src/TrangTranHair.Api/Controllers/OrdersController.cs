@@ -106,13 +106,15 @@ public class OrdersController(
 
         [FromQuery] string? phone,
 
+        [FromQuery] OrderKind? kind,
+
         CancellationToken ct)
 
     {
 
         if (await adminAccess.IsAdminAsync(User, ct))
 
-            return Ok(await orderService.ListOrdersAsync(status, phone, null, ct));
+            return Ok(await orderService.ListOrdersAsync(status, phone, null, kind, ct));
 
 
 
@@ -122,7 +124,7 @@ public class OrdersController(
 
 
 
-        return Ok(await orderService.ListOrdersAsync(status, phone, currentUser.UserId, ct));
+        return Ok(await orderService.ListOrdersAsync(status, phone, currentUser.UserId, kind: null, ct));
 
     }
 

@@ -28,11 +28,16 @@ function OrderTrackingLink({ order }: { order: OrderResponse }) {
 function OrderMeta({ order }: { order: OrderResponse }) {
   const paymentMethod = normalizePaymentMethod(order.paymentMethod)
   const fulfillmentMethod = normalizeFulfillmentMethod(order.fulfillmentMethod)
+  const isServiceInvoice = order.kind === 'ServiceInvoice'
   return (
     <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500">
       <span>{PAYMENT_METHOD_LABELS[paymentMethod]}</span>
-      <span>·</span>
-      <span>{FULFILLMENT_METHOD_LABELS[fulfillmentMethod]}</span>
+      {!isServiceInvoice && (
+        <>
+          <span>·</span>
+          <span>{FULFILLMENT_METHOD_LABELS[fulfillmentMethod]}</span>
+        </>
+      )}
       {order.shippingFee > 0 && (
         <>
           <span>·</span>
@@ -225,14 +230,18 @@ export function PaymentCancelled({ order }: Props) {
 
 export function PaymentSuccess({ order }: Props) {
   const fulfillmentNote =
-    order.fulfillmentMethod === 'Delivery'
-      ? 'Salon sẽ giao hàng theo địa chỉ bạn đã cung cấp.'
-      : 'Bạn có thể đến tiệm lấy hàng nếu chưa nhận.'
+    order.kind === 'ServiceInvoice'
+      ? 'Cảm ơn bạn đã tin tưởng Trang Tran Hair Salon.'
+      : order.fulfillmentMethod === 'Delivery'
+        ? 'Salon sẽ giao hàng theo địa chỉ bạn đã cung cấp.'
+        : 'Bạn có thể đến tiệm lấy hàng nếu chưa nhận.'
 
   return (
     <div className="rounded-sm border border-emerald-900/50 bg-emerald-950/20 p-8 text-center">
       <p className="text-4xl">✓</p>
-      <h2 className="mt-4 font-serif text-3xl text-emerald-300">Đơn hàng hoàn tất</h2>
+      <h2 className="mt-4 font-serif text-3xl text-emerald-300">
+        {order.kind === 'ServiceInvoice' ? 'Thanh toán thành công' : 'Đơn hàng hoàn tất'}
+      </h2>
       <p className="mt-2 text-zinc-400">
         Đơn <strong className="text-zinc-200">{order.paymentCode}</strong> đã được salon xác nhận.
       </p>

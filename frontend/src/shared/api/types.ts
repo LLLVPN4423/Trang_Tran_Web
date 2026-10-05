@@ -13,11 +13,13 @@ export type ServiceCategory =
 
 export type StylistLevel = 'MasterTrangTran' | 'Senior' | 'Junior' | 'BangTrim'
 
-export type OrderItemType = 'Service' | 'Product'
+export type OrderItemType = 'Service' | 'Product' | 'Custom'
+
+export type OrderKind = 'Retail' | 'ServiceInvoice'
 
 export type OrderStatus = 'Pending' | 'Paid' | 'Cancelled'
 
-export type PaymentMethod = 'BankTransfer' | 'COD'
+export type PaymentMethod = 'BankTransfer' | 'COD' | 'CashAtSalon'
 
 export type FulfillmentMethod = 'Pickup' | 'Delivery'
 
@@ -112,8 +114,52 @@ export interface SubmitDisputeRequest {
   notes?: string | null
 }
 
+export interface ServiceInvoiceLineRequest {
+  itemType: OrderItemType
+  itemId?: string | null
+  name?: string | null
+  hairSize?: HairSize | null
+  quantity?: number
+  unitPrice?: number | null
+}
+
+export interface CreateServiceInvoiceRequest {
+  customerName: string
+  customerPhone: string
+  customerEmail?: string | null
+  customerId?: string | null
+  appointmentId?: string | null
+  notes?: string | null
+  internalNotes?: string | null
+  lines: ServiceInvoiceLineRequest[]
+  manualDiscountAmount?: number
+  promoCode?: string | null
+  pointsToRedeem?: number
+  paymentMethod?: PaymentMethod
+  markPaidImmediately?: boolean
+}
+
+export interface UpdateServiceInvoiceRequest {
+  customerName: string
+  customerPhone: string
+  customerEmail?: string | null
+  customerId?: string | null
+  appointmentId?: string | null
+  notes?: string | null
+  internalNotes?: string | null
+  lines: ServiceInvoiceLineRequest[]
+  manualDiscountAmount?: number
+  promoCode?: string | null
+  pointsToRedeem?: number
+  paymentMethod?: PaymentMethod
+}
+
 export interface OrderResponse {
   id: string
+  kind: OrderKind
+  appointmentId: string | null
+  internalNotes: string | null
+  manualDiscountAmount: number
   customerId: string | null
   customerName: string
   customerPhone: string

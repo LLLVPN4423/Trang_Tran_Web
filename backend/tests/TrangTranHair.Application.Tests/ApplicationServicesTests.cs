@@ -100,7 +100,7 @@ public class OrderServiceLinkTests
         var loyaltyRepo = new InMemoryLoyaltyRepository();
         var loyalty = new LoyaltyService(customers, loyaltyRepo, orders);
         var promotionService = new PromotionService(promotions);
-        var orderService = new OrderService(products, orders, promotionService, loyalty, customers);
+        var orderService = new OrderService(products, services, orders, promotionService, loyalty, customers, new InMemoryAppointmentRepository());
 
         await orders.CreateAsync(new Order
         {
@@ -160,15 +160,7 @@ public class OrderServiceStockTests
     [Fact]
     public async Task CreateOrder_reserves_product_stock_while_pending()
     {
-        var services = new InMemoryServiceRepository();
-        var products = new InMemoryProductRepository();
-        var orders = new InMemoryOrderRepository();
-        var promotions = new InMemoryPromotionRepository();
-        var customers = new InMemoryCustomerRepository();
-        var loyaltyRepo = new InMemoryLoyaltyRepository();
-        var loyalty = new LoyaltyService(customers, loyaltyRepo, orders);
-        var promotionService = new PromotionService(promotions);
-        var orderService = new OrderService(products, orders, promotionService, loyalty, customers);
+        var (orderService, products, _, orders, _, _) = OrderServiceTestFactory.Create();
 
         await products.CreateAsync(new Product
         {
@@ -197,15 +189,7 @@ public class OrderServiceStockTests
     [Fact]
     public async Task Cancel_pending_order_releases_reserved_stock()
     {
-        var services = new InMemoryServiceRepository();
-        var products = new InMemoryProductRepository();
-        var orders = new InMemoryOrderRepository();
-        var promotions = new InMemoryPromotionRepository();
-        var customers = new InMemoryCustomerRepository();
-        var loyaltyRepo = new InMemoryLoyaltyRepository();
-        var loyalty = new LoyaltyService(customers, loyaltyRepo, orders);
-        var promotionService = new PromotionService(promotions);
-        var orderService = new OrderService(products, orders, promotionService, loyalty, customers);
+        var (orderService, products, _, orders, _, _) = OrderServiceTestFactory.Create();
 
         await products.CreateAsync(new Product
         {
@@ -232,15 +216,7 @@ public class OrderServiceStockTests
     [Fact]
     public async Task CreateOrder_rejects_service_items()
     {
-        var services = new InMemoryServiceRepository();
-        var products = new InMemoryProductRepository();
-        var orders = new InMemoryOrderRepository();
-        var promotions = new InMemoryPromotionRepository();
-        var customers = new InMemoryCustomerRepository();
-        var loyaltyRepo = new InMemoryLoyaltyRepository();
-        var loyalty = new LoyaltyService(customers, loyaltyRepo, orders);
-        var promotionService = new PromotionService(promotions);
-        var orderService = new OrderService(products, orders, promotionService, loyalty, customers);
+        var (orderService, _, services, _, _, _) = OrderServiceTestFactory.Create();
 
         await services.CreateAsync(new Service
         {

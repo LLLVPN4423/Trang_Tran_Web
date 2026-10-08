@@ -13,6 +13,7 @@ backend/**/obj/
 .env.local
 *.json.secret
 firebase-service-account.json
+github-sa-key.json
 
 # IDE
 .vs/

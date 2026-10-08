@@ -6,7 +6,6 @@ import { useAuth } from '@/shared/auth/AuthProvider'
 import { useServiceCartStore } from '@/shared/store/serviceCartStore'
 import { selectServiceCartCount } from '@/shared/store/serviceCartSelectors'
 import { useSiteContent } from '../SiteContentContext'
-import { SalonSharePanel } from '@/shared/components/SalonSharePanel'
 
 export function BookingSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -146,9 +145,6 @@ export function BookingSection() {
             </div>
           </dl>
 
-          <div className="mt-10">
-            <SalonSharePanel path="/appointment" />
-          </div>
         </div>
 
         <div>

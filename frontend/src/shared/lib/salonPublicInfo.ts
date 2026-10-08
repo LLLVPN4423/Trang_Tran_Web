@@ -1,3 +1,5 @@
+import { SALON_META_KEYWORDS } from '@/shared/lib/salonKeywords'
+
 /** Thông tin công khai salon — SEO, JSON-LD, CTA (đồng bộ với site content mặc định). */
 export const SALON_PUBLIC = {
   name: 'Trang Tran Hair Salon',
@@ -8,8 +10,7 @@ export const SALON_PUBLIC = {
   address: '18–19 LK2, KDC Tuấn Lan, Hùng Vương, TP. Sóc Trăng',
   openingHours: '8:30 – 20:30, Thứ Hai – Chủ Nhật',
   geo: { latitude: 9.6032, longitude: 105.98 },
-  keywords:
-    'salon tóc Sóc Trăng, nhuộm tóc, uốn tóc, balayage, Trang Tran Hair, làm tóc Hùng Vương, Moroccanoil',
+  keywords: SALON_META_KEYWORDS,
   facebook: 'https://www.facebook.com/TrangTranHair/',
   portfolioUrl: 'https://trang-tran-portfolio.vercel.app/',
   zalo: 'https://zalo.me/0986586058',

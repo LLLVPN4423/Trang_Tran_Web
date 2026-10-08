@@ -22,6 +22,16 @@ import {
 } from '@/shared/lib/servicePricing'
 import { useServiceCartStore } from '@/shared/store/serviceCartStore'
 import { selectServiceCartCount } from '@/shared/store/serviceCartSelectors'
+import { useSalonDocumentMeta } from '@/shared/hooks/useSalonDocumentMeta'
+import { SALON_PUBLIC } from '@/shared/lib/salonPublicInfo'
+
+function buildServiceMetaDescription(service: ServiceResponse): string {
+  const category = CATEGORY_LABELS[service.category]
+  const lead = service.description?.trim()
+    ? `${service.description.trim().slice(0, 120)}${service.description.length > 120 ? '…' : ''} `
+    : ''
+  return `${lead}${service.name} — ${category} tại Trang Tran Hair, Sóc Trăng. ${SALON_PUBLIC.address}. Đặt lịch · ${SALON_PUBLIC.phoneDisplay}.`
+}
 
 export function ServiceDetailPage() {
   return (
@@ -59,6 +69,16 @@ function ServiceDetailContent() {
     : 0
   const priceRange = service ? formatServicePriceRange(service) : null
   const gallery = service ? getCatalogGallery(service) : []
+
+  const metaActive = Boolean(service?.isActive && id)
+  const categoryLabel = service ? CATEGORY_LABELS[service.category] : ''
+  useSalonDocumentMeta(metaActive, {
+    title: service
+      ? `${service.name} · ${categoryLabel} Sóc Trăng · Trang Tran Hair`
+      : 'Trang Tran Hair',
+    description: service ? buildServiceMetaDescription(service) : SALON_PUBLIC.name,
+    canonicalPath: id ? `/catalog/service/${id}` : '/catalog',
+  })
 
   const handleAdd = () => {
     if (!service) return
@@ -98,6 +118,9 @@ function ServiceDetailContent() {
             <div>
               <p className="section-eyebrow">{CATEGORY_LABELS[service.category]}</p>
               <h1 className="section-title mt-2">{service.name}</h1>
+              <p className="mt-2 text-sm text-zinc-500">
+                {categoryLabel} tại salon Sóc Trăng (Tuấn Lan, Hùng Vương) — đặt lịch online Trang Tran Hair.
+              </p>
               {service.stylistLevel && (
                 <p className="mt-2 text-sm text-zinc-500">{STYLIST_LABELS[service.stylistLevel]}</p>
               )}

@@ -29,6 +29,21 @@ export const SALON_FAQ = [
     answer:
       'Gọi 0986 586 058, nhắn Zalo cùng số, hoặc inbox Facebook TrangTranHair. Trên điện thoại, dùng nút Gọi / Zalo / Đặt lịch cố định dưới màn hình.',
   },
+  {
+    question: 'Tìm “salon tóc Sóc Trăng” hoặc “nhuộm tóc Sóc Trăng” thì Trang Tran Hair ở đâu?',
+    answer:
+      'Trang Tran Hair (Salon Trang Trần) tại 18–19 LK2 KDC Tuấn Lan, Hùng Vương, TP. Sóc Trăng. Xem bảng giá và đặt lịch trên web chính thức trangtran-hair.pages.dev.',
+  },
+  {
+    question: 'Salon có cắt tóc nam/nữ và tẩy/nhuộm màu thời trang không?',
+    answer:
+      'Có — cắt, tạo kiểu, uốn/duỗi, nhuộm, balayage, airtouch và phục hồi. Giá theo bảng giá web; tóc dài/dày có thể UpSize.',
+  },
+  {
+    question: 'Có thể mua Moroccanoil tại Sóc Trăng qua salon không?',
+    answer:
+      'Có shop Moroccanoil trên web salon — đặt online, giao theo quy trình đơn hàng. Làm tóc tại tiệm: đặt lịch dịch vụ trước.',
+  },
 ] as const
 
 export function buildFaqJsonLd() {

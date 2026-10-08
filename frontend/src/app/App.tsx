@@ -14,6 +14,8 @@ import { LoadingState } from '@/shared/components/LoadingState'
 import { NotFoundPage } from '@/shared/components/NotFoundPage'
 import { ModuleErrorBoundary } from '@/shared/components/ModuleErrorBoundary'
 import { lazyWithRetry } from '@/shared/utils/lazyWithRetry'
+import { MobileSalonCtaBar } from '@/shared/components/MobileSalonCtaBar'
+import { SalonLocalSeo } from '@/shared/components/SalonLocalSeo'
 
 const AdminLayout = lazyWithRetry(() =>
   import('@/modules/admin/AdminLayout').then((m) => ({ default: m.AdminLayout })),
@@ -63,6 +65,8 @@ export function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <SalonLocalSeo />
+        <MobileSalonCtaBar />
         <Routes>
           <Route path="/" element={<PortfolioPage />} />
           <Route path="/catalog" element={<CatalogPage />} />

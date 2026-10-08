@@ -7,8 +7,8 @@ import { GallerySection } from './sections/GallerySection'
 import { LookbookSection } from './sections/LookbookSection'
 import { CatalogSection } from './sections/CatalogSection'
 import { BookingSection } from './sections/BookingSection'
+import { SalonFaqSection } from '@/shared/components/SalonFaqSection'
 import { SiteContentProvider } from './SiteContentContext'
-
 export function PortfolioPage() {
   return (
     <ModuleErrorBoundary moduleName="Portfolio">
@@ -21,6 +21,7 @@ export function PortfolioPage() {
               <GallerySection />
               <LookbookSection />
               <CatalogSection />
+              <SalonFaqSection />
               <BookingSection />
             </div>
           </SmoothScrollProvider>

@@ -1,0 +1,18 @@
+{
+  "name": "Trang Tran Hair Salon",
+  "short_name": "Trang Tran",
+  "description": "Salon tóc Sóc Trăng — đặt lịch, bảng giá, Moroccanoil",
+  "lang": "vi",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#c9a962",
+  "icons": [
+    {
+      "src": "/icons.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

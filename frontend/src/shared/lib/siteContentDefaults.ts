@@ -43,11 +43,15 @@ export const DEFAULT_SITE_CONTENT: SiteContentResponse = {
   contact: {
     phone: '0986 586 058',
     phoneRaw: '0986586058',
-    address: '18-19LK2 KDC Tuấn Lan, Hùng Vương, TP. Sóc Trăng',
+    address: '18–19 LK2, KDC Tuấn Lan, Hùng Vương, TP. Sóc Trăng',
     note: 'Tóc dày và dài sẽ được tính UpSize (S → M → L → XL)',
+    openingHours: '8:30 – 20:30 (Thứ Hai – Chủ Nhật)',
+    mapsUrl:
+      'https://www.google.com/maps/search/?api=1&query=18-19+LK2+Tu%E1%BA%A5n+Lan+H%C3%B9ng+V%C6%B0%C6%A1ng+S%C3%B3c+Tr%C4%83ng',
+    zaloUrl: 'https://zalo.me/0986586058',
   },
   socialLinks: [
-    { label: 'Facebook', url: 'https://www.facebook.com/trang.tran.352944?locale=vi_VN' },
+    { label: 'Facebook', url: 'https://www.facebook.com/TrangTranHair/' },
     { label: 'Instagram', url: 'https://www.instagram.com/trang_tran_hair' },
     { label: 'Threads', url: 'https://www.threads.com/@trang_tran_hair' },
     { label: 'TikTok', url: 'https://www.tiktok.com/@trangtranhair' },
@@ -67,6 +71,9 @@ export function mergeSiteContentForm(raw: SiteContentResponse | null | undefined
           phoneRaw: raw.contact.phoneRaw?.trim() || raw.contact.phone.replace(/\D/g, ''),
           address: raw.contact.address?.trim() ?? base.contact.address,
           note: raw.contact.note?.trim() ?? base.contact.note,
+          openingHours: raw.contact.openingHours?.trim() ?? base.contact.openingHours,
+          mapsUrl: raw.contact.mapsUrl?.trim() ?? base.contact.mapsUrl,
+          zaloUrl: raw.contact.zaloUrl?.trim() ?? base.contact.zaloUrl,
         }
       : base.contact
 

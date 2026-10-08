@@ -4,6 +4,7 @@ import { PageLayout } from '@/shared/components/PageLayout'
 import { AppointmentForm } from './components/AppointmentForm'
 import { ServiceCartSummary } from './components/ServiceCartSummary'
 import { useServiceCartStore } from '@/shared/store/serviceCartStore'
+import { SalonSharePanel } from '@/shared/components/SalonSharePanel'
 
 export function AppointmentPage() {
   return (
@@ -32,6 +33,7 @@ function AppointmentContent() {
         <div className="mt-10 space-y-12">
           <ServiceCartSummary />
           {itemCount > 0 && <AppointmentForm />}
+          <SalonSharePanel compact />
         </div>
       </div>
     </PageLayout>

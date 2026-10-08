@@ -6,6 +6,7 @@ import { useAuth } from '@/shared/auth/AuthProvider'
 import { useServiceCartStore } from '@/shared/store/serviceCartStore'
 import { selectServiceCartCount } from '@/shared/store/serviceCartSelectors'
 import { useSiteContent } from '../SiteContentContext'
+import { SalonSharePanel } from '@/shared/components/SalonSharePanel'
 
 export function BookingSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -94,9 +95,43 @@ export function BookingSection() {
               </dd>
             </div>
             <div>
-              <dt className="label-caps text-zinc-600">Địa chỉ</dt>
-              <dd className="mt-1.5 leading-relaxed text-zinc-300">{contact.address}</dd>
+              <dt className="label-caps text-zinc-600">Giờ mở cửa</dt>
+              <dd className="mt-1.5 text-zinc-300">{contact.openingHours ?? '8:30 – 20:30 (T2–CN)'}</dd>
             </div>
+            <div>
+              <dt className="label-caps text-zinc-600">Địa chỉ</dt>
+              <dd className="mt-1.5 leading-relaxed text-zinc-300">
+                {contact.address}
+                {contact.mapsUrl && (
+                  <>
+                    {' '}
+                    <a
+                      href={contact.mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gold-muted hover:text-gold"
+                    >
+                      Chỉ đường Google Maps →
+                    </a>
+                  </>
+                )}
+              </dd>
+            </div>
+            {contact.zaloUrl && (
+              <div>
+                <dt className="label-caps text-zinc-600">Chat nhanh</dt>
+                <dd className="mt-1.5">
+                  <a
+                    href={contact.zaloUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gold-muted hover:text-gold"
+                  >
+                    Nhắn Zalo salon →
+                  </a>
+                </dd>
+              </div>
+            )}
             <div>
               <dt className="label-caps text-zinc-600">Lưu ý</dt>
               <dd className="mt-1.5 leading-relaxed text-zinc-400">{contact.note}</dd>
@@ -110,6 +145,10 @@ export function BookingSection() {
               </dd>
             </div>
           </dl>
+
+          <div className="mt-10">
+            <SalonSharePanel path="/appointment" />
+          </div>
         </div>
 
         <div>

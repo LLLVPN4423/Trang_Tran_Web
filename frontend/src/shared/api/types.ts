@@ -443,6 +443,9 @@ export interface ContactContent {
   phoneRaw: string
   address: string
   note: string
+  openingHours?: string
+  mapsUrl?: string
+  zaloUrl?: string
 }
 
 export interface SocialLinkContent {

@@ -15,7 +15,7 @@ export function AppShell({ children, variant = 'customer', showSidebar = true }:
     return (
       <div className="min-h-screen bg-zinc-950">
         <SiteHeader onMenuClick={() => setMobileOpen(true)} showMenuButton={false} />
-        <main>{children}</main>
+        <main className="pb-20 lg:pb-0">{children}</main>
       </div>
     )
   }
@@ -31,7 +31,7 @@ export function AppShell({ children, variant = 'customer', showSidebar = true }:
           </div>
         </div>
 
-        <main className="min-w-0 flex-1 overflow-x-hidden">{children}</main>
+        <main className="min-w-0 flex-1 overflow-x-hidden pb-20 lg:pb-0">{children}</main>
       </div>
 
       {mobileOpen && (

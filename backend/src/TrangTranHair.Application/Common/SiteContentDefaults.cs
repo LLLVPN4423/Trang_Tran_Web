@@ -44,10 +44,10 @@ public static class SiteContentDefaults
             new ContactContentDto(
                 "0986 586 058",
                 "0986586058",
-                "18-19LK2 KDC Tuấn Lan, Hùng Vương, TP. Sóc Trăng",
+                "18–19 LK2, KDC Tuấn Lan, Hùng Vương, TP. Sóc Trăng",
                 "Tóc dày và dài sẽ được tính UpSize (S → M → L → XL)"),
             [
-                new SocialLinkDto("Facebook", "https://www.facebook.com/trang.tran.352944?locale=vi_VN"),
+                new SocialLinkDto("Facebook", "https://www.facebook.com/TrangTranHair/"),
                 new SocialLinkDto("Instagram", "https://www.instagram.com/trang_tran_hair"),
                 new SocialLinkDto("Threads", "https://www.threads.com/@trang_tran_hair"),
                 new SocialLinkDto("TikTok", "https://www.tiktok.com/@trangtranhair"),

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { gsap } from '@/shared/lib/gsap'
 import { resolveProductImageUrl } from '@/shared/lib/productMedia'
 import { useSiteContent } from '../SiteContentContext'
@@ -105,7 +106,18 @@ export function HeroSection() {
         >
           {hero.tagline}
         </p>
-        <div className="hero-tagline mt-14">
+        <div className="hero-tagline mt-10 flex flex-wrap items-center justify-center gap-3">
+          <Link to="/catalog" className="btn-gold px-6 py-2.5 text-[10px] uppercase tracking-widest">
+            Bảng giá · Sóc Trăng
+          </Link>
+          <Link
+            to="/appointment"
+            className="btn-editorial px-6 py-2.5 text-[10px] uppercase tracking-widest"
+          >
+            Đặt lịch online
+          </Link>
+        </div>
+        <div className="hero-tagline mt-10">
           <span className="mx-auto block h-10 w-px bg-gradient-to-b from-gold/50 to-transparent" />
         </div>
       </div>

@@ -8,6 +8,7 @@ import { LookbookSection } from './sections/LookbookSection'
 import { CatalogSection } from './sections/CatalogSection'
 import { BookingSection } from './sections/BookingSection'
 import { SalonFaqSection } from '@/shared/components/SalonFaqSection'
+import { SalonPresenceFooter } from '@/shared/components/SalonPresenceFooter'
 import { SiteContentProvider } from './SiteContentContext'
 export function PortfolioPage() {
   return (
@@ -23,6 +24,7 @@ export function PortfolioPage() {
               <CatalogSection />
               <SalonFaqSection />
               <BookingSection />
+              <SalonPresenceFooter />
             </div>
           </SmoothScrollProvider>
         </SiteContentProvider>

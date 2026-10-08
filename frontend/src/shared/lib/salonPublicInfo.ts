@@ -11,6 +11,7 @@ export const SALON_PUBLIC = {
   keywords:
     'salon tóc Sóc Trăng, nhuộm tóc, uốn tóc, balayage, Trang Tran Hair, làm tóc Hùng Vương, Moroccanoil',
   facebook: 'https://www.facebook.com/TrangTranHair/',
+  portfolioUrl: 'https://trang-tran-portfolio.vercel.app/',
   zalo: 'https://zalo.me/0986586058',
   mapsSearchUrl:
     'https://www.google.com/maps/search/?api=1&query=18-19+LK2+Tu%E1%BA%A5n+Lan+H%C3%B9ng+V%C6%B0%C6%A1ng+S%C3%B3c+Tr%C4%83ng',
@@ -50,7 +51,9 @@ export function buildHairSalonJsonLd(origin: string = SALON_PUBLIC.siteUrl) {
       },
     ],
     sameAs: [
+      origin,
       SALON_PUBLIC.facebook,
+      SALON_PUBLIC.portfolioUrl,
       'https://www.instagram.com/trang_tran_hair',
       'https://www.tiktok.com/@trangtranhair',
     ],

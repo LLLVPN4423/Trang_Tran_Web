@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '@/shared/auth/AuthProvider'
+import { SALON_PUBLIC } from '@/shared/lib/salonPublicInfo'
 import { useCartStore } from '@/shared/store/cartStore'
 import { selectCartItemCount } from '@/shared/store/cartSelectors'
 import { useServiceCartStore } from '@/shared/store/serviceCartStore'
@@ -121,6 +122,36 @@ export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
           </NavLink>
         )}
       </nav>
+
+      {variant === 'customer' && (
+        <div className="mt-6 space-y-2 border-t border-zinc-800/80 pt-4 text-xs">
+          <p className="label-caps text-zinc-600">Maps & MXH</p>
+          <a
+            href={SALON_PUBLIC.mapsSearchUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-zinc-500 hover:text-gold"
+          >
+            Google Maps
+          </a>
+          <a
+            href={SALON_PUBLIC.facebook}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-zinc-500 hover:text-gold"
+          >
+            Facebook
+          </a>
+          <a
+            href={SALON_PUBLIC.portfolioUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-zinc-500 hover:text-gold"
+          >
+            Portfolio
+          </a>
+        </div>
+      )}
 
       {user && (
         <div className="mt-auto border-t border-zinc-800 pt-4">

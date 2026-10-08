@@ -33,9 +33,10 @@ function CatalogContent() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="section-eyebrow">Catalog</p>
-            <h1 className="section-title">Bảng giá dịch vụ</h1>
+            <h1 className="section-title">Bảng giá dịch vụ · Sóc Trăng</h1>
             <p className="section-body mt-4 max-w-2xl">
-              Chọn dịch vụ, thêm vào danh sách rồi gửi lịch một lần. Thanh toán tại tiệm.{' '}
+              Salon Trang Trần — Tuấn Lan, Hùng Vương. Chọn dịch vụ, thêm vào danh sách rồi gửi lịch một lần.
+              Thanh toán tại tiệm.{' '}
               <Link to="/shop" className="text-gold-muted hover:text-gold">
                 Mua sản phẩm Moroccanoil online
               </Link>

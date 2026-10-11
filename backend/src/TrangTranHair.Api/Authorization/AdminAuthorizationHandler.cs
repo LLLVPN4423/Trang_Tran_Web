@@ -12,7 +12,7 @@ public sealed class AdminAuthorizationHandler(IAdminAccessService adminAccess) :
         AuthorizationHandlerContext context,
         AdminRequirement requirement)
     {
-        if (await adminAccess.IsAdminAsync(context.User))
+        if (await adminAccess.IsSalonAdminAsync(context.User))
             context.Succeed(requirement);
     }
 }

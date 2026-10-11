@@ -29,7 +29,8 @@ import { setAuthTokenProvider } from '@/shared/api/client'
 import {
   fetchCustomerMe,
   syncCustomer,
-  verifyAdminAccess,
+  fetchAdminContext,
+  type AdminRole,
 } from '@/shared/api/endpoints'
 import type { CustomerResponse } from '@/shared/api/types'
 
@@ -41,6 +42,7 @@ interface AuthContextValue {
   isRedirectProcessing: boolean
   redirectError: string | null
   isAdmin: boolean
+  adminRole: AdminRole | null
   login: (email: string, password: string) => Promise<void>
   loginWithGoogle: () => Promise<void>
   register: (email: string, password: string, name: string, phone: string) => Promise<void>
@@ -58,6 +60,7 @@ const AuthContext = createContext<AuthContextValue>({
   isRedirectProcessing: false,
   redirectError: null,
   isAdmin: false,
+  adminRole: null,
   login: async () => {},
   loginWithGoogle: async () => {},
   register: async () => {},
@@ -67,16 +70,18 @@ const AuthContext = createContext<AuthContextValue>({
   clearRedirectError: () => {},
 })
 
-async function resolveAdminClaim(user: User | null): Promise<boolean> {
-  if (!user) return false
+async function resolveAdminAccess(user: User | null): Promise<{ isAdmin: boolean; adminRole: AdminRole | null }> {
+  if (!user) return { isAdmin: false, adminRole: null }
   try {
     const token = await user.getIdTokenResult(true)
     const claim = token.claims.admin
     const hasClaim = claim === true || claim === 'true'
-    if (!hasClaim) return false
-    return verifyAdminAccess()
+    if (!hasClaim) return { isAdmin: false, adminRole: null }
+    const ctx = await fetchAdminContext()
+    if (!ctx) return { isAdmin: false, adminRole: null }
+    return { isAdmin: true, adminRole: ctx.role }
   } catch {
-    return false
+    return { isAdmin: false, adminRole: null }
   }
 }
 
@@ -94,12 +99,14 @@ async function applyUserState(
   setters: {
     setUser: (u: User | null) => void
     setIsAdmin: (v: boolean) => void
+    setAdminRole: (r: AdminRole | null) => void
     setCustomerProfile: (p: CustomerResponse | null) => void
   },
 ) {
   setters.setUser(nextUser)
-  const admin = await resolveAdminClaim(nextUser)
-  setters.setIsAdmin(admin)
+  const access = await resolveAdminAccess(nextUser)
+  setters.setIsAdmin(access.isAdmin)
+  setters.setAdminRole(access.adminRole)
   setters.setCustomerProfile(await loadCustomerProfile(nextUser))
 }
 
@@ -121,6 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [customerProfile, setCustomerProfile] = useState<CustomerResponse | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [adminRole, setAdminRole] = useState<AdminRole | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isRedirectProcessing, setIsRedirectProcessing] = useState(
     () => wasGoogleRedirectPending() || isRedirectReturnUrl(),
@@ -152,7 +160,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             const signedInUser = credential?.user ?? redirectUser
             if (signedInUser) {
-              await applyUserState(signedInUser, { setUser, setIsAdmin, setCustomerProfile })
+              await applyUserState(signedInUser, {
+                setUser,
+                setIsAdmin,
+                setAdminRole,
+                setCustomerProfile,
+              })
               setRedirectError(null)
               clearGoogleRedirectPending()
             } else {
@@ -174,7 +187,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       unsubscribe = subscribeAuth(async (nextUser) => {
         if (cancelled) return
-        await applyUserState(nextUser, { setUser, setIsAdmin, setCustomerProfile })
+        await applyUserState(nextUser, { setUser, setIsAdmin, setAdminRole, setCustomerProfile })
         setIsLoading(false)
         if (nextUser) {
           setRedirectError(null)
@@ -209,7 +222,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     const credential = await loginWithEmail(email, password)
-    await applyUserState(credential.user, { setUser, setIsAdmin, setCustomerProfile })
+    await applyUserState(credential.user, { setUser, setIsAdmin, setAdminRole, setCustomerProfile })
     setRedirectError(null)
   }, [])
 
@@ -217,7 +230,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRedirectError(null)
     const credential = await loginWithGoogleFirebase()
     if (!credential) return
-    await applyUserState(credential.user, { setUser, setIsAdmin, setCustomerProfile })
+    await applyUserState(credential.user, { setUser, setIsAdmin, setAdminRole, setCustomerProfile })
   }, [])
 
   const register = useCallback(async (email: string, password: string, name: string, phone: string) => {
@@ -232,6 +245,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await logoutUser()
     setUser(null)
     setIsAdmin(false)
+    setAdminRole(null)
     setCustomerProfile(null)
     setRedirectError(null)
   }, [])
@@ -245,6 +259,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isRedirectProcessing,
       redirectError,
       isAdmin,
+      adminRole,
       login,
       loginWithGoogle,
       register,
@@ -261,6 +276,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isRedirectProcessing,
       redirectError,
       isAdmin,
+      adminRole,
       login,
       loginWithGoogle,
       register,

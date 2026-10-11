@@ -3,20 +3,11 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '@/shared/auth/AuthProvider'
 import { ServicesAdminPanel } from './ServicesAdminPanel'
 import { ProductsAdminPanel } from './ProductsAdminPanel'
-import { seedAdminData } from '@/shared/api/endpoints'
-
 type Tab = 'services' | 'products'
 
 export function AdminDashboard() {
   const { user, logout } = useAuth()
   const [tab, setTab] = useState<Tab>('services')
-  const [seedMsg, setSeedMsg] = useState<string | null>(null)
-
-  const handleForceSeed = async () => {
-    if (!confirm('Ghi đè toàn bộ dữ liệu seed?')) return
-    const result = await seedAdminData(true)
-    setSeedMsg(result.message)
-  }
 
   return (
     <div>
@@ -43,20 +34,7 @@ export function AdminDashboard() {
       <div className="mb-8 flex flex-wrap gap-4">
         <TabButton active={tab === 'services'} onClick={() => setTab('services')} label="Dịch vụ" />
         <TabButton active={tab === 'products'} onClick={() => setTab('products')} label="Sản phẩm" />
-        <button
-          type="button"
-          onClick={handleForceSeed}
-          className="ml-auto text-xs uppercase tracking-widest text-zinc-600 hover:text-gold"
-        >
-          Force Re-seed
-        </button>
       </div>
-
-      {seedMsg && (
-        <p className="mb-6 rounded-sm border border-zinc-800 bg-zinc-900/50 px-4 py-3 text-sm text-zinc-400">
-          {seedMsg}
-        </p>
-      )}
 
       {tab === 'services' && <ServicesAdminPanel />}
       {tab === 'products' && <ProductsAdminPanel />}

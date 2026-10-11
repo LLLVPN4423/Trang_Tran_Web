@@ -13,7 +13,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<IAdminAllowlist, Auth.FirebaseAdminAllowlist>();
+        services.AddSingleton<Auth.FirebaseAdminRoleAllowlist>();
+        services.AddSingleton<IAdminRoleAllowlist>(sp => sp.GetRequiredService<Auth.FirebaseAdminRoleAllowlist>());
+        services.AddSingleton<IAdminAllowlist>(sp => sp.GetRequiredService<Auth.FirebaseAdminRoleAllowlist>());
         services.AddSingleton<IAdminAccessService, Auth.AdminAccessService>();
         services.AddSingleton<IAuthService, Auth.FirebaseAuthService>();
 

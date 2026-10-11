@@ -115,6 +115,7 @@ static void LoadRootEnvFile()
     MapEnv("FIREBASE_PROJECT_ID", "Firebase__ProjectId");
     MapEnv("FIREBASE_CREDENTIALS_PATH", "Firebase__CredentialsPath");
     MapEnv("FIREBASE_ADMIN_UIDS", "Firebase__AdminUids");
+    MapEnv("FIREBASE_SALON_ADMIN_UIDS", "Firebase__SalonAdminUids");
     MapEnv("SEPAY_WEBHOOK_SECRET", "SePay__WebhookSecret");
 }
 

@@ -399,11 +399,20 @@ export async function seedAdminData(force = false): Promise<{
   return data
 }
 
-export async function verifyAdminAccess(): Promise<boolean> {
+export type AdminRole = 'platform' | 'salon'
+
+export async function fetchAdminContext(): Promise<{ role: AdminRole } | null> {
   try {
-    await apiClient.get('/api/health/admin')
-    return true
+    const { data } = await apiClient.get<{ role: AdminRole }>('/api/health/admin')
+    if (data.role === 'platform' || data.role === 'salon') return { role: data.role }
+    return null
   } catch {
-    return false
+    return null
   }
+}
+
+/** @deprecated use fetchAdminContext */
+export async function verifyAdminAccess(): Promise<boolean> {
+  const ctx = await fetchAdminContext()
+  return ctx !== null
 }

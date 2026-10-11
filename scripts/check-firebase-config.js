@@ -103,6 +103,11 @@ if (storageBucket) {
   ok.push('Storage tắt — dùng ảnh tĩnh (miễn phí)')
 }
 
+const salonAdminUids = (env.FIREBASE_SALON_ADMIN_UIDS || '')
+  .split(/[,;\s]+/)
+  .map((s) => s.trim())
+  .filter(Boolean)
+
 const adminUids = (env.FIREBASE_ADMIN_UIDS || '')
   .split(/[,;\s]+/)
   .map((s) => s.trim())
@@ -115,7 +120,11 @@ if (adminUids.length === 0) {
 } else if (adminUids.some(isPlaceholder)) {
   errors.push('FIREBASE_ADMIN_UIDS vẫn là placeholder — thay bằng UID Firebase thật')
 } else {
-  ok.push(`FIREBASE_ADMIN_UIDS: ${adminUids.length} UID admin`)
+  ok.push(`FIREBASE_ADMIN_UIDS (Platform): ${adminUids.length} UID`)
+}
+
+if (salonAdminUids.length > 0) {
+  ok.push(`FIREBASE_SALON_ADMIN_UIDS: ${salonAdminUids.length} UID`)
 }
 
 console.log('\n=== Kiểm tra Firebase / .env ===\n')

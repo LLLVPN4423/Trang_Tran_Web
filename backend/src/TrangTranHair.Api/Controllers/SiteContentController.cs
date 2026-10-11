@@ -15,7 +15,7 @@ public class SiteContentController(ISiteContentService siteContentService) : Con
         Ok(await siteContentService.GetHomepageAsync(ct));
 
     [HttpPut]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
     public async Task<ActionResult<SiteContentResponse>> UpdateHomepage(
         [FromBody] UpdateSiteContentRequest request,
         CancellationToken ct) =>

@@ -27,7 +27,7 @@ public class ProductsController(IProductRepository repository) : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
     public async Task<ActionResult<ProductResponse>> Create([FromBody] CreateProductRequest request, CancellationToken ct)
     {
         var product = request.ToEntity();
@@ -36,7 +36,7 @@ public class ProductsController(IProductRepository repository) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
     public async Task<ActionResult<ProductResponse>> Update(string id, [FromBody] UpdateProductRequest request, CancellationToken ct)
     {
         var product = await repository.GetByIdAsync(id, ct)
@@ -48,7 +48,7 @@ public class ProductsController(IProductRepository repository) : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
     public async Task<IActionResult> Delete(string id, CancellationToken ct)
     {
         _ = await repository.GetByIdAsync(id, ct)

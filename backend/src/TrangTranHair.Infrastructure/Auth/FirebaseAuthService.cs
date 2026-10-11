@@ -11,23 +11,23 @@ namespace TrangTranHair.Infrastructure.Auth;
 public sealed class FirebaseAuthService : IAuthService
 {
     private readonly ILogger<FirebaseAuthService> _logger;
-    private readonly IAdminAllowlist _allowlist;
+    private readonly IAdminRoleAllowlist _roleAllowlist;
     private readonly bool _isConfigured;
 
     public FirebaseAuthService(
         IConfiguration configuration,
-        IAdminAllowlist allowlist,
+        IAdminRoleAllowlist roleAllowlist,
         ILogger<FirebaseAuthService> logger)
     {
         _logger = logger;
-        _allowlist = allowlist;
+        _roleAllowlist = roleAllowlist;
         _isConfigured = TryInitializeFirebase(configuration);
         PersistenceRuntimeInfo.FirebaseAdminSdkReady = _isConfigured;
     }
 
     public async Task<bool> ValidateAdminClaimAsync(string userId, CancellationToken cancellationToken = default)
     {
-        if (!_allowlist.Contains(userId))
+        if (!_roleAllowlist.IsPlatform(userId) && !_roleAllowlist.IsSalon(userId))
             return false;
 
         if (!_isConfigured)

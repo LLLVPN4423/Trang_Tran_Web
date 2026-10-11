@@ -14,6 +14,9 @@ public static class AdminClaimHelper
         ?? user.FindFirst("sub")?.Value
         ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+    public static string? GetAdminRoleClaim(ClaimsPrincipal user) =>
+        user.FindFirst("adminRole")?.Value?.Trim().ToLowerInvariant();
+
     internal static bool IsTruthyAdminValue(string? value) =>
         !string.IsNullOrWhiteSpace(value) &&
         (value.Equals("true", StringComparison.OrdinalIgnoreCase) || value == "1");

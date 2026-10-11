@@ -32,7 +32,7 @@ public class PromotionsController(IPromotionService promotionService) : Controll
 
     [HttpGet("all")]
 
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
 
     public async Task<ActionResult<IReadOnlyList<PromotionResponse>>> ListAll(CancellationToken ct) =>
 
@@ -42,7 +42,7 @@ public class PromotionsController(IPromotionService promotionService) : Controll
 
     [HttpGet("{id}")]
 
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
 
     public async Task<ActionResult<PromotionResponse>> GetById(string id, CancellationToken ct) =>
 
@@ -66,7 +66,7 @@ public class PromotionsController(IPromotionService promotionService) : Controll
 
     [HttpPost]
 
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
 
     public async Task<ActionResult<PromotionResponse>> Create([FromBody] CreatePromotionRequest request, CancellationToken ct)
 
@@ -82,7 +82,7 @@ public class PromotionsController(IPromotionService promotionService) : Controll
 
     [HttpPut("{id}")]
 
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
 
     public async Task<ActionResult<PromotionResponse>> Update(string id, [FromBody] UpdatePromotionRequest request, CancellationToken ct) =>
 
@@ -92,7 +92,7 @@ public class PromotionsController(IPromotionService promotionService) : Controll
 
     [HttpDelete("{id}")]
 
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
 
     public async Task<IActionResult> Delete(string id, CancellationToken ct)
 

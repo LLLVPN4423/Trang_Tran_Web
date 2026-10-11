@@ -45,9 +45,12 @@ public static class AuthenticationExtensions
             });
 
         services.AddSingleton<IAuthorizationHandler, AdminAuthorizationHandler>();
+        services.AddSingleton<IAuthorizationHandler, PlatformAdminAuthorizationHandler>();
 
         services.AddAuthorizationBuilder()
-            .AddPolicy("Admin", policy => policy.Requirements.Add(new AdminRequirement()));
+            .AddPolicy("Admin", policy => policy.Requirements.Add(new AdminRequirement()))
+            .AddPolicy("SalonAdmin", policy => policy.Requirements.Add(new AdminRequirement()))
+            .AddPolicy("PlatformAdmin", policy => policy.Requirements.Add(new PlatformAdminRequirement()));
 
         return services;
     }

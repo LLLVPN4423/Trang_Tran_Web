@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TrangTranHair.Application.Authorization;
 using TrangTranHair.Application.Interfaces;
 using TrangTranHair.Infrastructure.Firebase;
 
@@ -7,7 +8,11 @@ namespace TrangTranHair.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class HealthController(IConfiguration configuration, IAdminAllowlist adminAllowlist) : ControllerBase
+public class HealthController(
+    IConfiguration configuration,
+    IAdminAllowlist adminAllowlist,
+    IAdminRoleAllowlist roleAllowlist,
+    IAdminAccessService adminAccess) : ControllerBase
 {
     [HttpGet]
     public IActionResult Get() =>
@@ -30,6 +35,7 @@ public class HealthController(IConfiguration configuration, IAdminAllowlist admi
                 serviceAccountProjectId = FirebaseEnvironment.ReadServiceAccountProjectId(configuration["Firebase:CredentialsPath"]),
                 adminAllowlistConfigured = adminAllowlist.IsConfigured,
                 adminAllowlistCount = adminAllowlist.AllowedUids.Count,
+                salonAdminAllowlistCount = roleAllowlist.SalonUids.Count,
             },
         });
 
@@ -45,11 +51,18 @@ public class HealthController(IConfiguration configuration, IAdminAllowlist admi
 
     [HttpGet("admin")]
     [Authorize(Policy = "Admin")]
-    public IActionResult GetAdmin() =>
-        Ok(new
+    public async Task<IActionResult> GetAdmin(CancellationToken ct)
+    {
+        var role = await adminAccess.GetRoleAsync(User, ct);
+        if (role == AdminRole.None)
+            return Forbid();
+
+        return Ok(new
         {
             status = "admin",
+            role = role == AdminRole.Platform ? "platform" : "salon",
             message = "Admin access granted.",
             timestamp = DateTime.UtcNow,
         });
+    }
 }

@@ -9,7 +9,6 @@ import {
   fetchAppointments,
   fetchOrders,
   fetchServiceInvoices,
-  seedAdminData,
 } from '@/shared/api/endpoints'
 import {
   computeRevenueBreakdown,
@@ -31,12 +30,12 @@ const TITLES: Record<string, string> = {
   '/admin/site-content': 'Nội dung & liên hệ',
   '/admin/promotions': 'Khuyến mãi',
   '/admin/customers': 'Khách hàng',
+  '/admin/tools': 'Công cụ kỹ thuật',
 }
 
 export function AdminLayout() {
-  const { isConfigured, isLoading, isAdmin, user } = useAuth()
+  const { isConfigured, isLoading, isAdmin, adminRole, user } = useAuth()
   const location = useLocation()
-  const [seedMsg, setSeedMsg] = useState<string | null>(null)
 
   if (!isConfigured) {
     return (
@@ -64,20 +63,13 @@ export function AdminLayout() {
         <div className="mx-auto max-w-lg px-6 py-24 text-center">
           <h1 className="font-serif text-3xl text-zinc-200">Không có quyền Admin</h1>
           <p className="mt-4 text-sm text-zinc-500">
-            Tài khoản này là khách hàng thường. Admin chỉ dành cho UID có trong{' '}
-            <code className="text-zinc-400">FIREBASE_ADMIN_UIDS</code> và đã chạy{' '}
-            <code className="text-zinc-400">set-admin.js</code>.
+            Tài khoản chưa được cấp quyền Salon/Platform Admin. Liên hệ quản trị web để thêm UID và
+            chạy <code className="text-zinc-400">set-admin.js</code>.
           </p>
           <Link to="/" className="mt-8 inline-block text-sm text-gold-muted hover:underline">← Trang chủ</Link>
         </div>
       </PageLayout>
     )
-  }
-
-  const handleForceSeed = async () => {
-    if (!confirm('Ghi đè toàn bộ dữ liệu seed?')) return
-    const result = await seedAdminData(true)
-    setSeedMsg(result.message)
   }
 
   return (
@@ -89,25 +81,17 @@ export function AdminLayout() {
             <h1 className="mt-2 font-serif text-2xl text-zinc-100 sm:text-3xl">
               {TITLES[location.pathname] ?? 'Quản lý Salon'}
             </h1>
-            <p className="mt-1 text-sm text-zinc-500">{user.email}</p>
+            <p className="mt-1 text-sm text-zinc-500">
+              {user.email}
+              {adminRole && (
+                <span className="ml-2 text-xs uppercase tracking-wider text-gold-muted">
+                  · {adminRole === 'platform' ? 'Platform Admin' : 'Salon Admin'}
+                </span>
+              )}
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <AdminNotificationBell />
-            <button
-              type="button"
-              onClick={handleForceSeed}
-              className="text-xs uppercase tracking-widest text-zinc-600 hover:text-gold"
-            >
-              Force Re-seed
-            </button>
-          </div>
+          <AdminNotificationBell />
         </div>
-
-        {seedMsg && (
-          <p className="mb-6 rounded-sm border border-zinc-800 bg-zinc-900/50 px-4 py-3 text-sm text-zinc-400">
-            {seedMsg}
-          </p>
-        )}
 
         <Outlet />
       </div>
@@ -116,6 +100,9 @@ export function AdminLayout() {
 }
 
 export function AdminOverview() {
+  const location = useLocation()
+  const forbidden = (location.state as { adminForbidden?: boolean } | null)?.adminForbidden
+
   const [stats, setStats] = useState({
     pendingRetail: 0,
     pendingServiceInvoices: 0,
@@ -180,6 +167,12 @@ export function AdminOverview() {
 
   return (
     <div className="space-y-8">
+      {forbidden && (
+        <p className="rounded-sm border border-zinc-800 bg-zinc-900/40 px-4 py-3 text-sm text-zinc-400">
+          Mục đó chỉ dành cho Platform Admin. Salon Admin vẫn dùng lịch hẹn, hóa đơn và doanh thu bình
+          thường.
+        </p>
+      )}
       <AdminLiveBadge
         lastUpdated={lastUpdated}
         refreshing={refreshing}

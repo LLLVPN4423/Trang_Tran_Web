@@ -39,7 +39,7 @@ public class LoyaltyController(
     }
 
     [HttpPost("adjust")]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
     public async Task<IActionResult> Adjust([FromBody] AdjustLoyaltyRequest request, CancellationToken ct)
     {
         await loyaltyService.AdjustPointsAsync(request.CustomerId, request.Points, request.Description, ct);

@@ -16,6 +16,7 @@ import { ModuleErrorBoundary } from '@/shared/components/ModuleErrorBoundary'
 import { lazyWithRetry } from '@/shared/utils/lazyWithRetry'
 import { MobileSalonCtaBar } from '@/shared/components/MobileSalonCtaBar'
 import { SalonLocalSeo } from '@/shared/components/SalonLocalSeo'
+import { PlatformAdminRoute } from '@/modules/admin/components/PlatformAdminRoute'
 
 const AdminLayout = lazyWithRetry(() =>
   import('@/modules/admin/AdminLayout').then((m) => ({ default: m.AdminLayout })),
@@ -52,6 +53,12 @@ const ServiceInvoicesAdminPanel = lazyWithRetry(() =>
 const RevenueAdminPanel = lazyWithRetry(() =>
   import('@/modules/admin/components/RevenueAdminPanel').then((m) => ({ default: m.RevenueAdminPanel })),
 )
+const AdminToolsPanel = lazyWithRetry(() =>
+  import('@/modules/admin/components/AdminToolsPanel').then((m) => ({ default: m.AdminToolsPanel })),
+)
+function PlatformAdminOnly({ children }: { children: ReactNode }) {
+  return <PlatformAdminRoute>{children}</PlatformAdminRoute>
+}
 
 function AdminRoute({ children }: { children: ReactNode }) {
   return (
@@ -107,11 +114,47 @@ export function App() {
             <Route path="service-invoices" element={<ServiceInvoicesAdminPanel />} />
             <Route path="revenue" element={<RevenueAdminPanel />} />
             <Route path="appointments" element={<AppointmentsAdminPanel />} />
-            <Route path="services" element={<ServicesAdminPanel />} />
-            <Route path="products" element={<ProductsAdminPanel />} />
-            <Route path="site-content" element={<SiteContentAdminPanel />} />
-            <Route path="promotions" element={<PromotionsAdminPanel />} />
+            <Route
+              path="services"
+              element={
+                <PlatformAdminOnly>
+                  <ServicesAdminPanel />
+                </PlatformAdminOnly>
+              }
+            />
+            <Route
+              path="products"
+              element={
+                <PlatformAdminOnly>
+                  <ProductsAdminPanel />
+                </PlatformAdminOnly>
+              }
+            />
+            <Route
+              path="site-content"
+              element={
+                <PlatformAdminOnly>
+                  <SiteContentAdminPanel />
+                </PlatformAdminOnly>
+              }
+            />
+            <Route
+              path="promotions"
+              element={
+                <PlatformAdminOnly>
+                  <PromotionsAdminPanel />
+                </PlatformAdminOnly>
+              }
+            />
             <Route path="customers" element={<CustomersAdminPanel />} />
+            <Route
+              path="tools"
+              element={
+                <PlatformAdminOnly>
+                  <AdminToolsPanel />
+                </PlatformAdminOnly>
+              }
+            />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

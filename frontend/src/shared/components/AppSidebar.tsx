@@ -12,6 +12,8 @@ export interface SidebarNavItem {
   end?: boolean
   badge?: number
   adminOnly?: boolean
+  /** Chỉ Platform Admin (quản trị web) — ẩn với Salon Admin. */
+  platformOnly?: boolean
   guestOnly?: boolean
 }
 
@@ -31,11 +33,12 @@ const ADMIN_NAV: SidebarNavItem[] = [
   { to: '/admin/service-invoices', label: 'Hóa đơn DV', adminOnly: true },
   { to: '/admin/revenue', label: 'Doanh thu', adminOnly: true },
   { to: '/admin/appointments', label: 'Lịch hẹn', adminOnly: true },
-  { to: '/admin/services', label: 'Dịch vụ', adminOnly: true },
-  { to: '/admin/products', label: 'Sản phẩm', adminOnly: true },
-  { to: '/admin/site-content', label: 'Nội dung & liên hệ', adminOnly: true },
-  { to: '/admin/promotions', label: 'Khuyến mãi', adminOnly: true },
+  { to: '/admin/services', label: 'Dịch vụ', adminOnly: true, platformOnly: true },
+  { to: '/admin/products', label: 'Sản phẩm', adminOnly: true, platformOnly: true },
+  { to: '/admin/site-content', label: 'Nội dung & liên hệ', adminOnly: true, platformOnly: true },
+  { to: '/admin/promotions', label: 'Khuyến mãi', adminOnly: true, platformOnly: true },
   { to: '/admin/customers', label: 'Khách hàng', adminOnly: true },
+  { to: '/admin/tools', label: 'Công cụ kỹ thuật', adminOnly: true, platformOnly: true },
 ]
 
 interface Props {
@@ -44,7 +47,7 @@ interface Props {
 }
 
 export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
-  const { user, isAdmin, logout } = useAuth()
+  const { user, isAdmin, adminRole, logout } = useAuth()
   const itemCount = useCartStore(selectCartItemCount)
   const serviceCount = useServiceCartStore(selectServiceCartCount)
 
@@ -64,6 +67,7 @@ export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
       <nav className="flex flex-1 flex-col gap-1">
         {items.map((item) => {
           if (item.adminOnly && !isAdmin) return null
+          if (item.platformOnly && adminRole !== 'platform') return null
           if (item.guestOnly === false && !user && item.to.startsWith('/account')) {
             return (
               <NavLink

@@ -9,7 +9,7 @@ namespace TrangTranHair.Api.Controllers;
 public class SeedController(IDataSeedService seedService, IHostEnvironment env) : ControllerBase
 {
     [HttpPost]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
     public async Task<IActionResult> Seed([FromQuery] bool force = false, CancellationToken ct = default)
     {
         var result = await seedService.SeedAsync(force, ct);

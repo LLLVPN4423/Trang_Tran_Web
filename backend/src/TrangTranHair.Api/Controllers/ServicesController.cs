@@ -27,7 +27,7 @@ public class ServicesController(IServiceRepository repository) : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
     public async Task<ActionResult<ServiceResponse>> Create([FromBody] CreateServiceRequest request, CancellationToken ct)
     {
         var service = request.ToEntity();
@@ -36,7 +36,7 @@ public class ServicesController(IServiceRepository repository) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
     public async Task<ActionResult<ServiceResponse>> Update(string id, [FromBody] UpdateServiceRequest request, CancellationToken ct)
     {
         var service = await repository.GetByIdAsync(id, ct)
@@ -48,7 +48,7 @@ public class ServicesController(IServiceRepository repository) : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "PlatformAdmin")]
     public async Task<IActionResult> Delete(string id, CancellationToken ct)
     {
         _ = await repository.GetByIdAsync(id, ct)

@@ -5,9 +5,11 @@
 | Vai trò | Env UID | Quyền |
 |---------|---------|--------|
 | **Platform Admin** | `FIREBASE_ADMIN_UIDS` | Toàn bộ admin + seed, catalog, site content, khuyến mãi |
-| **Salon Admin** | `FIREBASE_SALON_ADMIN_UIDS` | Lịch hẹn, đơn shop, hóa đơn DV, doanh thu (xem), danh sách khách |
+| **Salon Admin** | `FIREBASE_SALON_ADMIN_UIDS` | Lịch hẹn, đơn shop, hóa đơn DV, doanh thu (**xem trên web**), danh sách khách — **không xuất CSV** |
 
-Platform Admin **kế thừa** mọi quyền Salon Admin.
+Platform Admin **kế thừa** mọi quyền Salon Admin, gồm **xuất CSV** (doanh thu, hóa đơn DV).
+
+Chỉ **hai role**: `platform` và `salon` — không thêm role staff.
 
 ## Platform Admin (bạn) — lần đầu / mất quyền
 

@@ -5,6 +5,7 @@ import { formatVnd } from '@/shared/api/types'
 import { ApiErrorState } from '@/shared/components/ApiErrorState'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { PAYMENT_METHOD_LABELS, normalizePaymentMethod } from '@/shared/lib/orderLabels'
+import { useAuth } from '@/shared/auth/AuthProvider'
 import { AdminButton, AdminPanelHeader, adminInputClass } from './AdminFormUi'
 import { type RevenuePreset, rangeForPreset } from '@/modules/admin/lib/vnDate'
 
@@ -28,6 +29,8 @@ function exportRevenueCsv(summary: RevenueSummaryResponse): string {
 }
 
 export function RevenueAdminPanel() {
+  const { adminRole } = useAuth()
+  const canExportCsv = adminRole === 'platform'
   const [preset, setPreset] = useState<RevenuePreset>('7d')
   const [customFrom, setCustomFrom] = useState('')
   const [customTo, setCustomTo] = useState('')
@@ -191,20 +194,24 @@ export function RevenueAdminPanel() {
             </div>
           </div>
 
-          <AdminButton
-            onClick={() => {
-              const csv = exportRevenueCsv(summary)
-              const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
-              const url = URL.createObjectURL(blob)
-              const a = document.createElement('a')
-              a.href = url
-              a.download = `doanh-thu-${summary.fromLocal}_${summary.toLocal}.csv`
-              a.click()
-              URL.revokeObjectURL(url)
-            }}
-          >
-            Xuất CSV kỳ này
-          </AdminButton>
+          {canExportCsv ? (
+            <AdminButton
+              onClick={() => {
+                const csv = exportRevenueCsv(summary)
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `doanh-thu-${summary.fromLocal}_${summary.toLocal}.csv`
+                a.click()
+                URL.revokeObjectURL(url)
+              }}
+            >
+              Xuất CSV kỳ này
+            </AdminButton>
+          ) : (
+            <p className="text-xs text-zinc-600">Xuất CSV — chỉ Platform Admin (quản trị web).</p>
+          )}
         </>
       )}
     </div>

@@ -103,6 +103,7 @@ export function AdminLayout() {
 
 export function AdminOverview() {
   const location = useLocation()
+  const { adminRole } = useAuth()
   const forbidden = (location.state as { adminForbidden?: boolean } | null)?.adminForbidden
 
   const [stats, setStats] = useState({
@@ -198,7 +199,8 @@ export function AdminOverview() {
         <Link to="/admin/revenue" className="text-gold underline">
           Báo cáo doanh thu chi tiết
         </Link>{' '}
-        — lọc theo ngày, so sánh kỳ trước, xuất CSV.
+        — lọc theo ngày, so sánh kỳ trước
+        {adminRole === 'platform' ? ', xuất CSV' : ' (xem trên màn hình; CSV do quản trị web)'}.
       </p>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

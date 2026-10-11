@@ -31,6 +31,7 @@ import { ApiErrorState } from '@/shared/components/ApiErrorState'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
 import { AdminLiveBadge, AdminNewItemsBanner } from './AdminLiveBadge'
+import { useAuth } from '@/shared/auth/AuthProvider'
 import { AdminButton, AdminPanelHeader, adminInputClass } from './AdminFormUi'
 import { AdminFilterChips } from './AdminFilterChips'
 import {
@@ -113,6 +114,8 @@ const INVOICE_STATUS_CHIPS: { value: OrderStatus | ''; label: string }[] = [
 ]
 
 export function ServiceInvoicesAdminPanel() {
+  const { adminRole } = useAuth()
+  const canExportCsv = adminRole === 'platform'
   const [searchParams] = useSearchParams()
   const appliedApptFromUrl = useRef<string | null>(null)
   const [status, setStatus] = useState<OrderStatus | ''>('Pending')
@@ -389,20 +392,22 @@ export function ServiceInvoicesAdminPanel() {
         title="Hóa đơn dịch vụ"
         count={invoices.length}
         action={
-          <AdminButton
-            onClick={() => {
-              const csv = exportInvoicesCsv(invoices)
-              const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
-              const url = URL.createObjectURL(blob)
-              const a = document.createElement('a')
-              a.href = url
-              a.download = `hoa-don-dich-vu-${new Date().toISOString().slice(0, 10)}.csv`
-              a.click()
-              URL.revokeObjectURL(url)
-            }}
-          >
-            Xuất CSV
-          </AdminButton>
+          canExportCsv ? (
+            <AdminButton
+              onClick={() => {
+                const csv = exportInvoicesCsv(invoices)
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `hoa-don-dich-vu-${new Date().toISOString().slice(0, 10)}.csv`
+                a.click()
+                URL.revokeObjectURL(url)
+              }}
+            >
+              Xuất CSV
+            </AdminButton>
+          ) : undefined
         }
       />
 

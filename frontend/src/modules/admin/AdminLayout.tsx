@@ -12,12 +12,11 @@ import {
   seedAdminData,
 } from '@/shared/api/endpoints'
 import {
-  appointmentsMissingInvoice,
   computeRevenueBreakdown,
   finalizeBreakdown,
 } from '@/modules/admin/lib/salonRevenue'
 import { formatVnd } from '@/shared/api/types'
-import { FirebaseStatusBanner } from './components/FirebaseStatusBanner'
+import { AdminNotificationBell } from './components/AdminNotificationBell'
 import { AdminLiveBadge } from './components/AdminLiveBadge'
 import { useAdminPoll } from './hooks/useAdminLiveRefresh'
 
@@ -92,13 +91,16 @@ export function AdminLayout() {
             </h1>
             <p className="mt-1 text-sm text-zinc-500">{user.email}</p>
           </div>
-          <button
-            type="button"
-            onClick={handleForceSeed}
-            className="text-xs uppercase tracking-widest text-zinc-600 hover:text-gold"
-          >
-            Force Re-seed
-          </button>
+          <div className="flex items-center gap-3">
+            <AdminNotificationBell />
+            <button
+              type="button"
+              onClick={handleForceSeed}
+              className="text-xs uppercase tracking-widest text-zinc-600 hover:text-gold"
+            >
+              Force Re-seed
+            </button>
+          </div>
         </div>
 
         {seedMsg && (
@@ -106,8 +108,6 @@ export function AdminLayout() {
             {seedMsg}
           </p>
         )}
-
-        <FirebaseStatusBanner />
 
         <Outlet />
       </div>
@@ -124,7 +124,6 @@ export function AdminOverview() {
     revenueTodayTotal: 0,
     revenueTodayService: 0,
     revenueTodayRetail: 0,
-    missingInvoiceCount: 0,
   })
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -149,8 +148,6 @@ export function AdminOverview() {
       const rev = finalizeBreakdown(
         computeRevenueBreakdown(retailOrders ?? [], serviceInvoices ?? []),
       )
-      const missing = appointmentsMissingInvoice(appointments ?? [], serviceInvoices ?? [])
-
       setStats({
         pendingRetail: rev.pendingRetail,
         pendingServiceInvoices: rev.pendingService,
@@ -159,7 +156,6 @@ export function AdminOverview() {
         revenueTodayTotal: rev.totalPaidToday,
         revenueTodayService: rev.servicePaidToday,
         revenueTodayRetail: rev.retailPaidToday,
-        missingInvoiceCount: missing.length,
       })
       hasLoadedRef.current = true
       setLastUpdated(new Date())
@@ -189,16 +185,6 @@ export function AdminOverview() {
         refreshing={refreshing}
         onRefresh={() => loadStats(true)}
       />
-
-      {stats.missingInvoiceCount > 0 && (
-        <div className="rounded-sm border border-amber-900/40 bg-amber-950/20 px-4 py-3 text-sm text-amber-100/90">
-          <strong>{stats.missingInvoiceCount}</strong> lịch đã xác nhận/hoàn tất nhưng{' '}
-          <strong>chưa có hóa đơn HD</strong> —{' '}
-          <Link to="/admin/appointments" className="text-gold underline">
-            kiểm tra lịch hẹn → Tạo hóa đơn
-          </Link>
-        </div>
-      )}
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard

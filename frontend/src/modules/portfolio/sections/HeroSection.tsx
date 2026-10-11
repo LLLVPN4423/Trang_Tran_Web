@@ -108,7 +108,7 @@ export function HeroSection() {
         </p>
         <div className="hero-tagline mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link to="/catalog" className="btn-gold px-6 py-2.5 text-[10px] uppercase tracking-widest">
-            Bảng giá · Sóc Trăng
+            Bảng giá
           </Link>
           <Link
             to="/appointment"

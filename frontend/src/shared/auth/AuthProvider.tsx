@@ -73,10 +73,7 @@ const AuthContext = createContext<AuthContextValue>({
 async function resolveAdminAccess(user: User | null): Promise<{ isAdmin: boolean; adminRole: AdminRole | null }> {
   if (!user) return { isAdmin: false, adminRole: null }
   try {
-    const token = await user.getIdTokenResult(true)
-    const claim = token.claims.admin
-    const hasClaim = claim === true || claim === 'true'
-    if (!hasClaim) return { isAdmin: false, adminRole: null }
+    await user.getIdTokenResult(true)
     const ctx = await fetchAdminContext()
     if (!ctx) return { isAdmin: false, adminRole: null }
     return { isAdmin: true, adminRole: ctx.role }

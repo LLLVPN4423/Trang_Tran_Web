@@ -28,7 +28,7 @@ public sealed class FirebaseAuthService : IAuthService
     public async Task<bool> ValidateAdminClaimAsync(string userId, CancellationToken cancellationToken = default)
     {
         if (!_roleAllowlist.IsPlatform(userId) && !_roleAllowlist.IsSalon(userId))
-            return false;
+            return false; // Salon grant-only UIDs rely on JWT claim until next login after grant
 
         if (!_isConfigured)
         {

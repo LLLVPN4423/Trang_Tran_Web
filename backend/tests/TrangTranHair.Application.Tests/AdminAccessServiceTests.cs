@@ -26,6 +26,19 @@ public sealed class AdminAccessServiceTests
         public bool IsSalon(string userId) => SalonUids.Contains(userId);
     }
 
+    private sealed class FakeSalonRegistry : ISalonAdminRegistry
+    {
+        public Task<IReadOnlyList<string>> ListAsync(CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<string>>([]);
+
+        public Task<bool> ContainsAsync(string userId, CancellationToken cancellationToken = default) =>
+            Task.FromResult(false);
+
+        public Task AddAsync(string userId, CancellationToken cancellationToken = default) => Task.CompletedTask;
+
+        public Task RemoveAsync(string userId, CancellationToken cancellationToken = default) => Task.CompletedTask;
+    }
+
     private sealed class FakeAuthService : IAuthService
     {
         public Task<bool> ValidateAdminClaimAsync(string userId, CancellationToken cancellationToken = default) =>
@@ -37,6 +50,7 @@ public sealed class AdminAccessServiceTests
     {
         var svc = new AdminAccessService(
             new FakeRoleAllowlist("platform-uid", "salon-uid"),
+            new FakeSalonRegistry(),
             new FakeAuthService(),
             NullLogger<AdminAccessService>.Instance);
 
@@ -51,6 +65,7 @@ public sealed class AdminAccessServiceTests
     {
         var svc = new AdminAccessService(
             new FakeRoleAllowlist("platform-uid", "salon-uid"),
+            new FakeSalonRegistry(),
             new FakeAuthService(),
             NullLogger<AdminAccessService>.Instance);
 

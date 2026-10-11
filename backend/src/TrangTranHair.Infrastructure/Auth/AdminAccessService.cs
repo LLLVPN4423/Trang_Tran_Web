@@ -7,6 +7,7 @@ namespace TrangTranHair.Infrastructure.Auth;
 
 public sealed class AdminAccessService(
     IAdminRoleAllowlist roleAllowlist,
+    ISalonAdminRegistry salonAdminRegistry,
     IAuthService authService,
     ILogger<AdminAccessService> logger) : IAdminAccessService
 {
@@ -29,7 +30,9 @@ public sealed class AdminAccessService(
             return AdminRole.None;
 
         var inPlatform = roleAllowlist.IsPlatform(userId);
-        var inSalon = roleAllowlist.IsSalon(userId);
+        var inSalonEnv = roleAllowlist.IsSalon(userId);
+        var inSalonGranted = await salonAdminRegistry.ContainsAsync(userId, cancellationToken);
+        var inSalon = inSalonEnv || inSalonGranted;
 
         if (!inPlatform && !inSalon)
         {

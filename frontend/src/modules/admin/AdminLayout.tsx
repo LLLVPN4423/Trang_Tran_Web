@@ -63,8 +63,10 @@ export function AdminLayout() {
         <div className="mx-auto max-w-lg px-6 py-24 text-center">
           <h1 className="font-serif text-3xl text-zinc-200">Không có quyền Admin</h1>
           <p className="mt-4 text-sm text-zinc-500">
-            Tài khoản chưa được cấp quyền Salon/Platform Admin. Liên hệ quản trị web để thêm UID và
-            chạy <code className="text-zinc-400">set-admin.js</code>.
+            Tài khoản chưa được cấp quyền (hoặc thiếu claim Firebase). Platform: UID trong{' '}
+            <code className="text-zinc-400">FIREBASE_ADMIN_UIDS</code> rồi chạy{' '}
+            <code className="text-zinc-400">node scripts/set-admin.js UID platform</code> — đăng xuất/đăng
+            nhập lại. Xem <code className="text-zinc-400">docs/ADMIN_RBAC.md</code>.
           </p>
           <Link to="/" className="mt-8 inline-block text-sm text-gold-muted hover:underline">← Trang chủ</Link>
         </div>

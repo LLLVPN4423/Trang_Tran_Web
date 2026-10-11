@@ -403,12 +403,28 @@ export type AdminRole = 'platform' | 'salon'
 
 export async function fetchAdminContext(): Promise<{ role: AdminRole } | null> {
   try {
-    const { data } = await apiClient.get<{ role: AdminRole }>('/api/health/admin')
+    const { data } = await apiClient.get<{ role?: AdminRole; status?: string }>('/api/health/admin')
     if (data.role === 'platform' || data.role === 'salon') return { role: data.role }
+    if (data.status === 'admin') return { role: 'platform' }
     return null
   } catch {
     return null
   }
+}
+
+export type SalonAdminEntry = { userId: string; fromFirestore: boolean; fromEnvironment: boolean }
+
+export async function fetchSalonAdmins(): Promise<SalonAdminEntry[]> {
+  const { data } = await apiClient.get<SalonAdminEntry[]>('/api/platform/salon-admins')
+  return data
+}
+
+export async function grantSalonAdmin(userId: string): Promise<void> {
+  await apiClient.post('/api/platform/salon-admins', { userId })
+}
+
+export async function revokeSalonAdmin(userId: string): Promise<void> {
+  await apiClient.delete(`/api/platform/salon-admins/${encodeURIComponent(userId)}`)
 }
 
 /** @deprecated use fetchAdminContext */

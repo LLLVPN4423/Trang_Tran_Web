@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { seedAdminData } from '@/shared/api/endpoints'
+import { SalonAdminGrantPanel } from './SalonAdminGrantPanel'
 
 export function AdminToolsPanel() {
   const [open, setOpen] = useState(false)
@@ -36,6 +37,8 @@ export function AdminToolsPanel() {
           Chỉ quản trị hệ thống. Salon Admin không thấy mục này.
         </p>
       </div>
+
+      <SalonAdminGrantPanel />
 
       <div className="rounded-sm border border-zinc-800 bg-zinc-900/30 p-4">
         <h3 className="text-sm font-medium text-zinc-200">Ghi đè dữ liệu seed</h3>

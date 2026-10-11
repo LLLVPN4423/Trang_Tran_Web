@@ -9,17 +9,24 @@
 
 Platform Admin **kế thừa** mọi quyền Salon Admin.
 
-## Cấp quyền Firebase
+## Platform Admin (bạn) — lần đầu / mất quyền
 
-1. Thêm UID vào `.env` (local) hoặc Cloud Run env:
-   - Platform: `FIREBASE_ADMIN_UIDS=uid-dev`
-   - Salon: `FIREBASE_SALON_ADMIN_UIDS=uid-chi-trang`
-2. Chạy:
+1. UID phải có trong **Cloud Run** `FIREBASE_ADMIN_UIDS`.
+2. Chạy trên máy có `firebase-service-account.json`:
    ```bash
-   node scripts/set-admin.js <UID> platform
-   node scripts/set-admin.js <UID> salon
+   node scripts/set-admin.js <UID_CUA_BAN> platform
    ```
-3. User **đăng xuất và đăng nhập lại** trên web.
+3. **Đăng xuất → đăng nhập lại** trên web.
+
+Nếu vào `/admin` báo không quyền nhưng API cũ: hard refresh (Ctrl+F5) sau khi deploy front.
+
+## Cấp Salon Admin (nhân viên / chị Trang)
+
+**Cách 1 — Platform Admin trên web (khuyên dùng):** `/admin/tools` → **Cấp quyền Salon Admin** → dán Firebase UID → Cấp. Hệ thống ghi Firestore + claim Firebase.
+
+**Cách 2 — Env:** `FIREBASE_SALON_ADMIN_UIDS` + `node scripts/set-admin.js <UID> salon`.
+
+Platform Admin **không** cấp thêm Platform Admin qua web (chỉ env + script).
 
 ## API
 

@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddSingleton<IAdminAllowlist>(sp => sp.GetRequiredService<Auth.FirebaseAdminRoleAllowlist>());
         services.AddSingleton<IAdminAccessService, Auth.AdminAccessService>();
         services.AddSingleton<IAuthService, Auth.FirebaseAuthService>();
+        services.AddSingleton<IAdminGrantService, Auth.AdminGrantService>();
 
         if (TryCreateFirestoreDb(configuration, out var firestoreDb, out var failureReason))
         {
@@ -25,6 +26,7 @@ public static class DependencyInjection
             PersistenceRuntimeInfo.SetFirestore(projectId);
 
             services.AddSingleton(firestoreDb);
+            services.AddSingleton<ISalonAdminRegistry, Auth.FirestoreSalonAdminRegistry>();
             services.AddSingleton<IServiceRepository, FirestoreServiceRepository>();
             services.AddSingleton<IProductRepository, FirestoreProductRepository>();
             services.AddSingleton<IOrderRepository, FirestoreOrderRepository>();
@@ -36,6 +38,7 @@ public static class DependencyInjection
         }
         else
         {
+            services.AddSingleton<ISalonAdminRegistry, Auth.InMemorySalonAdminRegistry>();
             PersistenceRuntimeInfo.SetInMemory(failureReason ?? "Unknown reason");
 
             services.AddSingleton<IServiceRepository, InMemoryServiceRepository>();

@@ -13,7 +13,7 @@ export function ProductVideo({ videoUrl, title }: Props) {
     return (
       <section className="mt-10">
         <h2 className="section-eyebrow mb-4">Video</h2>
-        <div className="aspect-video w-full overflow-hidden rounded-sm border border-zinc-800 bg-black">
+        <div className="aspect-video w-full overflow-hidden rounded-sm border border-edge bg-black">
           <iframe
             src={parsed.embedUrl}
             title={`Video ${title}`}
@@ -30,7 +30,7 @@ export function ProductVideo({ videoUrl, title }: Props) {
     return (
       <section className="mt-10">
         <h2 className="section-eyebrow mb-4">Video</h2>
-        <div className="overflow-hidden rounded-sm border border-zinc-800 bg-black">
+        <div className="overflow-hidden rounded-sm border border-edge bg-black">
           <video src={parsed.src} controls className="w-full" preload="metadata">
             Trình duyệt không hỗ trợ video.
           </video>
@@ -46,7 +46,7 @@ export function ProductVideo({ videoUrl, title }: Props) {
         href={parsed.href}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-sm text-gold-muted hover:text-gold hover:underline"
+        className="text-sm text-gold-700 hover:text-gold-300 hover:underline"
       >
         Xem video (TikTok / link ngoài) →
       </a>

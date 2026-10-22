@@ -54,12 +54,12 @@ export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
   const items = variant === 'admin' ? ADMIN_NAV : MAIN_NAV
 
   return (
-    <aside className="flex h-full flex-col border-r border-zinc-800/90 bg-zinc-950/95 p-5 sm:p-6">
+    <aside className="flex h-full flex-col border-r border-edge/80 bg-section/95 p-5 sm:p-6">
       <div className="mb-7">
         <p className="section-eyebrow">
           {variant === 'admin' ? 'Admin Portal' : 'Trang Tran Hair'}
         </p>
-        <h2 className="mt-2 font-serif text-xl text-zinc-100 sm:text-2xl">
+        <h2 className="mt-2 font-serif text-xl text-ink sm:text-2xl">
           {variant === 'admin' ? 'Quản trị' : 'Salon Menu'}
         </h2>
       </div>
@@ -74,7 +74,7 @@ export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
                 key={item.to}
                 to="/login"
                 onClick={onNavigate}
-                className="rounded-sm px-3 py-2.5 text-sm text-zinc-500 transition hover:bg-zinc-900 hover:text-zinc-200"
+                className="rounded-sm px-3 py-2.5 text-sm text-ink-subtle transition hover:bg-elevated hover:text-ink"
               >
                 Đăng nhập / Đăng ký
               </NavLink>
@@ -93,15 +93,15 @@ export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
               className={({ isActive }) =>
                 `rounded-sm px-3 py-2.5 text-sm transition ${
                   isActive
-                    ? 'bg-zinc-900 text-gold'
-                    : 'text-zinc-500 hover:bg-zinc-900/60 hover:text-zinc-200'
+                    ? 'bg-elevated text-gold-300'
+                    : 'text-ink-subtle hover:bg-elevated/70 hover:text-ink-secondary'
                 }`
               }
             >
               <span className="flex items-center justify-between gap-3">
                 <span>{item.label}</span>
                 {badge != null && badge > 0 && (
-                  <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-medium text-zinc-950">
+                  <span className="rounded-full bg-gold-500 px-2 py-0.5 text-[10px] font-medium text-canvas">
                     {badge}
                   </span>
                 )}
@@ -117,8 +117,8 @@ export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
             className={({ isActive }) =>
               `mt-4 rounded-sm border px-3 py-2.5 text-sm transition ${
                 isActive
-                  ? 'border-gold/40 bg-gold/10 text-gold'
-                  : 'border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'
+                  ? 'border-gold-500/40 bg-gold-500/10 text-gold-300'
+                  : 'border-edge text-ink-subtle hover:border-edge-strong hover:text-ink-secondary'
               }`
             }
           >
@@ -128,13 +128,13 @@ export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
       </nav>
 
       {variant === 'customer' && (
-        <div className="mt-6 space-y-2 border-t border-zinc-800/80 pt-4 text-xs">
-          <p className="label-caps text-zinc-600">Maps & MXH</p>
+        <div className="mt-6 space-y-2 border-t border-edge/80 pt-4 text-xs">
+          <p className="label-caps">Maps & MXH</p>
           <a
             href={SALON_PUBLIC.mapsSearchUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-zinc-500 hover:text-gold"
+            className="block text-ink-subtle transition hover:text-gold-300"
           >
             Google Maps
           </a>
@@ -142,7 +142,7 @@ export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
             href={SALON_PUBLIC.facebook}
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-zinc-500 hover:text-gold"
+            className="block text-ink-subtle transition hover:text-gold-300"
           >
             Facebook
           </a>
@@ -150,7 +150,7 @@ export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
             href={SALON_PUBLIC.portfolioUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-zinc-500 hover:text-gold"
+            className="block text-ink-subtle transition hover:text-gold-300"
           >
             Portfolio
           </a>
@@ -158,15 +158,15 @@ export function AppSidebar({ variant = 'customer', onNavigate }: Props) {
       )}
 
       {user && (
-        <div className="mt-auto border-t border-zinc-800 pt-4">
-          <p className="truncate text-xs text-zinc-500">{user.email}</p>
+        <div className="mt-auto border-t border-edge pt-4">
+          <p className="truncate text-xs text-ink-subtle">{user.email}</p>
           <button
             type="button"
             onClick={() => {
               logout()
               onNavigate?.()
             }}
-            className="mt-3 text-xs uppercase tracking-widest text-zinc-600 hover:text-red-400"
+            className="mt-3 text-xs uppercase tracking-widest text-ink-subtle transition hover:text-danger"
           >
             Đăng xuất
           </button>

@@ -18,14 +18,14 @@ export function AdminLiveBadge({
     : '—'
 
   return (
-    <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500">
+    <div className="flex flex-wrap items-center gap-3 text-xs text-ink-subtle">
       <span className="inline-flex items-center gap-2">
         <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/40" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success/40" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
         </span>
-        <span className="uppercase tracking-widest text-emerald-400/90">Live</span>
-        {refreshing && <span className="text-zinc-600">· đang cập nhật</span>}
+        <span className="uppercase tracking-widest text-success/90">Live</span>
+        {refreshing && <span className="text-ink-subtle">· đang cập nhật</span>}
       </span>
 
       <span>Cập nhật {timeLabel}</span>
@@ -34,14 +34,14 @@ export function AdminLiveBadge({
         <button
           type="button"
           onClick={onDismissNew}
-          className="rounded-sm border border-emerald-800/60 bg-emerald-950/40 px-2 py-0.5 text-emerald-400 hover:bg-emerald-950/70"
+          className="rounded-sm border border-success/40 bg-success/10 px-2 py-0.5 text-success hover:bg-success/15"
         >
           {newCount} mới
         </button>
       )}
 
       {onRefresh && (
-        <button type="button" onClick={onRefresh} className="uppercase tracking-widest text-gold hover:underline">
+        <button type="button" onClick={onRefresh} className="uppercase tracking-widest text-gold-500 hover:underline">
           Làm mới
         </button>
       )}
@@ -61,11 +61,11 @@ export function AdminNewItemsBanner({
   if (count <= 0) return null
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-sm border border-emerald-800/50 bg-emerald-950/30 px-4 py-3 text-sm text-emerald-300">
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-sm border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
       <p>
         <strong>{count}</strong> {label} mới — có thể duyệt ngay bên dưới.
       </p>
-      <button type="button" onClick={onDismiss} className="text-xs uppercase tracking-widest text-emerald-400/80 hover:text-emerald-300">
+      <button type="button" onClick={onDismiss} className="text-xs uppercase tracking-widest text-success/80 hover:text-success">
         Đã xem
       </button>
     </div>

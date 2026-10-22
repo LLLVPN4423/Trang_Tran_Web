@@ -16,7 +16,7 @@ export function PortfolioPage() {
       <AppShell>
         <SiteContentProvider>
           <SmoothScrollProvider>
-            <div className="bg-zinc-950">
+            <div className="bg-canvas">
               <HeroSection />
               <ArtistSection />
               <GallerySection />

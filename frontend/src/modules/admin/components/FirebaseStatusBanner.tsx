@@ -27,15 +27,15 @@ export function FirebaseStatusBanner() {
   if (health.persistence.mode === 'firestore') return null
 
   return (
-    <div className="mb-6 rounded-sm border border-amber-900/60 bg-amber-950/30 px-4 py-3 text-sm text-amber-200">
+    <div className="mb-6 rounded-sm border border-warning/30/60 bg-warning/10 px-4 py-3 text-sm text-warning">
       <p className="font-medium">⚠ Dữ liệu đang lưu tạm (RAM) — chưa kết nối Firestore</p>
-      <p className="mt-1 text-amber-200/80">
+      <p className="mt-1 text-warning/80">
         {health.persistence.detail ?? 'Kiểm tra .env và firebase-service-account.json.'} Chạy{' '}
-        <code className="text-amber-100">npm run check:firebase</code> rồi restart API. Xem{' '}
-        <code className="text-amber-100">FIREBASE_SETUP.md</code>.
+        <code className="text-warning">npm run check:firebase</code> rồi restart API. Xem{' '}
+        <code className="text-warning">FIREBASE_SETUP.md</code>.
       </p>
       {health.firebase && !health.firebase.credentialsFound && (
-        <p className="mt-2 text-amber-200/80">Thiếu file firebase-service-account.json ở thư mục gốc repo.</p>
+        <p className="mt-2 text-warning/80">Thiếu file firebase-service-account.json ở thư mục gốc repo.</p>
       )}
     </div>
   )

@@ -162,11 +162,11 @@ export function OrdersAdminPanel() {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="Lọc SĐT..."
-          className="w-full border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300 sm:max-w-xs"
+          className="w-full border border-edge bg-canvas px-3 py-2 text-sm text-ink-secondary sm:max-w-xs"
         />
       </div>
 
-      <p className="text-sm text-zinc-500">{orders.length} đơn hàng</p>
+      <p className="text-sm text-ink-subtle">{orders.length} đơn hàng</p>
 
       <div className="space-y-3">
         {orders.map((order) => {
@@ -176,8 +176,8 @@ export function OrdersAdminPanel() {
               key={order.id}
               className={`border transition-colors ${
                 isNew
-                  ? 'border-emerald-700/60 bg-emerald-950/20 ring-1 ring-emerald-700/30'
-                  : 'border-zinc-800'
+                  ? 'border-success/40 bg-success/10 ring-1 ring-success/30'
+                  : 'border-edge'
               }`}
             >
               <button
@@ -186,19 +186,19 @@ export function OrdersAdminPanel() {
                   dismissNew(order.id)
                   setExpandedId(expandedId === order.id ? null : order.id)
                 }}
-                className="flex w-full flex-wrap items-center justify-between gap-3 px-4 py-4 text-left hover:bg-zinc-900/30"
+                className="flex w-full flex-wrap items-center justify-between gap-3 px-4 py-4 text-left hover:bg-elevated/30"
               >
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-mono text-sm text-gold-muted">{order.paymentCode}</p>
+                    <p className="font-mono text-sm text-gold-700">{order.paymentCode}</p>
                     {isNew && (
-                      <span className="rounded-sm bg-emerald-900/60 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-emerald-400">
+                      <span className="rounded-sm bg-success/20 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-success">
                         Mới
                       </span>
                     )}
                   </div>
-                  <p className="mt-1 text-zinc-200">{order.customerName} · {order.customerPhone}</p>
-                  <p className="mt-1 text-xs text-zinc-600">
+                  <p className="mt-1 text-ink-secondary">{order.customerName} · {order.customerPhone}</p>
+                  <p className="mt-1 text-xs text-ink-subtle">
                     {PAYMENT_METHOD_LABELS[normalizePaymentMethod(order.paymentMethod)]}
                     {' · '}
                     {FULFILLMENT_METHOD_LABELS[normalizeFulfillmentMethod(order.fulfillmentMethod)]}
@@ -208,14 +208,14 @@ export function OrdersAdminPanel() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-serif text-lg text-zinc-100">{formatVnd(order.totalAmount)}</p>
-                  <p className="text-xs text-zinc-500">{STATUS_LABELS[order.status]}</p>
+                  <p className="font-serif text-lg text-ink">{formatVnd(order.totalAmount)}</p>
+                  <p className="text-xs text-ink-subtle">{STATUS_LABELS[order.status]}</p>
                 </div>
               </button>
 
               {expandedId === order.id && (
-                <div className="border-t border-zinc-800 px-4 py-4 text-sm text-zinc-400">
-                  <p className="text-xs text-zinc-600">
+                <div className="border-t border-edge px-4 py-4 text-sm text-ink-muted">
+                  <p className="text-xs text-ink-subtle">
                     {new Date(order.createdAt).toLocaleString('vi-VN')}
                     {order.customerEmail ? ` · ${order.customerEmail}` : ''}
                   </p>
@@ -233,24 +233,24 @@ export function OrdersAdminPanel() {
                     {order.pointsRedeemed > 0 && <span>Dùng {order.pointsRedeemed} điểm</span>}
                     {order.pointsEarned > 0 && order.status === 'Paid' && <span>+{order.pointsEarned} điểm</span>}
                   </div>
-                  {order.notes && <p className="mt-3 text-zinc-500">Ghi chú: {order.notes}</p>}
+                  {order.notes && <p className="mt-3 text-ink-subtle">Ghi chú: {order.notes}</p>}
                   {order.deliveryAddress && (
-                    <p className="mt-2 text-zinc-500">Địa chỉ giao: {order.deliveryAddress}</p>
+                    <p className="mt-2 text-ink-subtle">Địa chỉ giao: {order.deliveryAddress}</p>
                   )}
                   {order.shippingFee > 0 && (
-                    <p className="mt-2 text-zinc-500">
+                    <p className="mt-2 text-ink-subtle">
                       Phí ship: {formatVnd(order.shippingFee)}
                       {order.shippingZone ? ` · ${getShippingLabel(order.shippingZone)}` : ''}
                     </p>
                   )}
                   {order.trackingCode && (
-                    <p className="mt-2 text-zinc-500">
+                    <p className="mt-2 text-ink-subtle">
                       Vận đơn: {order.carrier ? `${order.carrier} · ` : ''}
-                      <span className="font-mono text-zinc-400">{order.trackingCode}</span>
+                      <span className="font-mono text-ink-muted">{order.trackingCode}</span>
                       {order.trackingUrl && (
                         <>
                           {' · '}
-                          <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="text-gold hover:underline">
+                          <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="text-gold-500 hover:underline">
                             Link
                           </a>
                         </>
@@ -258,7 +258,7 @@ export function OrdersAdminPanel() {
                     </p>
                   )}
                   {order.fulfillmentStatus === 'Disputed' && (
-                    <p className="mt-2 text-red-400">
+                    <p className="mt-2 text-danger">
                       Khiếu nại: {order.disputeReason}
                       {order.disputeNotes ? ` — ${order.disputeNotes}` : ''}
                     </p>
@@ -270,7 +270,7 @@ export function OrdersAdminPanel() {
                         type="button"
                         disabled={updatingId === order.id}
                         onClick={() => void handleApprove(order.id)}
-                        className="text-xs text-amber-300 hover:underline disabled:opacity-50"
+                        className="text-xs text-warning hover:underline disabled:opacity-50"
                       >
                         Duyệt COD — sẵn sàng giao
                       </button>
@@ -279,7 +279,7 @@ export function OrdersAdminPanel() {
 
                   {order.fulfillmentMethod === 'Delivery' && order.fulfillmentStatus === 'Approved' && (
                     <div className="mt-4 space-y-2">
-                      <p className="text-xs uppercase tracking-widest text-zinc-600">Nhập vận đơn & giao hàng</p>
+                      <p className="text-xs uppercase tracking-widest text-ink-subtle">Nhập vận đơn & giao hàng</p>
                       <input
                         placeholder="Mã vận đơn SPX"
                         value={trackingDrafts[order.id]?.code ?? ''}
@@ -293,7 +293,7 @@ export function OrdersAdminPanel() {
                             },
                           }))
                         }
-                        className="w-full border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300"
+                        className="w-full border border-edge bg-canvas px-3 py-2 text-sm text-ink-secondary"
                       />
                       <input
                         placeholder="Link theo dõi (tuỳ chọn)"
@@ -308,13 +308,13 @@ export function OrdersAdminPanel() {
                             },
                           }))
                         }
-                        className="w-full border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300"
+                        className="w-full border border-edge bg-canvas px-3 py-2 text-sm text-ink-secondary"
                       />
                       <button
                         type="button"
                         disabled={updatingId === order.id}
                         onClick={() => void handleShipment(order.id)}
-                        className="text-xs text-emerald-400 hover:underline disabled:opacity-50"
+                        className="text-xs text-success hover:underline disabled:opacity-50"
                       >
                         Xác nhận đã giao cho đơn vị vận chuyển
                       </button>
@@ -327,7 +327,7 @@ export function OrdersAdminPanel() {
                         type="button"
                         disabled={updatingId === order.id}
                         onClick={() => void handleDelivered(order.id)}
-                        className="text-xs text-emerald-400 hover:underline disabled:opacity-50"
+                        className="text-xs text-success hover:underline disabled:opacity-50"
                       >
                         Đánh dấu đã giao tới khách
                       </button>
@@ -340,7 +340,7 @@ export function OrdersAdminPanel() {
                         type="button"
                         disabled={updatingId === order.id}
                         onClick={() => handleStatusChange(order.id, 'Paid')}
-                        className="text-xs text-emerald-400 hover:underline disabled:opacity-50"
+                        className="text-xs text-success hover:underline disabled:opacity-50"
                       >
                         {normalizePaymentMethod(order.paymentMethod) === 'COD'
                           ? 'Xác nhận đã thu tiền (COD)'
@@ -350,7 +350,7 @@ export function OrdersAdminPanel() {
                         type="button"
                         disabled={updatingId === order.id}
                         onClick={() => handleStatusChange(order.id, 'Cancelled')}
-                        className="text-xs text-red-400 hover:underline disabled:opacity-50"
+                        className="text-xs text-danger hover:underline disabled:opacity-50"
                       >
                         Hủy đơn
                       </button>

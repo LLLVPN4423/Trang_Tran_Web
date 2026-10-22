@@ -90,7 +90,7 @@ function ServiceDetailContent() {
   return (
     <PageLayout>
       <div className="section-inner px-5 py-12 sm:px-8 sm:py-16">
-        <Link to="/catalog" className="text-xs uppercase tracking-widest text-gold-muted hover:text-gold">
+        <Link to="/catalog" className="text-xs uppercase tracking-widest text-gold-700 hover:text-gold-300">
           ← Quay lại bảng giá
         </Link>
 
@@ -106,7 +106,7 @@ function ServiceDetailContent() {
         )}
 
         {!loading && !error && service && !service.isActive && (
-          <p className="mt-10 text-center text-zinc-500">Dịch vụ không còn được cung cấp.</p>
+          <p className="mt-10 text-center text-ink-subtle">Dịch vụ không còn được cung cấp.</p>
         )}
 
         {!loading && !error && service && service.isActive && (
@@ -116,61 +116,61 @@ function ServiceDetailContent() {
             </div>
 
             <div>
-              <p className="section-eyebrow">{CATEGORY_LABELS[service.category]}</p>
-              <h1 className="section-title mt-2">{service.name}</h1>
-              <p className="mt-2 text-sm text-zinc-500">
+              <p className="catalog-card-meta mb-2 sm:text-[0.65rem]">
+                {CATEGORY_LABELS[service.category]}
+              </p>
+              <h1 className="catalog-detail-title">{service.name}</h1>
+              <p className="mt-2 text-sm text-ink-subtle">
                 {categoryLabel} tại salon Sóc Trăng (Tuấn Lan, Hùng Vương) — đặt lịch online Trang Tran Hair.
               </p>
               {service.stylistLevel && (
-                <p className="mt-2 text-sm text-zinc-500">{STYLIST_LABELS[service.stylistLevel]}</p>
+                <p className="mt-2 text-sm text-ink-subtle">{STYLIST_LABELS[service.stylistLevel]}</p>
               )}
 
               {needsSize ? (
                 <div className="mt-6">
                   {priceRange && (
-                    <p className="text-sm text-zinc-500">
-                      Khoảng giá: <span className="text-zinc-300">{priceRange}</span>
+                    <p className="text-sm text-ink-subtle">
+                      Khoảng giá: <span className="text-ink-secondary">{priceRange}</span>
                     </p>
                   )}
-                  <p className="mt-4 text-xs uppercase tracking-widest text-zinc-500">Chọn size tóc</p>
+                  <p className="mt-4 text-xs uppercase tracking-widest text-ink-subtle">Chọn size tóc</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {HAIR_SIZES.filter((size) => service.priceBySize?.[size] != null).map((size) => (
                       <button
                         key={size}
                         type="button"
                         onClick={() => setHairSize(size)}
-                        className={`min-w-12 px-4 py-2 text-xs uppercase tracking-[0.2em] transition ${
-                          hairSize === size
-                            ? 'bg-gold/15 text-gold ring-1 ring-gold/30'
-                            : 'border border-zinc-800 text-zinc-500 hover:border-zinc-600 hover:text-zinc-300'
+                        className={`min-w-12 px-4 py-2 text-xs uppercase tracking-[0.2em] ${
+                          hairSize === size ? 'control-selected' : 'control-idle'
                         }`}
                       >
                         {size}
                       </button>
                     ))}
                   </div>
-                  <p className="mt-4 font-serif text-3xl text-gold">{formatVnd(price)}</p>
+                  <p className="mt-4 font-serif text-3xl text-gold-500">{formatVnd(price)}</p>
                 </div>
               ) : (
-                <p className="mt-4 font-serif text-3xl text-gold">{formatServiceCardPrice(service)}</p>
+                <p className="mt-4 font-serif text-3xl text-gold-500">{formatServiceCardPrice(service)}</p>
               )}
 
               {service.durationMinutes && (
-                <p className="mt-2 text-sm text-zinc-500">Thời gian ước tính: ~{service.durationMinutes} phút</p>
+                <p className="mt-2 text-sm text-ink-subtle">Thời gian ước tính: ~{service.durationMinutes} phút</p>
               )}
 
-              <p className="mt-4 text-sm text-zinc-500">
+              <p className="mt-4 text-sm text-ink-subtle">
                 Giá chốt tại tiệm sau khi tư vấn. Thanh toán khi làm dịch vụ — không thanh toán online.
               </p>
 
               {needsSize && service.priceBySize && (
-                <div className="mt-6 border-t border-zinc-800/80 pt-6">
-                  <h2 className="text-xs uppercase tracking-widest text-zinc-500">Bảng giá theo size</h2>
-                  <ul className="mt-3 space-y-2 text-sm text-zinc-400">
+                <div className="mt-6 border-t border-edge/80 pt-6">
+                  <h2 className="text-xs uppercase tracking-widest text-ink-subtle">Bảng giá theo size</h2>
+                  <ul className="mt-3 space-y-2 text-sm text-ink-muted">
                     {HAIR_SIZES.filter((size) => service.priceBySize?.[size] != null).map((size) => (
-                      <li key={size} className="flex justify-between gap-4 border-b border-zinc-900/80 pb-2">
+                      <li key={size} className="flex justify-between gap-4 border-b border-edge/70 pb-2">
                         <span>Size {size}</span>
-                        <span className="tabular-nums text-zinc-200">{formatVnd(service.priceBySize![size])}</span>
+                        <span className="tabular-nums text-ink-secondary">{formatVnd(service.priceBySize![size])}</span>
                       </li>
                     ))}
                   </ul>
@@ -178,9 +178,9 @@ function ServiceDetailContent() {
               )}
 
               {service.description && (
-                <div className="mt-8 border-t border-zinc-800/80 pt-6">
-                  <h2 className="text-xs uppercase tracking-widest text-zinc-500">Mô tả dịch vụ</h2>
-                  <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-zinc-400">
+                <div className="mt-8 border-t border-edge/80 pt-6">
+                  <h2 className="text-xs uppercase tracking-widest text-ink-subtle">Mô tả dịch vụ</h2>
+                  <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-ink-muted">
                     {service.description}
                   </p>
                 </div>
@@ -195,11 +195,11 @@ function ServiceDetailContent() {
                     Xem & gửi lịch ({serviceCount})
                   </Link>
                 )}
-                <Link to="/shop" className="text-sm text-zinc-500 hover:text-gold">
+                <Link to="/shop" className="text-sm text-ink-subtle hover:text-gold-300">
                   Mua Moroccanoil
                 </Link>
               </div>
-              {feedback && <p className="mt-3 text-sm text-gold">{feedback}</p>}
+              {feedback && <p className="mt-3 text-sm text-gold-500">{feedback}</p>}
             </div>
           </div>
         )}

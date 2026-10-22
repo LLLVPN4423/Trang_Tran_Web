@@ -127,8 +127,8 @@ export function AccountPage() {
     return (
       <PageLayout>
         <div className="mx-auto max-w-md px-6 py-16">
-          <h1 className="font-serif text-3xl text-zinc-100">Hoàn tất hồ sơ</h1>
-          <p className="mt-3 text-sm text-zinc-500">Nhập thông tin để tích điểm và theo dõi đơn hàng.</p>
+          <h1 className="font-serif text-3xl text-ink">Hoàn tất hồ sơ</h1>
+          <p className="mt-3 text-sm text-ink-subtle">Nhập thông tin để tích điểm và theo dõi đơn hàng.</p>
           <ProfileSyncForm
             email={user.email ?? ''}
             defaultName={user.displayName ?? ''}
@@ -150,12 +150,12 @@ export function AccountPage() {
   return (
     <PageLayout>
       <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-16">
-        <p className="text-xs uppercase tracking-[0.35em] text-gold-muted">Tài khoản</p>
-        <h1 className="mt-3 font-serif text-3xl text-zinc-100 sm:text-4xl">
+        <p className="text-xs uppercase tracking-[0.35em] text-gold-700">Tài khoản</p>
+        <h1 className="mt-3 font-serif text-3xl text-ink sm:text-4xl">
           Xin chào, {customerProfile.name}
         </h1>
 
-        <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-zinc-500">
+        <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink-subtle">
           {customerProfile.phone && <span>SĐT: {customerProfile.phone}</span>}
           {(customerProfile.email ?? user.email) && (
             <span>Email: {customerProfile.email ?? user.email}</span>
@@ -163,14 +163,14 @@ export function AccountPage() {
           <span>Thành viên từ {formatDate(customerProfile.createdAt)}</span>
         </div>
 
-        <nav className="mt-8 flex flex-wrap gap-x-5 gap-y-2 border-b border-zinc-800/80 pb-4">
+        <nav className="mt-8 flex flex-wrap gap-x-5 gap-y-2 border-b border-edge/80 pb-4">
           {(Object.keys(TAB_LABELS) as AccountTab[]).map((tab) => (
             <button
               key={tab}
               type="button"
               onClick={() => setTab(tab)}
               className={`text-xs uppercase tracking-widest transition ${
-                activeTab === tab ? 'text-gold' : 'text-zinc-500 hover:text-zinc-300'
+                activeTab === tab ? 'text-gold-500' : 'text-ink-subtle hover:text-ink-secondary'
               }`}
             >
               {TAB_LABELS[tab]}
@@ -276,14 +276,14 @@ function OverviewSection({
       </div>
 
       {!loadingLoyalty && rules && (
-        <div className="border border-zinc-800 p-5 sm:p-6">
-          <h2 className="font-serif text-xl text-zinc-200">Chương trình tích điểm</h2>
-          <ul className="mt-4 space-y-2 text-sm text-zinc-400">
+        <div className="border border-edge p-5 sm:p-6">
+          <h2 className="font-serif text-xl text-ink-secondary">Chương trình tích điểm</h2>
+          <ul className="mt-4 space-y-2 text-sm text-ink-muted">
             <li>• Tích {rules.pointsPerTenThousandVnd} điểm / 10.000đ khi thanh toán thành công (làm tròn xuống theo 10.000đ)</li>
             <li>• Đổi {rules.redeemRatePoints} điểm = {formatVnd(rules.redeemRateValueVnd)} giảm giá tại checkout</li>
-            <li>• Đã tích <span className="text-emerald-400">+{totalPointsEarned}</span> điểm · Đã dùng <span className="text-amber-400">−{totalPointsRedeemed}</span> điểm</li>
+            <li>• Đã tích <span className="text-success">+{totalPointsEarned}</span> điểm · Đã dùng <span className="text-warning">−{totalPointsRedeemed}</span> điểm</li>
           </ul>
-          <button type="button" onClick={() => onGoToTab('points')} className="mt-4 text-xs uppercase tracking-widest text-gold-muted hover:text-gold">
+          <button type="button" onClick={() => onGoToTab('points')} className="mt-4 text-xs uppercase tracking-widest text-gold-700 hover:text-gold-300">
             Xem chi tiết điểm →
           </button>
         </div>
@@ -293,7 +293,7 @@ function OverviewSection({
         <SectionHeader title="Giao dịch điểm gần đây" actionLabel="Xem tất cả" onAction={() => onGoToTab('points')} />
         {loadingLoyalty && <LoadingState label="Đang tải điểm..." />}
         {!loadingLoyalty && recentHistory.length === 0 && (
-          <p className="text-zinc-500">Chưa có giao dịch điểm. Mua hàng và thanh toán để bắt đầu tích điểm.</p>
+          <p className="text-ink-subtle">Chưa có giao dịch điểm. Mua hàng và thanh toán để bắt đầu tích điểm.</p>
         )}
         {!loadingLoyalty && recentHistory.length > 0 && (
           <div className="space-y-2">
@@ -307,8 +307,8 @@ function OverviewSection({
       <div>
         <SectionHeader title="Đơn hàng gần đây" actionLabel="Xem tất cả" onAction={() => onGoToTab('orders')} />
         {recentOrders.length === 0 ? (
-          <p className="text-zinc-500">
-            Chưa có đơn. <Link to="/catalog" className="text-gold-muted hover:text-gold">Xem menu →</Link>
+          <p className="text-ink-subtle">
+            Chưa có đơn. <Link to="/catalog" className="text-gold-700 hover:text-gold-300">Xem menu →</Link>
           </p>
         ) : (
           <div className="space-y-4">
@@ -360,34 +360,34 @@ function PointsSection({
   return (
     <div className="mt-8 space-y-10">
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="border border-gold/20 bg-gold/5 p-6">
-          <p className="text-xs uppercase tracking-widest text-gold-muted">Số điểm hiện tại</p>
-          <p className="mt-3 font-serif text-5xl tabular-nums text-gold">{points}</p>
+        <div className="border border-gold-500/20 bg-gold-500/5 p-6">
+          <p className="text-xs uppercase tracking-widest text-gold-700">Số điểm hiện tại</p>
+          <p className="mt-3 font-serif text-5xl tabular-nums text-gold-500">{points}</p>
           {rules && redeemValue > 0 && (
-            <p className="mt-2 text-sm text-zinc-400">Có thể đổi tối đa {formatVnd(redeemValue)} tại checkout</p>
+            <p className="mt-2 text-sm text-ink-muted">Có thể đổi tối đa {formatVnd(redeemValue)} tại checkout</p>
           )}
         </div>
         <div className="grid gap-4 sm:grid-cols-1">
-          <div className="border border-zinc-800 p-5">
-            <p className="text-xs uppercase tracking-widest text-zinc-600">Tổng chi tiêu</p>
-            <p className="mt-2 font-serif text-2xl tabular-nums text-zinc-200">{formatVnd(totalSpent)}</p>
+          <div className="border border-edge p-5">
+            <p className="text-xs uppercase tracking-widest text-ink-subtle">Tổng chi tiêu</p>
+            <p className="mt-2 font-serif text-2xl tabular-nums text-ink-secondary">{formatVnd(totalSpent)}</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="border border-zinc-800 p-4">
-              <p className="text-[10px] uppercase tracking-widest text-zinc-600">Đã tích</p>
-              <p className="mt-1 font-serif text-xl tabular-nums text-emerald-400">+{totalPointsEarned}</p>
+            <div className="border border-edge p-4">
+              <p className="text-[10px] uppercase tracking-widest text-ink-subtle">Đã tích</p>
+              <p className="mt-1 font-serif text-xl tabular-nums text-success">+{totalPointsEarned}</p>
             </div>
-            <div className="border border-zinc-800 p-4">
-              <p className="text-[10px] uppercase tracking-widest text-zinc-600">Đã dùng</p>
-              <p className="mt-1 font-serif text-xl tabular-nums text-amber-400">−{totalPointsRedeemed}</p>
+            <div className="border border-edge p-4">
+              <p className="text-[10px] uppercase tracking-widest text-ink-subtle">Đã dùng</p>
+              <p className="mt-1 font-serif text-xl tabular-nums text-warning">−{totalPointsRedeemed}</p>
             </div>
           </div>
         </div>
       </div>
 
       {rules && (
-        <div className="border border-zinc-800 p-5 sm:p-6 text-sm text-zinc-400">
-          <h2 className="font-serif text-xl text-zinc-200">Quy tắc tích & đổi điểm</h2>
+        <div className="border border-edge p-5 sm:p-6 text-sm text-ink-muted">
+          <h2 className="font-serif text-xl text-ink-secondary">Quy tắc tích & đổi điểm</h2>
           <ul className="mt-4 space-y-2">
             <li>• Tích {rules.pointsPerTenThousandVnd} điểm / 10.000đ trên phần tiền đã thanh toán (làm tròn xuống — ví dụ 19.999đ = 1 điểm)</li>
             <li>• Đổi {rules.redeemRatePoints} điểm = {formatVnd(rules.redeemRateValueVnd)} giảm giá</li>
@@ -395,7 +395,7 @@ function PointsSection({
             <li>• Điểm được cộng sau khi salon xác nhận thanh toán (trạng thái Đã thanh toán)</li>
           </ul>
           {summary && (
-            <p className="mt-4 text-xs text-zinc-600">
+            <p className="mt-4 text-xs text-ink-subtle">
               Số dư đồng bộ: {summary.points} điểm · Chi tiêu tích lũy: {formatVnd(summary.totalSpent)}
             </p>
           )}
@@ -403,13 +403,13 @@ function PointsSection({
       )}
 
       <div>
-        <h2 className="font-serif text-2xl text-zinc-200">Lịch sử giao dịch điểm</h2>
-        <p className="mt-1 text-sm text-zinc-500">{history.length} giao dịch</p>
+        <h2 className="font-serif text-2xl text-ink-secondary">Lịch sử giao dịch điểm</h2>
+        <p className="mt-1 text-sm text-ink-subtle">{history.length} giao dịch</p>
 
         {history.length === 0 ? (
-          <p className="mt-6 text-zinc-500">Chưa có giao dịch điểm.</p>
+          <p className="mt-6 text-ink-subtle">Chưa có giao dịch điểm.</p>
         ) : (
-          <div className="mt-6 divide-y divide-zinc-900 border border-zinc-800">
+          <div className="mt-6 divide-y divide-edge border border-edge">
             {history.map((tx) => (
               <LoyaltyTransactionRow
                 key={tx.id}
@@ -455,14 +455,14 @@ function OrdersSection({
       </div>
 
       {stats.pending > 0 && (
-        <p className="text-sm text-amber-400/90">
+        <p className="text-sm text-warning/90">
           {stats.pending} đơn đang chờ thanh toán — điểm chỉ được cộng khi salon xác nhận đã thanh toán (trạng thái Đã thanh toán).
         </p>
       )}
 
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-2xl text-zinc-200">Lịch sử đơn hàng</h2>
-        <Link to="/catalog" className="text-xs uppercase tracking-widest text-gold-muted hover:text-gold">
+        <h2 className="font-serif text-2xl text-ink-secondary">Lịch sử đơn hàng</h2>
+        <Link to="/catalog" className="text-xs uppercase tracking-widest text-gold-700 hover:text-gold-300">
           Đặt thêm →
         </Link>
       </div>
@@ -471,7 +471,7 @@ function OrdersSection({
       {error && <ApiErrorState message={error} onRetry={onRetry} />}
 
       {!loading && !error && orders.length === 0 && (
-        <p className="text-zinc-500">Bạn chưa có đơn hàng nào.</p>
+        <p className="text-ink-subtle">Bạn chưa có đơn hàng nào.</p>
       )}
 
       <div className="space-y-4">
@@ -493,8 +493,8 @@ function AppointmentsSection({
   return (
     <div className="mt-8">
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="font-serif text-2xl text-zinc-200">Lịch hẹn của tôi</h2>
-        <Link to="/appointment" className="text-xs uppercase tracking-widest text-gold-muted hover:text-gold">
+        <h2 className="font-serif text-2xl text-ink-secondary">Lịch hẹn của tôi</h2>
+        <Link to="/appointment" className="text-xs uppercase tracking-widest text-gold-700 hover:text-gold-300">
           Đặt lịch mới →
         </Link>
       </div>
@@ -502,24 +502,24 @@ function AppointmentsSection({
       {loading && <LoadingState label="Đang tải lịch hẹn..." />}
 
       {!loading && appointments.length === 0 && (
-        <p className="text-zinc-500">
+        <p className="text-ink-subtle">
           Chưa có lịch hẹn. Chọn dịch vụ tại{' '}
-          <Link to="/catalog" className="text-gold-muted hover:text-gold">bảng giá</Link>
+          <Link to="/catalog" className="text-gold-700 hover:text-gold-300">bảng giá</Link>
           {' '}và gửi lịch tại{' '}
-          <Link to="/appointment" className="text-gold-muted hover:text-gold">trang đặt lịch</Link>.
+          <Link to="/appointment" className="text-gold-700 hover:text-gold-300">trang đặt lịch</Link>.
         </p>
       )}
 
       <div className="space-y-4">
         {appointments.map((item) => (
-          <article key={item.id} className="border border-zinc-800 p-4 sm:p-6">
+          <article key={item.id} className="border border-edge p-4 sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="font-serif text-lg text-zinc-200">
+                <p className="font-serif text-lg text-ink-secondary">
                   {APPOINTMENT_SERVICE_LABELS[item.serviceInterest] ?? item.serviceInterest}
                 </p>
                 {item.notes && <AppointmentNotesView notes={item.notes} className="mt-3" />}
-                <dl className="mt-3 grid gap-1 text-xs text-zinc-600 sm:grid-cols-2">
+                <dl className="mt-3 grid gap-1 text-xs text-ink-subtle sm:grid-cols-2">
                   <div>
                     <dt className="inline">Gửi lúc: </dt>
                     <dd className="inline">{formatDateTime(item.createdAt)}</dd>
@@ -564,9 +564,9 @@ function ProfileSection({
         <MiniStat label="Tổng chi tiêu" value={formatVnd(totalSpent)} />
       </div>
 
-      <div className="border border-zinc-800 p-5 sm:p-6">
-        <h2 className="font-serif text-xl text-zinc-200">Thông tin cá nhân</h2>
-        <p className="mt-1 text-sm text-zinc-500">Cập nhật họ tên và số điện thoại để salon liên hệ và tích điểm chính xác.</p>
+      <div className="border border-edge p-5 sm:p-6">
+        <h2 className="font-serif text-xl text-ink-secondary">Thông tin cá nhân</h2>
+        <p className="mt-1 text-sm text-ink-subtle">Cập nhật họ tên và số điện thoại để salon liên hệ và tích điểm chính xác.</p>
         <ProfileEditForm name={name} phone={phone} email={email} onSaved={onSaved} />
       </div>
     </div>
@@ -588,68 +588,68 @@ function OrderCard({
       : null
 
   return (
-    <article className="border border-zinc-800 p-4 sm:p-6">
+    <article className="border border-edge p-4 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="font-mono text-sm text-zinc-300">{order.paymentCode}</p>
-          <p className="mt-1 text-xs text-zinc-600">{formatDateTime(order.createdAt)}</p>
+          <p className="font-mono text-sm text-ink-secondary">{order.paymentCode}</p>
+          <p className="mt-1 text-xs text-ink-subtle">{formatDateTime(order.createdAt)}</p>
           {order.paidAt && order.status === 'Paid' && (
-            <p className="text-xs text-emerald-600/80">Thanh toán: {formatDateTime(order.paidAt)}</p>
+            <p className="text-xs text-success/80">Thanh toán: {formatDateTime(order.paidAt)}</p>
           )}
         </div>
         <StatusBadge status={order.status} />
       </div>
 
       {order.fulfillmentMethod === 'Delivery' && order.fulfillmentStatus !== 'None' && (
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-ink-subtle">
           {FULFILLMENT_METHOD_LABELS[normalizeFulfillmentMethod(order.fulfillmentMethod)]}:{' '}
           {FULFILLMENT_STATUS_LABELS[order.fulfillmentStatus]}
         </p>
       )}
 
-      <ul className={`space-y-2 text-sm text-zinc-400 ${compact ? 'mt-3' : 'mt-5'}`}>
+      <ul className={`space-y-2 text-sm text-ink-muted ${compact ? 'mt-3' : 'mt-5'}`}>
         {order.items.map((item) => (
           <li key={`${item.itemId}-${item.hairSize}`} className="flex flex-wrap justify-between gap-2">
             <span>
               {item.name}
               {item.hairSize ? ` · size ${item.hairSize}` : ''} × {item.quantity}
             </span>
-            <span className="tabular-nums text-zinc-500">{formatVnd(item.subtotal)}</span>
+            <span className="tabular-nums text-ink-subtle">{formatVnd(item.subtotal)}</span>
           </li>
         ))}
       </ul>
 
       {!compact && (
-        <dl className="mt-5 space-y-1 border-t border-zinc-900 pt-4 text-sm">
-          <div className="flex justify-between text-zinc-500">
+        <dl className="mt-5 space-y-1 border-t border-edge pt-4 text-sm">
+          <div className="flex justify-between text-ink-subtle">
             <dt>Tạm tính</dt>
             <dd className="tabular-nums">{formatVnd(order.subtotalAmount)}</dd>
           </div>
           {order.promotionCode && (
-            <div className="flex justify-between text-emerald-500/90">
+            <div className="flex justify-between text-success/90">
               <dt>Mã {order.promotionCode}</dt>
               <dd className="tabular-nums">−{formatVnd(order.discountAmount)}</dd>
             </div>
           )}
           {!order.promotionCode && order.discountAmount > 0 && (
-            <div className="flex justify-between text-emerald-500/90">
+            <div className="flex justify-between text-success/90">
               <dt>Giảm giá</dt>
               <dd className="tabular-nums">−{formatVnd(order.discountAmount)}</dd>
             </div>
           )}
           {order.pointsRedeemed > 0 && (
-            <div className="flex justify-between text-amber-400/90">
+            <div className="flex justify-between text-warning/90">
               <dt>Đổi {order.pointsRedeemed} điểm{pointsRedeemValue ? ` (${formatVnd(pointsRedeemValue)})` : ''}</dt>
               <dd>−</dd>
             </div>
           )}
           {order.shippingFee > 0 && (
-            <div className="flex justify-between text-zinc-500">
+            <div className="flex justify-between text-ink-subtle">
               <dt>Phí giao hàng</dt>
               <dd className="tabular-nums">{formatVnd(order.shippingFee)}</dd>
             </div>
           )}
-          <div className="flex justify-between font-serif text-lg text-zinc-100">
+          <div className="flex justify-between font-serif text-lg text-ink">
             <dt>Tổng cộng</dt>
             <dd className="tabular-nums">{formatVnd(order.totalAmount)}</dd>
           </div>
@@ -658,29 +658,29 @@ function OrderCard({
 
       <div className={`flex flex-wrap gap-3 text-sm ${compact ? 'mt-3' : 'mt-4'}`}>
         {order.status === 'Pending' && order.pointsEarned > 0 && (
-          <span className="rounded-sm border border-amber-900/40 px-2 py-0.5 text-amber-400">
+          <span className="rounded-sm border border-warning/25 px-2 py-0.5 text-warning">
             +{order.pointsEarned} điểm sau khi thanh toán
           </span>
         )}
         {order.pointsEarned > 0 && order.status === 'Paid' && (
-          <span className="rounded-sm border border-emerald-900/40 px-2 py-0.5 text-emerald-400">
+          <span className="rounded-sm border border-success/25 px-2 py-0.5 text-success">
             +{order.pointsEarned} điểm tích
           </span>
         )}
         {order.pointsRedeemed > 0 && (
-          <span className="rounded-sm border border-amber-900/40 px-2 py-0.5 text-amber-400">
+          <span className="rounded-sm border border-warning/25 px-2 py-0.5 text-warning">
             −{order.pointsRedeemed} điểm đổi
           </span>
         )}
         {compact && (
-          <span className="ml-auto font-serif text-lg tabular-nums text-zinc-200">{formatVnd(order.totalAmount)}</span>
+          <span className="ml-auto font-serif text-lg tabular-nums text-ink-secondary">{formatVnd(order.totalAmount)}</span>
         )}
       </div>
 
       {!compact && (
         <Link
           to={`/orders/${order.id}`}
-          className="mt-4 inline-block text-xs uppercase tracking-widest text-gold-muted hover:text-gold"
+          className="mt-4 inline-block text-xs uppercase tracking-widest text-gold-700 hover:text-gold-300"
         >
           Chi tiết & theo dõi
         </Link>
@@ -703,19 +703,19 @@ function LoyaltyTransactionRow({
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <LoyaltyTypeBadge type={tx.type} />
-          <p className="text-zinc-300">{tx.description}</p>
+          <p className="text-ink-secondary">{tx.description}</p>
         </div>
-        <p className="mt-1 text-xs text-zinc-600">{formatDateTime(tx.createdAt)}</p>
+        <p className="mt-1 text-xs text-ink-subtle">{formatDateTime(tx.createdAt)}</p>
         {linkedOrder && (
-          <p className="mt-1 font-mono text-xs text-zinc-500">Đơn: {linkedOrder.paymentCode}</p>
+          <p className="mt-1 font-mono text-xs text-ink-subtle">Đơn: {linkedOrder.paymentCode}</p>
         )}
         {tx.orderId && !linkedOrder && (
-          <p className="mt-1 font-mono text-xs text-zinc-600">Mã đơn: {tx.orderId.slice(0, 8)}…</p>
+          <p className="mt-1 font-mono text-xs text-ink-subtle">Mã đơn: {tx.orderId.slice(0, 8)}…</p>
         )}
       </div>
       <span
         className={`shrink-0 font-serif text-xl tabular-nums ${
-          tx.points >= 0 ? 'text-emerald-400' : 'text-amber-400'
+          tx.points >= 0 ? 'text-success' : 'text-warning'
         }`}
       >
         {tx.points >= 0 ? '+' : ''}{tx.points}
@@ -726,9 +726,9 @@ function LoyaltyTransactionRow({
 
 function LoyaltyTypeBadge({ type }: { type: LoyaltyTransactionType }) {
   const styles = {
-    Earn: 'text-emerald-400 border-emerald-900/50 bg-emerald-950/30',
-    Redeem: 'text-amber-400 border-amber-900/50 bg-amber-950/30',
-    Adjust: 'text-zinc-400 border-zinc-700 bg-zinc-900/50',
+    Earn: 'text-success border-success/30 bg-success/10',
+    Redeem: 'text-warning border-warning/30 bg-warning/10',
+    Adjust: 'text-ink-muted border-edge-strong bg-elevated/50',
   } as const
 
   const labels = {
@@ -758,14 +758,14 @@ function StatCard({
   onClick?: () => void
 }) {
   const className = `border p-5 transition ${
-    accent ? 'border-gold/20 bg-gold/5 hover:border-gold/30' : 'border-zinc-800 hover:border-zinc-700'
+    accent ? 'border-gold-500/20 bg-gold-500/5 hover:border-gold-500/30' : 'border-edge hover:border-edge-strong'
   } ${onClick ? 'cursor-pointer text-left w-full' : ''}`
 
   const inner = (
     <>
-      <p className="text-xs uppercase tracking-widest text-zinc-600">{label}</p>
-      <p className={`mt-2 font-serif text-2xl tabular-nums ${accent ? 'text-gold' : 'text-zinc-100'}`}>{value}</p>
-      {sub && <p className="mt-1 text-xs text-zinc-600">{sub}</p>}
+      <p className="text-xs uppercase tracking-widest text-ink-subtle">{label}</p>
+      <p className={`mt-2 font-serif text-2xl tabular-nums ${accent ? 'text-gold-500' : 'text-ink'}`}>{value}</p>
+      {sub && <p className="mt-1 text-xs text-ink-subtle">{sub}</p>}
     </>
   )
 
@@ -782,9 +782,9 @@ function StatCard({
 
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-zinc-800 p-4">
-      <p className="text-[10px] uppercase tracking-widest text-zinc-600">{label}</p>
-      <p className="mt-1 font-serif text-lg tabular-nums text-zinc-200">{value}</p>
+    <div className="border border-edge p-4">
+      <p className="text-[10px] uppercase tracking-widest text-ink-subtle">{label}</p>
+      <p className="mt-1 font-serif text-lg tabular-nums text-ink-secondary">{value}</p>
     </div>
   )
 }
@@ -800,8 +800,8 @@ function SectionHeader({
 }) {
   return (
     <div className="mb-4 flex items-center justify-between">
-      <h2 className="font-serif text-2xl text-zinc-200">{title}</h2>
-      <button type="button" onClick={onAction} className="text-xs uppercase tracking-widest text-gold-muted hover:text-gold">
+      <h2 className="font-serif text-2xl text-ink-secondary">{title}</h2>
+      <button type="button" onClick={onAction} className="text-xs uppercase tracking-widest text-gold-700 hover:text-gold-300">
         {actionLabel} →
       </button>
     </div>
@@ -849,8 +849,8 @@ function ProfileEditForm({
       <input name="name" required defaultValue={name} placeholder="Họ tên" className="field-input" />
       <input name="phone" required defaultValue={phone} placeholder="Số điện thoại" className="field-input" />
       <input name="email" defaultValue={email} placeholder="Email" className="field-input sm:col-span-2" />
-      {error && <p className="text-sm text-red-300 sm:col-span-2">{error}</p>}
-      {success && <p className="text-sm text-emerald-400 sm:col-span-2">Đã cập nhật hồ sơ.</p>}
+      {error && <p className="text-sm text-danger sm:col-span-2">{error}</p>}
+      {success && <p className="text-sm text-success sm:col-span-2">Đã cập nhật hồ sơ.</p>}
       <button type="submit" disabled={loading} className="btn-gold sm:col-span-2 sm:max-w-xs">
         {loading ? 'Đang lưu...' : 'Cập nhật hồ sơ'}
       </button>
@@ -902,17 +902,17 @@ function ProfileSyncForm({
   return (
     <form onSubmit={handleSubmit} className="mt-8 space-y-4">
       <label className="block">
-        <span className="text-xs uppercase tracking-widest text-zinc-600">Họ tên *</span>
+        <span className="text-xs uppercase tracking-widest text-ink-subtle">Họ tên *</span>
         <input
           name="name"
           required
           defaultValue={defaultName}
           placeholder="Nguyễn Văn A"
-          className="mt-1 w-full border-b border-zinc-800 bg-transparent py-3 text-zinc-200"
+          className="mt-1 w-full border-b border-edge bg-transparent py-3 text-ink-secondary"
         />
       </label>
       <label className="block">
-        <span className="text-xs uppercase tracking-widest text-zinc-600">Số điện thoại *</span>
+        <span className="text-xs uppercase tracking-widest text-ink-subtle">Số điện thoại *</span>
         <input
           name="phone"
           type="tel"
@@ -920,24 +920,24 @@ function ProfileSyncForm({
           inputMode="tel"
           autoComplete="tel"
           placeholder="0901234567"
-          className="mt-1 w-full border-b border-zinc-800 bg-transparent py-3 text-zinc-200"
+          className="mt-1 w-full border-b border-edge bg-transparent py-3 text-ink-secondary"
         />
       </label>
       <label className="block">
-        <span className="text-xs uppercase tracking-widest text-zinc-600">Email</span>
+        <span className="text-xs uppercase tracking-widest text-ink-subtle">Email</span>
         <input
           name="email"
           type="email"
           defaultValue={email}
           placeholder="email@example.com"
-          className="mt-1 w-full border-b border-zinc-800 bg-transparent py-3 text-zinc-200"
+          className="mt-1 w-full border-b border-edge bg-transparent py-3 text-ink-secondary"
         />
       </label>
-      {error && <p className="text-sm text-red-300">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-gold/90 py-3 text-xs uppercase tracking-widest text-zinc-950 disabled:opacity-50"
+        className="w-full bg-gold-500 py-3 text-xs uppercase tracking-widest text-canvas disabled:opacity-50"
       >
         {loading ? 'Đang lưu...' : 'Lưu hồ sơ'}
       </button>
@@ -955,10 +955,10 @@ const APPOINTMENT_SERVICE_LABELS: Record<string, string> = {
 
 function AppointmentStatusBadge({ status }: { status: AppointmentResponse['status'] }) {
   const styles = {
-    Pending: 'text-amber-400 border-amber-900/50',
-    Confirmed: 'text-emerald-400 border-emerald-900/50',
-    Completed: 'text-zinc-400 border-zinc-700',
-    Cancelled: 'text-zinc-500 border-zinc-700',
+    Pending: 'text-warning border-warning/30',
+    Confirmed: 'text-success border-success/30',
+    Completed: 'text-ink-muted border-edge-strong',
+    Cancelled: 'text-ink-subtle border-edge-strong',
   } as const
 
   const labels = {
@@ -977,9 +977,9 @@ function AppointmentStatusBadge({ status }: { status: AppointmentResponse['statu
 
 function StatusBadge({ status }: { status: OrderResponse['status'] }) {
   const styles = {
-    Pending: 'text-amber-400 border-amber-900/50',
-    Paid: 'text-emerald-400 border-emerald-900/50',
-    Cancelled: 'text-zinc-500 border-zinc-700',
+    Pending: 'text-warning border-warning/30',
+    Paid: 'text-success border-success/30',
+    Cancelled: 'text-ink-subtle border-edge-strong',
   } as const
 
   const labels = { Pending: 'Chờ thanh toán', Paid: 'Đã thanh toán', Cancelled: 'Đã hủy' }

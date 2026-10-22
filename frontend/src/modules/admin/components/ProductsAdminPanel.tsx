@@ -137,8 +137,8 @@ export function ProductsAdminPanel() {
         }
       />
 
-      <p className="text-sm text-zinc-500">
-        Ảnh &amp; video trên <strong className="text-zinc-400">Google Drive</strong>: up file → Chia sẻ &quot;Bất kỳ ai có
+      <p className="text-sm text-ink-subtle">
+        Ảnh &amp; video trên <strong className="text-ink-muted">Google Drive</strong>: up file → Chia sẻ &quot;Bất kỳ ai có
         link&quot; → dán link vào form (tối đa {MAX_PRODUCT_GALLERY} ảnh). {GOOGLE_DRIVE_SHARE_HINT}
       </p>
 
@@ -147,7 +147,7 @@ export function ProductsAdminPanel() {
           const gallery = getProductGallery(p)
           const thumb = gallery[0]
           return (
-            <article key={p.id} className="border border-zinc-800 p-4">
+            <article key={p.id} className="border border-edge p-4">
               <div className="flex gap-4">
                 {thumb ? (
                   <img
@@ -157,34 +157,34 @@ export function ProductsAdminPanel() {
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="flex h-24 w-24 shrink-0 items-center justify-center bg-zinc-900 text-xs text-zinc-600">
+                  <div className="flex h-24 w-24 shrink-0 items-center justify-center bg-elevated text-xs text-ink-subtle">
                     Chưa có ảnh
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="font-serif text-lg text-zinc-200">{p.name}</p>
-                  <p className="text-sm text-zinc-500">
+                  <p className="font-serif text-lg text-ink-secondary">{p.name}</p>
+                  <p className="text-sm text-ink-subtle">
                     {p.brand} · {formatVnd(p.price)} · Tồn {p.stock}
                   </p>
-                  <p className="mt-1 text-xs text-zinc-600">
+                  <p className="mt-1 text-xs text-ink-subtle">
                     {gallery.length} ảnh{p.videoUrl ? ' · có video' : ''}
                   </p>
-                  <p className={`mt-1 text-xs ${p.isActive ? 'text-emerald-500' : 'text-zinc-600'}`}>
+                  <p className={`mt-1 text-xs ${p.isActive ? 'text-success' : 'text-ink-subtle'}`}>
                     {p.isActive ? 'Active' : 'Off'}
                   </p>
                 </div>
               </div>
               <div className="mt-4 flex flex-wrap gap-3">
-                <Link to={`/catalog/product/${p.id}`} className="text-xs uppercase tracking-wider text-zinc-500 hover:text-gold">
+                <Link to={`/catalog/product/${p.id}`} className="text-xs uppercase tracking-wider text-ink-subtle hover:text-gold-300">
                   Xem trang
                 </Link>
-                <button type="button" onClick={() => setFormMode({ type: 'edit', product: p })} className="text-xs uppercase tracking-wider hover:text-gold">
+                <button type="button" onClick={() => setFormMode({ type: 'edit', product: p })} className="text-xs uppercase tracking-wider hover:text-gold-300">
                   Sửa
                 </button>
-                <button type="button" onClick={() => toggleActive(p)} className="text-xs uppercase tracking-wider hover:text-gold">
+                <button type="button" onClick={() => toggleActive(p)} className="text-xs uppercase tracking-wider hover:text-gold-300">
                   {p.isActive ? 'Tắt' : 'Bật'}
                 </button>
-                <button type="button" onClick={() => handleDelete(p.id, p.name)} className="text-xs uppercase tracking-wider text-red-400/70 hover:text-red-400">
+                <button type="button" onClick={() => handleDelete(p.id, p.name)} className="text-xs uppercase tracking-wider text-danger/70 hover:text-danger">
                   Xóa
                 </button>
               </div>
@@ -240,10 +240,10 @@ export function ProductsAdminPanel() {
             </AdminField>
             {storageEnabled && (
               <AdminField label="Hoặc upload 1 ảnh lên Storage (thêm vào gallery)">
-                <input type="file" name="imageFile" accept="image/*" className="text-xs text-zinc-500" />
+                <input type="file" name="imageFile" accept="image/*" className="text-xs text-ink-subtle" />
               </AdminField>
             )}
-            <label className="flex items-center gap-2 text-sm text-zinc-400">
+            <label className="flex items-center gap-2 text-sm text-ink-muted">
               <input type="checkbox" name="isActive" defaultChecked={formMode.type === 'edit' ? formMode.product.isActive : true} />
               Hiển thị trên catalog
             </label>

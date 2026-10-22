@@ -1,16 +1,50 @@
 @import "tailwindcss";
 
+/*
+  Dark Luxury × Editorial — semantic color tokens
+  Brand gold preserved; surfaces/text/borders layered for hierarchy.
+  Aliases (gold, gold-muted, surface, surface-muted) keep existing utilities working.
+*/
 @theme {
   --font-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
   --font-sans: "Inter", system-ui, sans-serif;
+
+  /* Brand — champagne gold scale */
+  --color-gold-300: #e8d5a0;
+  --color-gold-500: #c9a962;
+  --color-gold-700: #8a7340;
   --color-gold: #c9a962;
   --color-gold-muted: #8a7340;
+
+  /* Surfaces — darkest → elevated */
+  --color-canvas: #09090b;
+  --color-section: #101012;
+  --color-card: #18181b;
+  --color-elevated: #202024;
   --color-surface: #09090b;
   --color-surface-muted: #18181b;
+
+  /* Ink / text hierarchy */
+  --color-ink: #f4f4f5;
+  --color-ink-secondary: #d4d4d8;
+  --color-ink-muted: #a1a1aa;
+  --color-ink-subtle: #71717a;
+
+  /* Borders / edges */
+  --color-edge: #27272a;
+  --color-edge-strong: #3f3f46;
+
+  /* Status — functional only, distinct from brand gold */
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
 }
 
 :root {
   --header-height: 4.25rem;
+  --ring-gold: color-mix(in srgb, var(--color-gold-500) 45%, transparent);
+  --fill-gold-soft: color-mix(in srgb, var(--color-gold-500) 12%, transparent);
+  --fill-gold-selected: color-mix(in srgb, var(--color-gold-500) 15%, transparent);
 }
 
 html {
@@ -22,30 +56,40 @@ body {
   font-size: 0.9375rem;
   line-height: 1.65;
   overflow-x: hidden;
+  background-color: var(--color-canvas);
+  color: var(--color-ink-secondary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-serif);
-  font-weight: 500;
-  letter-spacing: -0.015em;
-  text-wrap: balance;
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
 }
 
 ::selection {
-  background-color: color-mix(in srgb, var(--color-gold) 30%, transparent);
+  background-color: color-mix(in srgb, var(--color-gold-500) 30%, transparent);
+  color: var(--color-ink);
 }
 
 img {
   display: block;
   max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold-500);
+  outline-offset: 2px;
 }
 
 @layer components {
@@ -54,7 +98,7 @@ img {
   }
 
   .section-shell {
-    @apply border-t border-zinc-900/90 px-5 py-20 sm:px-8 md:py-28 lg:py-36;
+    @apply border-t border-edge/80 bg-section px-5 py-20 sm:px-8 md:py-28 lg:py-36;
   }
 
   .section-inner {
@@ -66,40 +110,42 @@ img {
   }
 
   .section-eyebrow {
-    @apply mb-3 text-[0.6875rem] font-medium uppercase tracking-[0.32em] text-gold-muted;
+    @apply mb-3 text-[0.6875rem] font-medium uppercase tracking-[0.32em] text-gold-700;
   }
 
   .section-title {
     font-size: clamp(2rem, 3.5vw + 0.75rem, 3.75rem);
-    @apply leading-[1.08] text-zinc-50;
+    @apply leading-[1.08] text-ink;
   }
 
   .section-lead {
-    @apply mt-4 max-w-2xl text-[0.9375rem] leading-relaxed text-zinc-500 md:text-base;
+    @apply mt-4 max-w-2xl text-[0.9375rem] leading-relaxed text-ink-muted md:text-base;
   }
 
   .section-body {
-    @apply text-[0.9375rem] leading-[1.75] text-zinc-400 md:text-base md:leading-[1.8];
+    @apply text-[0.9375rem] leading-[1.75] text-ink-muted md:text-base md:leading-[1.8];
   }
 
   .label-caps {
-    @apply text-[0.6875rem] font-medium uppercase tracking-[0.28em] text-zinc-500;
+    @apply text-[0.6875rem] font-medium uppercase tracking-[0.28em] text-ink-subtle;
   }
 
+  /* Secondary CTA — border + muted ink, gold on hover */
   .btn-editorial {
-    @apply inline-flex items-center justify-center border border-zinc-700/90 px-6 py-3 text-[0.6875rem] font-medium uppercase tracking-[0.28em] text-zinc-400 transition hover:border-gold/60 hover:text-gold;
+    @apply inline-flex items-center justify-center border border-edge-strong/90 bg-transparent px-6 py-3 text-[0.6875rem] font-medium uppercase tracking-[0.28em] text-ink-muted transition hover:border-gold-500/55 hover:text-gold-300 focus-visible:border-gold-500 disabled:cursor-not-allowed disabled:opacity-45;
   }
 
+  /* Primary CTA — solid gold-500, dark ink; lighter hover, deeper active */
   .btn-gold {
-    @apply bg-gold/90 py-3.5 text-[0.6875rem] font-medium uppercase tracking-[0.28em] text-zinc-950 transition hover:bg-gold disabled:opacity-50;
+    @apply inline-flex items-center justify-center bg-gold-500 py-3.5 px-6 text-[0.6875rem] font-medium uppercase tracking-[0.28em] text-canvas transition hover:bg-gold-300 active:bg-gold-700 active:text-ink disabled:cursor-not-allowed disabled:bg-gold-700/50 disabled:text-ink-subtle disabled:opacity-100;
   }
 
   .field-input {
-    @apply w-full border-b border-zinc-800/90 bg-transparent py-3 text-[0.9375rem] text-zinc-200 outline-none transition placeholder:text-zinc-600 focus:border-gold/80;
+    @apply w-full border-b border-edge bg-transparent py-3 text-[0.9375rem] text-ink outline-none transition placeholder:text-ink-subtle focus:border-gold-500;
   }
 
   .media-frame {
-    @apply overflow-hidden rounded-sm bg-zinc-900/40 ring-1 ring-zinc-800/60;
+    @apply overflow-hidden rounded-sm bg-card/80 ring-1 ring-edge/70;
   }
 
   .media-cover {
@@ -111,15 +157,41 @@ img {
   }
 
   .price-row-name {
-    @apply shrink-0 font-serif text-xl text-zinc-200 transition-colors group-hover:text-gold md:text-2xl;
+    @apply shrink-0 font-serif text-xl text-gold-300 transition-colors group-hover:text-gold-500 md:text-2xl;
   }
 
   .price-row-leader {
-    @apply mb-1 min-w-8 flex-1 border-b border-dotted border-zinc-800;
+    @apply mb-1 min-w-8 flex-1 border-b border-dotted border-edge;
   }
 
   .price-row-value {
-    @apply shrink-0 text-right text-sm tabular-nums tracking-wide text-zinc-500;
+    @apply shrink-0 text-right text-sm tabular-nums tracking-wide text-ink-subtle;
+  }
+
+  /* Shared product / service card shell */
+  .catalog-card {
+    @apply flex h-full min-w-0 flex-col justify-between overflow-hidden border border-edge/80 bg-card/90 p-2.5 transition hover:border-edge-strong hover:bg-elevated/80 sm:p-4;
+  }
+
+  .catalog-card-meta {
+    @apply mb-1 text-[0.5rem] font-medium uppercase tracking-[0.3em] text-ink-subtle sm:mb-1.5 sm:text-[0.5625rem];
+  }
+
+  .catalog-card-title {
+    @apply line-clamp-2 font-serif text-lg font-medium leading-snug text-gold-300 transition group-hover:text-gold-500 sm:text-2xl md:text-[1.85rem];
+  }
+
+  .catalog-detail-title {
+    font-size: clamp(2rem, 3.5vw + 0.75rem, 3.75rem);
+    @apply mt-1 font-serif font-medium leading-[1.08] text-gold-300;
+  }
+
+  .control-selected {
+    @apply bg-gold-500/15 text-gold-300 ring-1 ring-gold-500/30;
+  }
+
+  .control-idle {
+    @apply border border-edge text-ink-subtle transition hover:border-edge-strong hover:text-ink-secondary;
   }
 }
 

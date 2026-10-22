@@ -11,7 +11,7 @@ export function AdminPanelHeader({
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <h2 className="font-serif text-2xl text-zinc-200">
+      <h2 className="font-serif text-2xl text-ink-secondary">
         {title}
         {count != null && ` (${count})`}
       </h2>
@@ -34,9 +34,9 @@ export function AdminButton({
   disabled?: boolean
 }) {
   const styles = {
-    default: 'border border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200',
-    primary: 'border border-gold/40 bg-gold/10 text-gold hover:bg-gold/20',
-    danger: 'border border-red-900/50 text-red-400/80 hover:text-red-400',
+    default: 'border border-edge-strong text-ink-muted hover:border-edge-strong hover:text-ink',
+    primary: 'border border-gold-500/40 bg-gold-500/10 text-gold-500 hover:bg-gold-500/20',
+    danger: 'border border-danger/30 text-danger/80 hover:text-danger',
   } as const
 
   return (
@@ -65,13 +65,13 @@ export function AdminModal({
   return (
     <div className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-black/70 p-4 pt-16">
       <div
-        className={`w-full border border-zinc-800 bg-zinc-950 p-5 shadow-2xl sm:p-6 ${wide ? 'max-w-2xl' : 'max-w-lg'}`}
+        className={`w-full border border-edge bg-canvas p-5 shadow-2xl sm:p-6 ${wide ? 'max-w-2xl' : 'max-w-lg'}`}
         role="dialog"
         aria-modal="true"
       >
         <div className="mb-5 flex items-start justify-between gap-4">
-          <h3 className="font-serif text-xl text-zinc-100">{title}</h3>
-          <button type="button" onClick={onClose} className="text-zinc-600 hover:text-zinc-300">
+          <h3 className="font-serif text-xl text-ink">{title}</h3>
+          <button type="button" onClick={onClose} className="text-ink-subtle hover:text-ink-secondary">
             ✕
           </button>
         </div>
@@ -90,14 +90,14 @@ export function AdminField({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs uppercase tracking-widest text-zinc-500">{label}</span>
+      <span className="mb-1.5 block text-xs uppercase tracking-widest text-ink-subtle">{label}</span>
       {children}
     </label>
   )
 }
 
 export const adminInputClass =
-  'w-full border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 outline-none focus:border-gold/60'
+  'w-full border border-edge bg-canvas px-3 py-2 text-sm text-ink-secondary outline-none focus:border-gold-500/60'
 
 export const adminSelectClass = adminInputClass
 

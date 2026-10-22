@@ -146,13 +146,13 @@ function BookingContent() {
 
       <div className="mx-auto max-w-3xl px-6 py-16">
 
-        <p className="text-xs uppercase tracking-[0.35em] text-gold-muted">Mua sản phẩm</p>
+        <p className="text-xs uppercase tracking-[0.35em] text-gold-700">Mua sản phẩm</p>
 
-        <h1 className="mt-3 font-serif text-4xl text-zinc-100">Đặt hàng Moroccanoil</h1>
+        <h1 className="mt-3 font-serif text-4xl text-ink">Đặt hàng Moroccanoil</h1>
 
-        <p className="mt-2 text-sm text-zinc-500">
+        <p className="mt-2 text-sm text-ink-subtle">
           Dịch vụ salon —{' '}
-          <a href="/appointment" className="text-gold-muted hover:text-gold">
+          <a href="/appointment" className="text-gold-700 hover:text-gold-300">
             đặt lịch dịch vụ
           </a>
         </p>

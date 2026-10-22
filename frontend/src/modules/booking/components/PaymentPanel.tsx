@@ -18,7 +18,7 @@ function OrderTrackingLink({ order }: { order: OrderResponse }) {
   return (
     <Link
       to={`/orders/${order.id}?token=${encodeURIComponent(order.accessToken)}`}
-      className="mt-4 inline-block text-xs uppercase tracking-widest text-gold-muted hover:text-gold"
+      className="mt-4 inline-block text-xs uppercase tracking-widest text-gold-700 hover:text-gold-300"
     >
       Theo dõi đơn & xác nhận nhận hàng
     </Link>
@@ -30,7 +30,7 @@ function OrderMeta({ order }: { order: OrderResponse }) {
   const fulfillmentMethod = normalizeFulfillmentMethod(order.fulfillmentMethod)
   const isServiceInvoice = order.kind === 'ServiceInvoice'
   return (
-    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500">
+    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-subtle">
       <span>{PAYMENT_METHOD_LABELS[paymentMethod]}</span>
       {!isServiceInvoice && (
         <>
@@ -50,13 +50,13 @@ function OrderMeta({ order }: { order: OrderResponse }) {
       {fulfillmentMethod === 'Delivery' && order.fulfillmentStatus !== 'None' && (
         <>
           <span>·</span>
-          <span className="text-zinc-400">{FULFILLMENT_STATUS_LABELS[order.fulfillmentStatus]}</span>
+          <span className="text-ink-muted">{FULFILLMENT_STATUS_LABELS[order.fulfillmentStatus]}</span>
         </>
       )}
       {order.deliveryAddress && (
         <>
           <span>·</span>
-          <span className="text-zinc-400">{order.deliveryAddress}</span>
+          <span className="text-ink-muted">{order.deliveryAddress}</span>
         </>
       )}
     </div>
@@ -66,61 +66,61 @@ function OrderMeta({ order }: { order: OrderResponse }) {
 export function PaymentPending({ order, pollingExhausted }: Props) {
   return (
     <div className="space-y-8">
-      <div className="rounded-sm border border-gold/30 bg-gold/5 p-6">
-        <p className="text-xs uppercase tracking-widest text-gold-muted">Chờ chuyển khoản</p>
-        <p className="mt-4 font-serif text-3xl text-gold">{formatVnd(order.totalAmount)}</p>
-        <p className="mt-2 text-sm text-zinc-400">
+      <div className="rounded-sm border border-gold-500/30 bg-gold-500/5 p-6">
+        <p className="text-xs uppercase tracking-widest text-gold-700">Chờ chuyển khoản</p>
+        <p className="mt-4 font-serif text-3xl text-gold-500">{formatVnd(order.totalAmount)}</p>
+        <p className="mt-2 text-sm text-ink-muted">
           Mã đơn:{' '}
-          <strong className="font-mono text-zinc-200">{order.paymentCode}</strong>
+          <strong className="font-mono text-ink-secondary">{order.paymentCode}</strong>
         </p>
         <OrderMeta order={order} />
       </div>
 
       <VietQrPayment order={order} />
 
-      <div className="space-y-4 text-sm text-zinc-400">
-        <h3 className="text-xs uppercase tracking-widest text-zinc-500">Hướng dẫn</h3>
+      <div className="space-y-4 text-sm text-ink-muted">
+        <h3 className="text-xs uppercase tracking-widest text-ink-subtle">Hướng dẫn</h3>
         <ol className="list-decimal space-y-2 pl-5">
           <li>
-            Mở app ngân hàng → <strong className="text-zinc-300">Quét mã QR</strong> ở trên.
+            Mở app ngân hàng → <strong className="text-ink-secondary">Quét mã QR</strong> ở trên.
           </li>
           <li>
-            Kiểm tra số tiền <strong className="text-zinc-200">{formatVnd(order.totalAmount)}</strong> và nội dung{' '}
-            <strong className="font-mono text-gold">{order.paymentCode}</strong> đã điền sẵn.
+            Kiểm tra số tiền <strong className="text-ink-secondary">{formatVnd(order.totalAmount)}</strong> và nội dung{' '}
+            <strong className="font-mono text-gold-500">{order.paymentCode}</strong> đã điền sẵn.
           </li>
           <li>Xác thực và hoàn tất chuyển khoản.</li>
           <li>
             Salon xác nhận sau khi nhận tiền — trang tự chuyển sang{' '}
-            <strong className="text-zinc-300">Thanh toán thành công</strong>.
+            <strong className="text-ink-secondary">Thanh toán thành công</strong>.
           </li>
           <li>
             {order.fulfillmentMethod === 'Delivery' ? (
               <>
-                Sau khi xác nhận, salon sẽ <strong className="text-zinc-300">giao hàng</strong> theo địa chỉ bạn đã
+                Sau khi xác nhận, salon sẽ <strong className="text-ink-secondary">giao hàng</strong> theo địa chỉ bạn đã
                 nhập.
               </>
             ) : (
               <>
-                Sau khi xác nhận, bạn có thể <strong className="text-zinc-300">đến tiệm lấy hàng</strong>.
+                Sau khi xác nhận, bạn có thể <strong className="text-ink-secondary">đến tiệm lấy hàng</strong>.
               </>
             )}
           </li>
           <li>
-            Sản phẩm được <strong className="text-zinc-300">giữ tồn 15 phút</strong> — chuyển khoản trước khi hết hạn.
+            Sản phẩm được <strong className="text-ink-secondary">giữ tồn 15 phút</strong> — chuyển khoản trước khi hết hạn.
           </li>
         </ol>
       </div>
 
-      <div className="flex items-center gap-3 text-sm text-zinc-500">
+      <div className="flex items-center gap-3 text-sm text-ink-subtle">
         {!pollingExhausted ? (
           <>
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-700 border-t-gold" />
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-edge-strong border-t-gold" />
             Đang chờ salon xác nhận — trang tự cập nhật mỗi vài giây...
           </>
         ) : (
           <p>
             Vẫn đang chờ xác nhận. Nếu salon hủy đơn, màn hình sẽ tự chuyển sang{' '}
-            <strong className="text-zinc-300">Đã hủy</strong>.
+            <strong className="text-ink-secondary">Đã hủy</strong>.
           </p>
         )}
       </div>
@@ -136,62 +136,62 @@ export function CodOrderPending({ order, pollingExhausted }: Props) {
 
   return (
     <div className="space-y-8">
-      <div className="rounded-sm border border-amber-900/40 bg-amber-950/20 p-6">
-        <p className="text-xs uppercase tracking-widest text-amber-200/80">
+      <div className="rounded-sm border border-warning/25 bg-warning/10 p-6">
+        <p className="text-xs uppercase tracking-widest text-warning/80">
           {awaitingApproval ? 'COD giao hàng — chờ salon duyệt' : 'Đơn COD — chờ salon xác nhận'}
         </p>
-        <p className="mt-4 font-serif text-3xl text-amber-100">{formatVnd(order.totalAmount)}</p>
-        <p className="mt-2 text-sm text-zinc-400">
+        <p className="mt-4 font-serif text-3xl text-warning">{formatVnd(order.totalAmount)}</p>
+        <p className="mt-2 text-sm text-ink-muted">
           Mã đơn:{' '}
-          <strong className="font-mono text-zinc-200">{order.paymentCode}</strong>
+          <strong className="font-mono text-ink-secondary">{order.paymentCode}</strong>
         </p>
         <OrderMeta order={order} />
       </div>
 
-      <div className="space-y-4 text-sm text-zinc-400">
-        <h3 className="text-xs uppercase tracking-widest text-zinc-500">Tiếp theo</h3>
+      <div className="space-y-4 text-sm text-ink-muted">
+        <h3 className="text-xs uppercase tracking-widest text-ink-subtle">Tiếp theo</h3>
         <ol className="list-decimal space-y-2 pl-5">
           {awaitingApproval ? (
             <>
               <li>
-                Salon <strong className="text-zinc-300">duyệt đơn COD</strong> trước khi giao — thường trong vài giờ
+                Salon <strong className="text-ink-secondary">duyệt đơn COD</strong> trước khi giao — thường trong vài giờ
                 làm việc.
               </li>
               <li>
                 Sau khi duyệt, hàng được giao — bạn trả{' '}
-                <strong className="text-zinc-300">{formatVnd(order.totalAmount)}</strong> khi nhận.
+                <strong className="text-ink-secondary">{formatVnd(order.totalAmount)}</strong> khi nhận.
               </li>
             </>
           ) : (
             <li>
-              Salon sẽ <strong className="text-zinc-300">gọi điện / nhắn Zalo</strong> xác nhận đơn trong thời gian sớm
+              Salon sẽ <strong className="text-ink-secondary">gọi điện / nhắn Zalo</strong> xác nhận đơn trong thời gian sớm
               nhất.
             </li>
           )}
           <li>
             {order.fulfillmentMethod === 'Delivery' ? (
               <>
-                Hàng sẽ được <strong className="text-zinc-300">giao</strong> — bạn trả tiền khi nhận (
+                Hàng sẽ được <strong className="text-ink-secondary">giao</strong> — bạn trả tiền khi nhận (
                 {formatVnd(order.totalAmount)}).
               </>
             ) : (
               <>
-                Bạn <strong className="text-zinc-300">đến tiệm lấy</strong> và trả tiền mặt / chuyển khoản tại quầy.
+                Bạn <strong className="text-ink-secondary">đến tiệm lấy</strong> và trả tiền mặt / chuyển khoản tại quầy.
               </>
             )}
           </li>
           <li>
-            Đơn được giữ tồn <strong className="text-zinc-300">48 giờ</strong>. Nếu không liên hệ được, đơn có thể bị
+            Đơn được giữ tồn <strong className="text-ink-secondary">48 giờ</strong>. Nếu không liên hệ được, đơn có thể bị
             hủy.
           </li>
-          <li>Sau khi salon thu tiền, trang sẽ hiện <strong className="text-zinc-300">Đơn hoàn tất</strong>.</li>
+          <li>Sau khi salon thu tiền, trang sẽ hiện <strong className="text-ink-secondary">Đơn hoàn tất</strong>.</li>
         </ol>
       </div>
 
-      <div className="flex items-center gap-3 text-sm text-zinc-500">
+      <div className="flex items-center gap-3 text-sm text-ink-subtle">
         {!pollingExhausted ? (
           <>
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-700 border-t-amber-400" />
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-edge-strong border-t-warning" />
             Đang chờ salon xử lý — trang tự cập nhật...
           </>
         ) : (
@@ -206,13 +206,13 @@ export function CodOrderPending({ order, pollingExhausted }: Props) {
 
 export function PaymentCancelled({ order }: Props) {
   return (
-    <div className="rounded-sm border border-zinc-700 bg-zinc-900/40 p-8 text-center">
-      <p className="text-4xl text-zinc-500">×</p>
-      <h2 className="mt-4 font-serif text-3xl text-zinc-300">Đơn hàng đã hủy</h2>
-      <p className="mt-2 text-zinc-400">
-        Đơn <strong className="font-mono text-zinc-200">{order.paymentCode}</strong> không còn hiệu lực.
+    <div className="rounded-sm border border-edge-strong bg-elevated/40 p-8 text-center">
+      <p className="text-4xl text-ink-subtle">×</p>
+      <h2 className="mt-4 font-serif text-3xl text-ink-secondary">Đơn hàng đã hủy</h2>
+      <p className="mt-2 text-ink-muted">
+        Đơn <strong className="font-mono text-ink-secondary">{order.paymentCode}</strong> không còn hiệu lực.
       </p>
-      <p className="mt-4 text-sm text-zinc-500">
+      <p className="mt-4 text-sm text-ink-subtle">
         {order.paymentMethod === 'BankTransfer'
           ? 'Vui lòng không chuyển khoản.'
           : 'Đơn COD đã bị hủy — không cần thanh toán.'}{' '}
@@ -220,7 +220,7 @@ export function PaymentCancelled({ order }: Props) {
       </p>
       <Link
         to="/catalog"
-        className="mt-8 inline-block text-xs uppercase tracking-widest text-gold-muted hover:text-gold"
+        className="mt-8 inline-block text-xs uppercase tracking-widest text-gold-700 hover:text-gold-300"
       >
         Quay lại mua hàng
       </Link>
@@ -237,28 +237,28 @@ export function PaymentSuccess({ order }: Props) {
         : 'Bạn có thể đến tiệm lấy hàng nếu chưa nhận.'
 
   return (
-    <div className="rounded-sm border border-emerald-900/50 bg-emerald-950/20 p-8 text-center">
+    <div className="rounded-sm border border-success/30 bg-success/10 p-8 text-center">
       <p className="text-4xl">✓</p>
-      <h2 className="mt-4 font-serif text-3xl text-emerald-300">
+      <h2 className="mt-4 font-serif text-3xl text-success">
         {order.kind === 'ServiceInvoice' ? 'Thanh toán thành công' : 'Đơn hàng hoàn tất'}
       </h2>
-      <p className="mt-2 text-zinc-400">
-        Đơn <strong className="text-zinc-200">{order.paymentCode}</strong> đã được salon xác nhận.
+      <p className="mt-2 text-ink-muted">
+        Đơn <strong className="text-ink-secondary">{order.paymentCode}</strong> đã được salon xác nhận.
       </p>
-      <p className="mt-4 text-sm text-zinc-500">
+      <p className="mt-4 text-sm text-ink-subtle">
         Tổng: {formatVnd(order.totalAmount)}
         {order.pointsEarned > 0 && (
           <>
             {' '}
-            · Bạn nhận <strong className="text-gold">{order.pointsEarned} điểm</strong>
+            · Bạn nhận <strong className="text-gold-500">{order.pointsEarned} điểm</strong>
           </>
         )}
       </p>
-      <p className="mt-3 text-sm text-zinc-500">{fulfillmentNote}</p>
+      <p className="mt-3 text-sm text-ink-subtle">{fulfillmentNote}</p>
       <OrderMeta order={order} />
       <Link
         to={`/orders/${order.id}?token=${encodeURIComponent(order.accessToken)}`}
-        className="mt-6 inline-block text-xs uppercase tracking-widest text-gold-muted hover:text-gold"
+        className="mt-6 inline-block text-xs uppercase tracking-widest text-gold-700 hover:text-gold-300"
       >
         Xem chi tiết đơn
       </Link>

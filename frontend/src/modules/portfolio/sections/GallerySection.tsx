@@ -52,12 +52,12 @@ export function GallerySection() {
                 className="media-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 loading={index < 3 ? 'eager' : 'lazy'}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-canvas/90 via-canvas/20 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
                 {item.category && (
-                  <span className="label-caps text-gold-muted/90">{item.category}</span>
+                  <span className="label-caps text-gold-700/90">{item.category}</span>
                 )}
-                <p className="mt-1 font-serif text-lg leading-snug text-zinc-100 sm:text-xl">
+                <p className="mt-1 font-serif text-lg leading-snug text-ink sm:text-xl">
                   {item.label}
                 </p>
               </div>

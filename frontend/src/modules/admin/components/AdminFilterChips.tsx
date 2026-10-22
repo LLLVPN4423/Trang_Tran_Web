@@ -22,8 +22,8 @@ export function AdminFilterChips<T extends string>({
             onClick={() => onChange(opt.value)}
             className={`whitespace-nowrap border px-3 py-1.5 text-xs uppercase tracking-wider transition ${
               active
-                ? 'border-gold/50 bg-gold/10 text-gold'
-                : 'border-zinc-800 text-zinc-500 hover:border-zinc-600 hover:text-zinc-300'
+                ? 'border-gold-500/50 bg-gold-500/10 text-gold-500'
+                : 'border-edge text-ink-subtle hover:border-edge-strong hover:text-ink-secondary'
             }`}
           >
             {opt.label}

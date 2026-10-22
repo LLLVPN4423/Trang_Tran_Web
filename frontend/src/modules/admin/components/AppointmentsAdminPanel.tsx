@@ -91,11 +91,11 @@ export function AppointmentsAdminPanel() {
           options={STATUS_OPTIONS}
           aria-label="Lọc trạng thái lịch hẹn"
         />
-        <span className="text-sm text-zinc-500">{items.length} lịch hẹn</span>
+        <span className="text-sm text-ink-subtle">{items.length} lịch hẹn</span>
       </div>
 
       <div className="space-y-4">
-        {items.length === 0 && <p className="text-zinc-500">Không có lịch hẹn.</p>}
+        {items.length === 0 && <p className="text-ink-subtle">Không có lịch hẹn.</p>}
         {items.map((item) => {
           const isNew = newIds.has(item.id)
           return (
@@ -103,30 +103,30 @@ export function AppointmentsAdminPanel() {
               key={item.id}
               className={`border p-4 transition-colors sm:p-6 ${
                 isNew
-                  ? 'border-emerald-700/60 bg-emerald-950/20 ring-1 ring-emerald-700/30'
-                  : 'border-zinc-800'
+                  ? 'border-success/40 bg-success/10 ring-1 ring-success/30'
+                  : 'border-edge'
               }`}
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-serif text-xl text-zinc-200">{item.customerName}</p>
+                    <p className="font-serif text-xl text-ink-secondary">{item.customerName}</p>
                     {isNew && (
-                      <span className="rounded-sm bg-emerald-900/60 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-emerald-400">
+                      <span className="rounded-sm bg-success/20 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-success">
                         Mới
                       </span>
                     )}
                   </div>
-                  <p className="mt-1 text-sm text-zinc-400">{item.customerPhone}</p>
-                  <p className="mt-2 text-sm text-gold-muted">
+                  <p className="mt-1 text-sm text-ink-muted">{item.customerPhone}</p>
+                  <p className="mt-2 text-sm text-gold-700">
                     {SERVICE_LABELS[item.serviceInterest] ?? item.serviceInterest}
                   </p>
                   {item.notes && <AppointmentNotesView notes={item.notes} className="mt-3" />}
-                  <p className="mt-2 text-xs text-zinc-600">
+                  <p className="mt-2 text-xs text-ink-subtle">
                     {new Date(item.createdAt).toLocaleString('vi-VN')}
                   </p>
                 </div>
-                <span className="text-xs uppercase tracking-wider text-zinc-500">{item.status}</span>
+                <span className="text-xs uppercase tracking-wider text-ink-subtle">{item.status}</span>
               </div>
               {item.status === 'Pending' && (
                 <div className="mt-4 flex flex-wrap gap-3">
@@ -134,7 +134,7 @@ export function AppointmentsAdminPanel() {
                     type="button"
                     disabled={updatingId === item.id}
                     onClick={() => handleStatus(item.id, 'Confirmed')}
-                    className="text-xs uppercase tracking-widest text-emerald-400 disabled:opacity-50"
+                    className="text-xs uppercase tracking-widest text-success disabled:opacity-50"
                   >
                     Xác nhận
                   </button>
@@ -142,7 +142,7 @@ export function AppointmentsAdminPanel() {
                     type="button"
                     disabled={updatingId === item.id}
                     onClick={() => handleStatus(item.id, 'Cancelled')}
-                    className="text-xs uppercase tracking-widest text-red-400 disabled:opacity-50"
+                    className="text-xs uppercase tracking-widest text-danger disabled:opacity-50"
                   >
                     Từ chối
                   </button>
@@ -151,7 +151,7 @@ export function AppointmentsAdminPanel() {
               <div className="mt-4 flex flex-wrap gap-4">
                 <Link
                   to={`/admin/service-invoices?appointmentId=${encodeURIComponent(item.id)}`}
-                  className="text-xs uppercase tracking-widest text-gold hover:text-gold-muted"
+                  className="text-xs uppercase tracking-widest text-gold-500 hover:text-gold-700"
                 >
                   Tạo hóa đơn
                 </Link>
@@ -160,7 +160,7 @@ export function AppointmentsAdminPanel() {
                     type="button"
                     disabled={updatingId === item.id}
                     onClick={() => handleStatus(item.id, 'Completed')}
-                    className="text-xs uppercase tracking-widest text-zinc-400 hover:text-gold disabled:opacity-50"
+                    className="text-xs uppercase tracking-widest text-ink-muted hover:text-gold-300 disabled:opacity-50"
                   >
                     Đánh dấu hoàn tất
                   </button>

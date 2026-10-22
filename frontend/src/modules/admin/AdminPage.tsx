@@ -21,12 +21,12 @@ function AdminContent() {
     return (
       <PageLayout>
         <div className="mx-auto max-w-lg px-6 py-24 text-center">
-          <h1 className="font-serif text-3xl text-zinc-200">Firebase chưa cấu hình</h1>
-          <p className="mt-4 text-zinc-500">
-            Thiết lập <code className="text-gold-muted">VITE_FIREBASE_*</code> trong file{' '}
-            <code className="text-gold-muted">.env</code> để sử dụng Admin Portal.
+          <h1 className="font-serif text-3xl text-ink-secondary">Firebase chưa cấu hình</h1>
+          <p className="mt-4 text-ink-subtle">
+            Thiết lập <code className="text-gold-700">VITE_FIREBASE_*</code> trong file{' '}
+            <code className="text-gold-700">.env</code> để sử dụng Admin Portal.
           </p>
-          <Link to="/" className="mt-8 inline-block text-sm text-gold-muted hover:underline">
+          <Link to="/" className="mt-8 inline-block text-sm text-gold-700 hover:underline">
             ← Về trang chủ
           </Link>
         </div>
@@ -56,12 +56,12 @@ function AdminContent() {
     return (
       <PageLayout>
         <div className="mx-auto max-w-lg px-6 py-24 text-center">
-          <h1 className="font-serif text-3xl text-zinc-200">Không có quyền Admin</h1>
-          <p className="mt-4 text-zinc-500">
-            Tài khoản <strong className="text-zinc-400">{user.email}</strong> chưa có custom claim{' '}
-            <code className="text-gold-muted">admin: true</code>.
+          <h1 className="font-serif text-3xl text-ink-secondary">Không có quyền Admin</h1>
+          <p className="mt-4 text-ink-subtle">
+            Tài khoản <strong className="text-ink-muted">{user.email}</strong> chưa có custom claim{' '}
+            <code className="text-gold-700">admin: true</code>.
           </p>
-          <Link to="/" className="mt-8 inline-block text-sm text-gold-muted hover:underline">
+          <Link to="/" className="mt-8 inline-block text-sm text-gold-700 hover:underline">
             ← Về trang chủ
           </Link>
         </div>

@@ -33,12 +33,12 @@ export class ModuleErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex min-h-[40vh] flex-col items-center justify-center bg-zinc-950 px-6 py-24 text-center">
-          <p className="mb-2 text-xs uppercase tracking-[0.3em] text-zinc-500">
+        <div className="flex min-h-[40vh] flex-col items-center justify-center bg-canvas px-6 py-24 text-center">
+          <p className="mb-2 text-xs uppercase tracking-[0.3em] text-ink-subtle">
             {this.props.moduleName}
           </p>
-          <h2 className="font-serif text-3xl text-zinc-300">Không tải được trang</h2>
-          <p className="mt-3 max-w-md text-sm text-zinc-500">
+          <h2 className="font-serif text-3xl text-ink-secondary">Không tải được trang</h2>
+          <p className="mt-3 max-w-md text-sm text-ink-subtle">
             {this.state.message ??
               'Module này tạm thời gặp sự cố. Các phần khác của trang vẫn hoạt động bình thường.'}
           </p>
@@ -51,7 +51,7 @@ export class ModuleErrorBoundary extends Component<Props, State> {
               }
               this.setState({ hasError: false, message: null })
             }}
-            className="mt-8 border border-zinc-700 px-6 py-2 text-xs uppercase tracking-widest text-zinc-400 transition hover:border-gold hover:text-gold"
+            className="mt-8 border border-edge-strong px-6 py-2 text-xs uppercase tracking-widest text-ink-muted transition hover:border-gold hover:text-gold-300"
           >
             {this.state.message?.includes('tải lại trang') ? 'Tải lại trang' : 'Thử lại'}
           </button>

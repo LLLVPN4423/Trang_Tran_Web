@@ -23,12 +23,17 @@ export function AppointmentForm() {
     setSuccess(false)
 
     const form = new FormData(formEl)
-    const payload = buildAppointmentPayload(
-      items,
-      String(form.get('name')),
-      String(form.get('phone')),
-      String(form.get('notes')),
-    )
+    const name = String(form.get('name') ?? '').trim()
+    const phone = String(form.get('phone') ?? '').trim()
+    const notes = String(form.get('notes') ?? '').trim()
+
+    if (!name || !phone) {
+      setError('Vui lòng nhập đầy đủ họ tên và số điện thoại để salon liên hệ.')
+      setSubmitting(false)
+      return
+    }
+
+    const payload = buildAppointmentPayload(items, name, phone, notes)
 
     try {
       await createAppointment({
@@ -47,16 +52,16 @@ export function AppointmentForm() {
 
   if (success) {
     return (
-      <div className="rounded-sm border border-emerald-900/50 bg-emerald-950/20 px-6 py-8">
-        <p className="font-serif text-2xl text-emerald-200">Đã gửi yêu cầu đặt lịch</p>
-        <p className="mt-3 text-sm leading-relaxed text-emerald-300/90">
+      <div className="rounded-sm border border-success/30 bg-success/10 px-6 py-8">
+        <p className="font-serif text-2xl text-success">Đã gửi yêu cầu đặt lịch</p>
+        <p className="mt-3 text-sm leading-relaxed text-success/90">
           Salon sẽ liên hệ xác nhận lịch trong vòng 24 giờ. Cảm ơn bạn!
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link to="/catalog" className="btn-editorial px-5 py-2.5">
             Xem thêm dịch vụ
           </Link>
-          <Link to="/" className="text-sm text-zinc-500 hover:text-gold">
+          <Link to="/" className="text-sm text-ink-subtle hover:text-gold-300">
             Về trang chủ
           </Link>
         </div>
@@ -67,28 +72,31 @@ export function AppointmentForm() {
   if (items.length === 0) return null
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 border-t border-zinc-800 pt-10">
+    <form onSubmit={handleSubmit} className="space-y-5 border-t border-edge pt-10">
       <div>
-        <h2 className="font-serif text-2xl text-zinc-200">Thông tin liên hệ</h2>
-        <p className="mt-2 text-sm text-zinc-500">
-          Điền thông tin để salon gọi xác nhận lịch hẹn.
+        <h2 className="font-serif text-2xl text-ink-secondary">Thông tin liên hệ</h2>
+        <p className="mt-2 text-sm text-ink-subtle">
+          {user
+            ? 'Kiểm tra họ tên và số điện thoại trước khi gửi — salon sẽ gọi xác nhận lịch hẹn.'
+            : 'Chưa đăng nhập: bắt buộc nhập họ tên và số điện thoại để salon gọi xác nhận lịch hẹn.'}
         </p>
       </div>
 
       {error && (
-        <p className="rounded-sm border border-red-900/50 bg-red-950/20 px-4 py-3 text-sm text-red-300">
+        <p className="rounded-sm border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
           {error}
         </p>
       )}
 
       <div>
         <label htmlFor="appointment-name" className="label-caps mb-2 block">
-          Họ tên
+          Họ tên <span className="text-gold-500">*</span>
         </label>
         <input
           id="appointment-name"
           name="name"
           required
+          autoComplete="name"
           defaultValue={customerProfile?.name}
           className="field-input"
           placeholder="Nguyễn Văn A"
@@ -97,13 +105,15 @@ export function AppointmentForm() {
 
       <div>
         <label htmlFor="appointment-phone" className="label-caps mb-2 block">
-          Số điện thoại
+          Số điện thoại <span className="text-gold-500">*</span>
         </label>
         <input
           id="appointment-phone"
           name="phone"
           type="tel"
           required
+          autoComplete="tel"
+          inputMode="tel"
           defaultValue={customerProfile?.phone}
           className="field-input"
           placeholder="0986 586 058"
@@ -123,7 +133,7 @@ export function AppointmentForm() {
         />
       </div>
 
-      {user && <p className="text-xs text-zinc-600">Đăng nhập với {user.email}</p>}
+      {user && <p className="text-xs text-ink-subtle">Đăng nhập với {user.email}</p>}
 
       <button type="submit" disabled={submitting} className="btn-gold w-full">
         {submitting ? 'Đang gửi...' : 'Gửi yêu cầu đặt lịch'}

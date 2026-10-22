@@ -16,7 +16,7 @@ export function SiteHeader({ onMenuClick, showMenuButton = true }: Props) {
   const { user, customerProfile } = useAuth()
 
   return (
-    <header className="site-header sticky top-0 z-50 border-b border-zinc-900/80 bg-zinc-950/90 backdrop-blur-md">
+    <header className="site-header sticky top-0 z-50 border-b border-edge/70 bg-canvas/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
         <div className="flex items-center gap-3">
           {showMenuButton && (
@@ -24,49 +24,49 @@ export function SiteHeader({ onMenuClick, showMenuButton = true }: Props) {
               type="button"
               aria-label="Mở menu"
               onClick={onMenuClick}
-              className="rounded-sm border border-zinc-800 px-2.5 py-2 text-zinc-400 hover:border-zinc-700 hover:text-gold lg:hidden"
+              className="rounded-sm border border-edge px-2.5 py-2 text-ink-muted transition hover:border-edge-strong hover:text-gold-500 lg:hidden"
             >
               <span className="block h-0.5 w-4 bg-current" />
               <span className="mt-1 block h-0.5 w-4 bg-current" />
               <span className="mt-1 block h-0.5 w-4 bg-current" />
             </button>
           )}
-          <Link to="/" className="font-serif text-lg tracking-wide text-zinc-100 sm:text-xl">
+          <Link to="/" className="font-serif text-lg tracking-wide text-ink sm:text-xl">
             Trang Tran
           </Link>
         </div>
 
         <nav className="hidden items-center gap-5 text-[0.6875rem] font-medium uppercase tracking-[0.22em] md:flex">
-          <Link to="/catalog" className="text-zinc-500 transition hover:text-gold">
+          <Link to="/catalog" className="text-ink-subtle transition hover:text-gold-300">
             Bảng giá
           </Link>
-          <Link to="/appointment" className="relative text-zinc-500 transition hover:text-gold">
+          <Link to="/appointment" className="relative text-ink-subtle transition hover:text-gold-300">
             Đặt lịch
             {serviceCount > 0 && (
-              <span className="absolute -right-4 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-medium text-zinc-950">
+              <span className="absolute -right-4 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold-500 px-1 text-[10px] font-medium text-canvas">
                 {serviceCount}
               </span>
             )}
           </Link>
-          <Link to="/shop" className="text-zinc-500 transition hover:text-gold">
+          <Link to="/shop" className="text-ink-subtle transition hover:text-gold-300">
             Moroccanoil
           </Link>
-          <Link to="/booking" className="relative text-zinc-500 transition hover:text-gold">
+          <Link to="/booking" className="relative text-ink-subtle transition hover:text-gold-300">
             Thanh toán
             {itemCount > 0 && (
-              <span className="absolute -right-4 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-medium text-zinc-950">
+              <span className="absolute -right-4 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold-500 px-1 text-[10px] font-medium text-canvas">
                 {itemCount}
               </span>
             )}
           </Link>
-          <Link to={user ? '/account' : '/login'} className="text-zinc-500 transition hover:text-gold">
+          <Link to={user ? '/account' : '/login'} className="text-ink-subtle transition hover:text-gold-300">
             {user ? 'Tài khoản' : 'Đăng nhập'}
           </Link>
         </nav>
 
         <div className="flex items-center gap-2 md:hidden">
           {user && customerProfile && (
-            <Link to="/account/loyalty" className="text-[10px] uppercase tracking-wider text-gold-muted">
+            <Link to="/account/loyalty" className="text-[10px] uppercase tracking-wider text-gold-700">
               {customerProfile.loyaltyPoints} điểm
             </Link>
           )}
@@ -82,10 +82,10 @@ function HeaderQuickLink({ to, label, count }: { to: string; label: string; coun
   return (
     <Link
       to={to}
-      className="rounded-sm border border-zinc-800 px-3 py-1.5 text-[10px] uppercase tracking-wider text-zinc-400"
+      className="rounded-sm border border-edge px-3 py-1.5 text-[10px] uppercase tracking-wider text-ink-muted transition hover:border-edge-strong hover:text-ink"
     >
       {label}
-      {count > 0 && <span className="ml-1 text-gold">{count}</span>}
+      {count > 0 && <span className="ml-1 text-gold-500">{count}</span>}
     </Link>
   )
 }

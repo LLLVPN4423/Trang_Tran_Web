@@ -85,8 +85,8 @@ export function RevenueAdminPanel() {
             onClick={() => setPreset(p.id)}
             className={`border px-3 py-1.5 text-xs uppercase tracking-widest ${
               preset === p.id
-                ? 'border-gold/50 bg-gold/10 text-gold'
-                : 'border-zinc-700 text-zinc-400 hover:border-zinc-500'
+                ? 'border-gold-500/50 bg-gold-500/10 text-gold-500'
+                : 'border-edge-strong text-ink-muted hover:border-edge-strong'
             }`}
           >
             {p.label}
@@ -96,7 +96,7 @@ export function RevenueAdminPanel() {
 
       {preset === 'custom' && (
         <div className="flex flex-wrap items-end gap-3">
-          <label className="block text-xs text-zinc-500">
+          <label className="block text-xs text-ink-subtle">
             Từ
             <input
               type="date"
@@ -105,7 +105,7 @@ export function RevenueAdminPanel() {
               onChange={(e) => setCustomFrom(e.target.value)}
             />
           </label>
-          <label className="block text-xs text-zinc-500">
+          <label className="block text-xs text-ink-subtle">
             Đến
             <input
               type="date"
@@ -139,56 +139,56 @@ export function RevenueAdminPanel() {
             />
           </div>
 
-          <div className="rounded-sm border border-zinc-800 p-4">
-            <h3 className="text-xs uppercase tracking-widest text-zinc-500">Theo ngày</h3>
+          <div className="rounded-sm border border-edge p-4">
+            <h3 className="text-xs uppercase tracking-widest text-ink-subtle">Theo ngày</h3>
             <div className="mt-4 flex items-end gap-1 overflow-x-auto pb-2" style={{ minHeight: 120 }}>
               {summary.daily.map((d) => (
                 <div key={d.dateLocal} className="flex min-w-[28px] flex-1 flex-col items-center gap-1">
                   <div
-                    className="w-full max-w-[40px] rounded-t bg-gold/70"
+                    className="w-full max-w-[40px] rounded-t bg-gold-500/70"
                     style={{ height: `${Math.max(4, (d.total / maxDaily) * 96)}px` }}
                     title={`${d.dateLocal}: ${formatVnd(d.total)}`}
                   />
-                  <span className="text-[9px] text-zinc-600">{d.dateLocal.slice(8)}</span>
+                  <span className="text-[9px] text-ink-subtle">{d.dateLocal.slice(8)}</span>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-sm border border-zinc-800 p-4">
-              <h3 className="text-xs uppercase tracking-widest text-zinc-500">Theo hình thức TT</h3>
+            <div className="rounded-sm border border-edge p-4">
+              <h3 className="text-xs uppercase tracking-widest text-ink-subtle">Theo hình thức TT</h3>
               <ul className="mt-3 space-y-2 text-sm">
                 {summary.byPaymentMethod.map((b) => (
-                  <li key={b.paymentMethod} className="flex justify-between gap-2 text-zinc-400">
+                  <li key={b.paymentMethod} className="flex justify-between gap-2 text-ink-muted">
                     <span>{PAYMENT_METHOD_LABELS[normalizePaymentMethod(b.paymentMethod)] ?? b.paymentMethod}</span>
-                    <span className="text-zinc-200">
-                      {formatVnd(b.amount)} <span className="text-zinc-600">({b.orderCount})</span>
+                    <span className="text-ink-secondary">
+                      {formatVnd(b.amount)} <span className="text-ink-subtle">({b.orderCount})</span>
                     </span>
                   </li>
                 ))}
                 {summary.byPaymentMethod.length === 0 && (
-                  <li className="text-zinc-600">Không có đơn Paid trong kỳ.</li>
+                  <li className="text-ink-subtle">Không có đơn Paid trong kỳ.</li>
                 )}
               </ul>
             </div>
 
-            <div className="rounded-sm border border-zinc-800 p-4">
-              <h3 className="text-xs uppercase tracking-widest text-zinc-500">Top dịch vụ / sản phẩm</h3>
+            <div className="rounded-sm border border-edge p-4">
+              <h3 className="text-xs uppercase tracking-widest text-ink-subtle">Top dịch vụ / sản phẩm</h3>
               <ul className="mt-3 space-y-2 text-sm">
                 {summary.topItems.map((t) => (
-                  <li key={`${t.itemType}-${t.name}`} className="flex justify-between gap-2 text-zinc-400">
+                  <li key={`${t.itemType}-${t.name}`} className="flex justify-between gap-2 text-ink-muted">
                     <span>
                       {t.name}{' '}
-                      <span className="text-zinc-600">
+                      <span className="text-ink-subtle">
                         ({t.itemType === 'Product' ? 'SP' : t.itemType === 'Service' ? 'DV' : 'Khác'} ×{t.quantity})
                       </span>
                     </span>
-                    <span className="text-zinc-200">{formatVnd(t.revenue)}</span>
+                    <span className="text-ink-secondary">{formatVnd(t.revenue)}</span>
                   </li>
                 ))}
                 {summary.topItems.length === 0 && (
-                  <li className="text-zinc-600">Chưa có dòng hàng trong kỳ.</li>
+                  <li className="text-ink-subtle">Chưa có dòng hàng trong kỳ.</li>
                 )}
               </ul>
             </div>
@@ -210,7 +210,7 @@ export function RevenueAdminPanel() {
               Xuất CSV kỳ này
             </AdminButton>
           ) : (
-            <p className="text-xs text-zinc-600">Xuất CSV — chỉ Platform Admin (quản trị web).</p>
+            <p className="text-xs text-ink-subtle">Xuất CSV — chỉ Platform Admin (quản trị web).</p>
           )}
         </>
       )}
@@ -220,9 +220,9 @@ export function RevenueAdminPanel() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-sm border border-zinc-800 bg-zinc-950/40 p-4">
-      <p className="text-xs uppercase tracking-widest text-zinc-500">{label}</p>
-      <p className="mt-2 font-serif text-xl text-zinc-100">{value}</p>
+    <div className="rounded-sm border border-edge bg-card/40 p-4">
+      <p className="text-xs uppercase tracking-widest text-ink-subtle">{label}</p>
+      <p className="mt-2 font-serif text-xl text-ink">{value}</p>
     </div>
   )
 }

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Đề xuất đồng hành vận hành web — Trang Tran Hair</title>
+  <style>
+    @page { size: A4; margin: 18mm 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 11pt;
+      line-height: 1.45;
+      color: #1a1a1a;
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 12mm;
+    }
+    h1 { font-size: 18pt; font-weight: 600; margin: 0 0 4px; color: #3d3428; }
+    h2 { font-size: 13pt; margin: 20px 0 8px; border-bottom: 1px solid #c9a962; padding-bottom: 4px; color: #3d3428; }
+    h3 { font-size: 11pt; margin: 14px 0 6px; color: #444; }
+    .meta { font-size: 10pt; color: #555; margin-bottom: 16px; }
+    .meta a { color: #6b5a2e; }
+    table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 10pt; }
+    th, td { border: 1px solid #ccc; padding: 6px 8px; vertical-align: top; }
+    th { background: #f5f0e6; text-align: left; font-weight: 600; }
+    .num { text-align: right; white-space: nowrap; }
+    ul { margin: 6px 0; padding-left: 20px; }
+    li { margin: 3px 0; }
+    .box { background: #faf8f5; border: 1px solid #e8dfc8; padding: 10px 12px; margin: 10px 0; border-radius: 2px; }
+    .highlight { font-size: 12pt; font-weight: 600; color: #3d3428; }
+    .note { font-size: 9.5pt; color: #666; }
+    .page-break { page-break-before: always; }
+    footer { margin-top: 24px; font-size: 9pt; color: #888; border-top: 1px solid #ddd; padding-top: 8px; }
+  </style>
+</head>
+<body>
+
+  <h1>Đề xuất đồng hành vận hành website</h1>
+  <p class="meta">
+    <strong>Salon Trang Trần · Trang Tran Hair</strong><br />
+    Website: <a href="https://trangtran-hair.pages.dev">trangtran-hair.pages.dev</a><br />
+    Ngày lập: 11/10/2026
+  </p>
+
+  <h2>I. Cơ sở dự án (theo “TỔNG CHI PHÍ” đã gửi)</h2>
+  <table>
+    <thead>
+      <tr><th>STT</th><th>Hạng mục (tóm tắt)</th><th class="num">Giá trị (VNĐ)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Frontend — giao diện Editorial, React, GSAP/Lenis, tối ưu mobile/desktop</td><td class="num">4.000.000</td></tr>
+      <tr><td>2</td><td>Backend — Cloud Run (serverless), Admin (~12 module), kiến trúc mở rộng</td><td class="num">7.000.000</td></tr>
+      <tr><td>3</td><td>CRM &amp; Booking — đặt lịch, tài khoản, loyalty tích điểm</td><td class="num">3.000.000</td></tr>
+      <tr><td>4</td><td>Tích hợp thanh toán tự động (nhận diện CK, cập nhật đơn)</td><td class="num">1.000.000</td></tr>
+      <tr><th colspan="2">Tổng giá trị niêm yết</th><th class="num">15.000.000</th></tr>
+      <tr><td colspan="2">Ưu đãi 50% + portfolio / vận hành kèm theo thỏa thuận</td><td class="num">−7.500.000</td></tr>
+      <tr><th colspan="2">Thành tiền thực tế dự án</th><th class="num">7.500.000</th></tr>
+      <tr><td colspan="2">Đã tạm ứng (đợt 1 + đợt 2)</td><td class="num">−4.500.000</td></tr>
+      <tr><th colspan="2">Còn lại theo hợp đồng dự án (nghiệm thu web)</th><th class="num">3.000.000</th></tr>
+    </tbody>
+  </table>
+  <p class="note">
+    Phí duy trì hệ thống sau dự án: theo thỏa thuận, bàn lại sau ngày <strong>12/11/2026</strong>.
+    Gói hàng tháng dưới đây là <strong>đề xuất riêng</strong>, không thay thế 3.000.000 đ nghiệm thu dự án.
+  </p>
+
+  <h2>II. Nâng cấp &amp; hoạt động đã làm (từ lúc bảng chi phí → hiện tại)</h2>
+  <p class="note">Các hạng mục <strong>ngoài/ bổ sung</strong> giúp tiệm vận hành thực tế và chuẩn bị lâu dài — không tính thêm phí dự án trong tài liệu này.</p>
+
+  <h3>1. Vận hành &amp; nghiệp vụ salon</h3>
+  <ul>
+    <li><strong>Hóa đơn dịch vụ (HD)</strong> — tạo bill sau khi làm tóc; khách xác nhận/thanh toán trên web → <strong>tích điểm loyalty</strong>.</li>
+    <li><strong>Báo cáo doanh thu</strong> — admin xem theo ngày / tuần / tháng; so sánh kỳ; <strong>xuất CSV chỉ Platform Admin</strong>.</li>
+    <li><strong>Phân quyền 2 vai:</strong> Platform Admin (quản trị web) · Salon Admin (lịch, đơn, HĐ, xem doanh thu).</li>
+    <li>Platform Admin <strong>cấp / thu hồi Salon Admin</strong> trên web (<code>/admin/tools</code>) + Firebase claim.</li>
+    <li><strong>Chuông thông báo admin</strong> — lịch thiếu HĐ, lịch chờ duyệt, đơn/HĐ chờ xử lý.</li>
+    <li>Tối ưu UX admin (bỏ nút re-seed dễ bấm nhầm; re-seed chỉ Platform, xác nhận gõ SEED).</li>
+  </ul>
+
+  <h3>2. SEO &amp; hiện diện Google</h3>
+  <ul>
+    <li>Meta tiếng Việt, từ khóa địa phương (Sóc Trăng), FAQ + JSON-LD, <code>robots.txt</code>.</li>
+    <li><strong>Sitemap động</strong> lúc build — gồm từng dịch vụ/sản phẩm.</li>
+    <li>File xác minh <strong>Google Search Console</strong>; meta từng trang &amp; trang chi tiết dịch vụ.</li>
+    <li>Footer / schema đa kênh; liên kết web ↔ portfolio.</li>
+  </ul>
+
+  <h3>3. Triển khai &amp; ổn định kỹ thuật</h3>
+  <ul>
+    <li>Deploy tự động: <strong>GitHub → Cloud Run</strong> (API) · <strong>Cloudflare Pages</strong> (website).</li>
+    <li>API production Cloud Run; Firebase/Firestore; smoke test vận hành.</li>
+    <li>Tài liệu vận hành: RBAC, SOP “Ai làm gì”, hướng dẫn admin.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <h2>III. Đề xuất gói hỗ trợ remote hàng tháng</h2>
+  <div class="box">
+    <p class="highlight">Mức lương mong muốn: 3.000.000 VNĐ / tháng</p>
+    <p class="note" style="margin:6px 0 0">
+      <strong>Phí Google Cloud / Firebase / hosting:</strong> tiệm thanh toán trực tiếp (ước tính vài trăm nghìn/tháng, tùy lượt truy cập).<br />
+      <strong>Ngân sách quảng cáo</strong> (Facebook/Google, nếu chạy): tiệm thanh toán trực tiếp.<br />
+      Thử việc đề xuất: <strong>3 tháng</strong>, sau đó xem xét tiếp tục.
+    </p>
+  </div>
+
+  <h3>Vai trò: Phụ trách web &amp; kênh số</h3>
+  <p>
+    Em <strong>nắm trọn mảng website và hỗ trợ hiện diện online</strong> từ xa: vận hành kỹ thuật, Google Business, trả lời đánh giá,
+    đề xuất giải pháp tăng khách. Tiệm vẫn <strong>trả lời khách inbox/Zalo/đặt lịch hàng ngày</strong>; em hỗ trợ khi cần và xử lý phần web/kênh số.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Chu kỳ</th><th>Đầu việc</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Hằng ngày</strong><br /><span class="note">(async)</span></td>
+        <td>
+          Kiểm tra web/API hoạt động; xử lý sự cố (đặt lịch, đăng nhập, shop).<br />
+          Gửi báo cáo: doanh thu ngày, lịch/HĐ/đơn cần xử lý (lấy từ hệ thống).
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Hằng tuần</strong></td>
+        <td>
+          Báo cáo 1 trang (doanh thu tuần, việc pending, top dịch vụ).<br />
+          Xuất <strong>CSV</strong> kỳ nếu chị cần (chỉ Platform thực hiện).
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Hằng tháng</strong></td>
+        <td>
+          Báo cáo tháng; checklist SEO (GSC/sitemap); cập nhật giá/nội dung web (vài lần/tháng).<br />
+          Hỗ trợ admin salon khi thao tác sai (HĐ, điểm) qua Zalo/call.<br />
+          <strong>Đề xuất giải pháp</strong> online (SEO local, QR đánh giá, combo dịch vụ, landing đặt lịch…) và triển khai trên web khi phù hợp.
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Google Business</strong><br /><span class="note">(Maps)</span></td>
+        <td>
+          Cập nhật giờ, địa chỉ, ảnh, link website; <strong>trả lời đánh giá &amp; Q&amp;A</strong> (mục tiêu phản hồi trong 1–2 ngày).<br />
+          Có thể trả lời <strong>review/bình luận công khai Fanpage</strong> khi chị giao quyền truy cập.
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Quảng cáo</strong><br /><span class="note">(tuỳ chọn)</span></td>
+        <td>
+          <strong>Tư vấn</strong> kênh &amp; ngân sách; hỗ trợ <strong>thiết lập ban đầu</strong> (Meta/Google) trong gói remote.<br />
+          <strong>Chạy &amp; tối ưu ads thường xuyên</strong> — bàn thêm phí quản lý hoặc từng đợt khi tiệm có ngân sách ads.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>IV. Phân quyền tóm tắt (2 role — đủ dùng)</h2>
+  <table>
+    <thead>
+      <tr><th>Chức năng</th><th>Salon Admin</th><th>Platform Admin</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Lịch hẹn, đơn shop, HĐ DV, khách hàng</td><td>Có</td><td>Có</td></tr>
+      <tr><td>Xem doanh thu trên web</td><td>Có</td><td>Có</td></tr>
+      <tr><td>Xuất CSV</td><td>Không</td><td>Có</td></tr>
+      <tr><td>Sửa giá, dịch vụ, SP, nội dung web, KM, deploy, cấp Salon Admin</td><td>Không</td><td>Có</td></tr>
+    </tbody>
+  </table>
+
+  <h2>V. Đề xuất</h2>
+  <ol>
+    <li><strong>Nghiệm thu website</strong> và số tiền còn lại là <strong>3.000.000 đ</strong>.</li>
+    <li>Đề xuất mức lương của vị trí <strong>3.000.000 đ/tháng</strong> như mục III (thử 3 tháng).</li>
+  </ol>
+
+  <footer>
+    Tài liệu đính kèm đề xuất · Trang Tran Hair · Liên hệ quản trị web qua kênh Zalo đã trao đổi.<br />
+    In từ file HTML hoặc bản PDF — nội dung tham chiếu bảng “TỔNG CHI PHÍ” và hiện trạng web 10/2026.
+  </footer>
+
+</body>
+</html>

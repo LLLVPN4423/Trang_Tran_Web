@@ -45,13 +45,13 @@ export function AdminNotificationBell() {
           setOpen((v) => !v)
           if (!open) void reload()
         }}
-        className="relative flex h-10 w-10 items-center justify-center rounded-sm border border-zinc-800 text-zinc-400 transition hover:border-zinc-600 hover:text-gold"
+        className="relative flex h-10 w-10 items-center justify-center rounded-sm border border-edge text-ink-muted transition hover:border-edge-strong hover:text-gold-300"
       >
         <BellIcon className="h-5 w-5" />
         {badge > 0 && (
           <span
             className={`absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-medium ${
-              warningCount > 0 ? 'bg-amber-600 text-zinc-950' : 'bg-gold text-zinc-950'
+              warningCount > 0 ? 'bg-warning text-canvas' : 'bg-gold-500 text-canvas'
             }`}
           >
             {badge > 9 ? '9+' : badge}
@@ -60,13 +60,13 @@ export function AdminNotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-2rem,22rem)] rounded-sm border border-zinc-800 bg-zinc-950 shadow-xl">
-          <div className="flex items-center justify-between border-b border-zinc-800/80 px-3 py-2.5">
-            <p className="text-xs font-medium uppercase tracking-widest text-zinc-400">Thông báo</p>
+        <div className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-2rem,22rem)] rounded-sm border border-edge bg-canvas shadow-xl">
+          <div className="flex items-center justify-between border-b border-edge/80 px-3 py-2.5">
+            <p className="text-xs font-medium uppercase tracking-widest text-ink-muted">Thông báo</p>
             <button
               type="button"
               onClick={() => void reload()}
-              className="text-[10px] uppercase tracking-wider text-zinc-600 hover:text-gold"
+              className="text-[10px] uppercase tracking-wider text-ink-subtle hover:text-gold-300"
             >
               Làm mới
             </button>
@@ -74,33 +74,33 @@ export function AdminNotificationBell() {
 
           <ul className="max-h-72 overflow-y-auto py-1">
             {loading && items.length === 0 && (
-              <li className="px-3 py-4 text-sm text-zinc-500">Đang tải…</li>
+              <li className="px-3 py-4 text-sm text-ink-subtle">Đang tải…</li>
             )}
             {!loading && items.length === 0 && (
-              <li className="px-3 py-4 text-sm text-zinc-500">Không có việc cần xử lý.</li>
+              <li className="px-3 py-4 text-sm text-ink-subtle">Không có việc cần xử lý.</li>
             )}
             {items.map((item) => (
               <li
                 key={item.id}
-                className={`border-b border-zinc-900/80 px-3 py-3 last:border-0 ${
-                  item.tone === 'warning' ? 'bg-amber-950/15' : ''
+                className={`border-b border-edge/70 px-3 py-3 last:border-0 ${
+                  item.tone === 'warning' ? 'bg-warning/10/15' : ''
                 }`}
               >
                 <p
                   className={`text-sm font-medium ${
-                    item.tone === 'warning' ? 'text-amber-100/95' : 'text-zinc-200'
+                    item.tone === 'warning' ? 'text-warning/95' : 'text-ink-secondary'
                   }`}
                 >
                   {item.title}
                 </p>
                 {item.detail && (
-                  <p className="mt-1 text-xs leading-relaxed text-zinc-500">{item.detail}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-ink-subtle">{item.detail}</p>
                 )}
                 {item.href && item.linkLabel && (
                   <Link
                     to={item.href}
                     onClick={() => setOpen(false)}
-                    className="mt-2 inline-block text-xs text-gold underline"
+                    className="mt-2 inline-block text-xs text-gold-500 underline"
                   >
                     {item.linkLabel}
                   </Link>

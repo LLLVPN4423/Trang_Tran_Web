@@ -13,7 +13,7 @@ export function AppShell({ children, variant = 'customer', showSidebar = true }:
 
   if (!showSidebar) {
     return (
-      <div className="min-h-screen bg-zinc-950">
+      <div className="min-h-screen bg-canvas text-ink-secondary">
         <SiteHeader onMenuClick={() => setMobileOpen(true)} showMenuButton={false} />
         <main className="pb-20 lg:pb-0">{children}</main>
       </div>
@@ -21,7 +21,7 @@ export function AppShell({ children, variant = 'customer', showSidebar = true }:
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-canvas text-ink-secondary">
       <SiteHeader onMenuClick={() => setMobileOpen(true)} />
 
       <div className="mx-auto flex max-w-7xl">
@@ -39,10 +39,10 @@ export function AppShell({ children, variant = 'customer', showSidebar = true }:
           <button
             type="button"
             aria-label="Đóng menu"
-            className="absolute inset-0 bg-black/70"
+            className="absolute inset-0 bg-canvas/80 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute left-0 top-0 h-full w-[min(100%,280px)] shadow-2xl">
+          <div className="absolute left-0 top-0 h-full w-[min(100%,280px)] border-r border-edge shadow-2xl shadow-black/40">
             <AppSidebar variant={variant} onNavigate={() => setMobileOpen(false)} />
           </div>
         </div>

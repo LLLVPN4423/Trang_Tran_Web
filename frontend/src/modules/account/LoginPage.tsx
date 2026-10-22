@@ -14,13 +14,13 @@ export function LoginPage() {
     return (
       <PageLayout>
         <div className="mx-auto max-w-lg px-6 py-24 text-center">
-          <p className="text-zinc-400">Firebase chưa cấu hình — không thể đăng nhập.</p>
-          <p className="mt-4 text-sm leading-relaxed text-zinc-600">
-            Điền <code className="text-zinc-500">VITE_FIREBASE_API_KEY</code>,{' '}
-            <code className="text-zinc-500">VITE_FIREBASE_AUTH_DOMAIN</code>,{' '}
-            <code className="text-zinc-500">VITE_FIREBASE_PROJECT_ID</code> trong file{' '}
-            <code className="text-zinc-500">.env</code> ở thư mục gốc repo, rồi{' '}
-            <strong className="font-normal text-zinc-500">tắt và chạy lại</strong> <code className="text-zinc-500">npm run dev:all</code>.
+          <p className="text-ink-muted">Firebase chưa cấu hình — không thể đăng nhập.</p>
+          <p className="mt-4 text-sm leading-relaxed text-ink-subtle">
+            Điền <code className="text-ink-subtle">VITE_FIREBASE_API_KEY</code>,{' '}
+            <code className="text-ink-subtle">VITE_FIREBASE_AUTH_DOMAIN</code>,{' '}
+            <code className="text-ink-subtle">VITE_FIREBASE_PROJECT_ID</code> trong file{' '}
+            <code className="text-ink-subtle">.env</code> ở thư mục gốc repo, rồi{' '}
+            <strong className="font-normal text-ink-subtle">tắt và chạy lại</strong> <code className="text-ink-subtle">npm run dev:all</code>.
           </p>
         </div>
       </PageLayout>
@@ -31,17 +31,17 @@ export function LoginPage() {
     <PageLayout>
       <div className="mx-auto max-w-md px-6 py-16">
         {isRedirectProcessing && (
-          <p className="mb-6 rounded-sm border border-zinc-800 bg-zinc-900/50 px-4 py-3 text-sm text-zinc-400">
+          <p className="mb-6 rounded-sm border border-edge bg-elevated/50 px-4 py-3 text-sm text-ink-muted">
             Đang hoàn tất đăng nhập Google...
           </p>
         )}
         {redirectError && (
-          <div className="mb-6 rounded-sm border border-red-900/50 bg-red-950/20 px-4 py-3 text-sm text-red-300">
+          <div className="mb-6 rounded-sm border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
             <p>{redirectError}</p>
             <button
               type="button"
               onClick={clearRedirectError}
-              className="mt-2 text-xs uppercase tracking-widest text-red-200/80 hover:text-red-100"
+              className="mt-2 text-xs uppercase tracking-widest text-danger/80 hover:text-danger"
             >
               Thử lại
             </button>
@@ -52,9 +52,9 @@ export function LoginPage() {
           subtitle="Truy cập tài khoản, xem đơn hàng và tích điểm."
           onSubmit={(email, password) => login(email, password)}
           footer={
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-ink-subtle">
               Chưa có tài khoản?{' '}
-              <Link to="/register" className="text-gold hover:underline">
+              <Link to="/register" className="text-gold-500 hover:underline">
                 Đăng ký ngay
               </Link>
             </p>
@@ -100,9 +100,9 @@ export function AuthForm({ title, subtitle, onSubmit, showProfileFields, footer 
 
   return (
     <div>
-      <p className="text-xs uppercase tracking-[0.35em] text-gold-muted">Tài khoản</p>
-      <h1 className="mt-3 font-serif text-4xl text-zinc-100">{title}</h1>
-      <p className="mt-3 text-sm text-zinc-500">{subtitle}</p>
+      <p className="text-xs uppercase tracking-[0.35em] text-gold-700">Tài khoản</p>
+      <h1 className="mt-3 font-serif text-4xl text-ink">{title}</h1>
+      <p className="mt-3 text-sm text-ink-subtle">{subtitle}</p>
 
       <form onSubmit={handleSubmit} className="mt-10 space-y-5" data-lenis-prevent>
         {showProfileFields && (
@@ -115,7 +115,7 @@ export function AuthForm({ title, subtitle, onSubmit, showProfileFields, footer 
         <Field label="Mật khẩu" name="password" type="password" required minLength={6} />
 
         {error && (
-          <p className="rounded-sm border border-red-900/50 bg-red-950/20 px-4 py-3 text-sm text-red-300">
+          <p className="rounded-sm border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
             {error}
           </p>
         )}
@@ -123,7 +123,7 @@ export function AuthForm({ title, subtitle, onSubmit, showProfileFields, footer 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-gold/90 py-4 text-xs font-medium uppercase tracking-[0.3em] text-zinc-950 transition hover:bg-gold disabled:opacity-50"
+          className="w-full bg-gold-500 py-4 text-xs font-medium uppercase tracking-[0.3em] text-canvas transition hover:bg-gold-500 disabled:opacity-50"
         >
           {loading ? 'Đang xử lý...' : title}
         </button>
@@ -138,10 +138,10 @@ export function AuthDivider() {
   return (
     <div className="relative my-8">
       <div className="absolute inset-0 flex items-center">
-        <div className="w-full border-t border-zinc-800" />
+        <div className="w-full border-t border-edge" />
       </div>
       <div className="relative flex justify-center">
-        <span className="bg-zinc-950 px-3 text-xs uppercase tracking-widest text-zinc-600">hoặc</span>
+        <span className="bg-canvas px-3 text-xs uppercase tracking-widest text-ink-subtle">hoặc</span>
       </div>
     </div>
   )
@@ -162,7 +162,7 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={name} className="mb-2 block text-xs uppercase tracking-widest text-zinc-500">
+      <label htmlFor={name} className="mb-2 block text-xs uppercase tracking-widest text-ink-subtle">
         {label}
       </label>
       <input
@@ -171,7 +171,7 @@ function Field({
         type={type}
         required={required}
         minLength={minLength}
-        className="w-full border-b border-zinc-800 bg-transparent py-3 text-zinc-200 outline-none transition focus:border-gold"
+        className="w-full border-b border-edge bg-transparent py-3 text-ink-secondary outline-none transition focus:border-gold"
       />
     </div>
   )

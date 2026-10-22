@@ -44,12 +44,12 @@ export function CustomersAdminPanel() {
 
   return (
     <div className="space-y-4">
-      <h2 className="font-serif text-2xl text-zinc-200">Khách hàng ({customers.length})</h2>
+      <h2 className="font-serif text-2xl text-ink-secondary">Khách hàng ({customers.length})</h2>
 
       <div className="overflow-x-auto">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead>
-            <tr className="border-b border-zinc-800 text-xs uppercase tracking-widest text-zinc-500">
+            <tr className="border-b border-edge text-xs uppercase tracking-widest text-ink-subtle">
               <th className="py-3 pr-4">Tên</th>
               <th className="py-3 pr-4">SĐT</th>
               <th className="py-3 pr-4">Email</th>
@@ -60,14 +60,14 @@ export function CustomersAdminPanel() {
           </thead>
           <tbody>
             {customers.map((c) => (
-              <tr key={c.id} className="border-b border-zinc-900 text-zinc-400">
-                <td className="py-3 pr-4 text-zinc-200">{c.name}</td>
+              <tr key={c.id} className="border-b border-edge text-ink-muted">
+                <td className="py-3 pr-4 text-ink-secondary">{c.name}</td>
                 <td className="py-3 pr-4">{c.phone}</td>
                 <td className="py-3 pr-4">{c.email ?? '—'}</td>
-                <td className="py-3 pr-4 text-gold-muted">{c.loyaltyPoints}</td>
+                <td className="py-3 pr-4 text-gold-700">{c.loyaltyPoints}</td>
                 <td className="py-3 pr-4">{formatVnd(c.totalSpent)}</td>
                 <td className="py-3">
-                  <button type="button" onClick={() => handleAdjust(c)} className="text-xs hover:text-gold">
+                  <button type="button" onClick={() => handleAdjust(c)} className="text-xs hover:text-gold-300">
                     Điều chỉnh điểm
                   </button>
                 </td>

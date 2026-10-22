@@ -30,7 +30,7 @@ export function VietQrPayment({ order }: Props) {
   return (
     <div className="space-y-4">
       {qrUrl && !qrFailed ? (
-        <div className="flex flex-col items-center gap-4 rounded-sm border border-zinc-800 bg-white p-4">
+        <div className="flex flex-col items-center gap-4 rounded-sm border border-edge bg-white p-4">
           <img
             src={qrUrl}
             alt={`QR chuyển khoản ${formatVnd(order.totalAmount)} — ${order.paymentCode}`}
@@ -41,36 +41,36 @@ export function VietQrPayment({ order }: Props) {
             decoding="async"
             onError={() => setQrFailed(true)}
           />
-          <p className="text-center text-xs text-zinc-600">
+          <p className="text-center text-xs text-ink-subtle">
             Quét bằng app ngân hàng — số tiền và nội dung sẽ được điền sẵn.
           </p>
         </div>
       ) : (
-        <div className="rounded-sm border border-amber-900/40 bg-amber-950/20 p-4 text-sm text-amber-200/90">
+        <div className="rounded-sm border border-warning/25 bg-warning/10 p-4 text-sm text-warning/90">
           Không tạo được QR tự động — vui lòng chuyển khoản thủ công theo thông tin bên dưới.
         </div>
       )}
 
-      <dl className="grid gap-3 rounded-sm border border-zinc-800 p-4 text-sm">
+      <dl className="grid gap-3 rounded-sm border border-edge p-4 text-sm">
         <div className="flex justify-between gap-4">
-          <dt className="text-zinc-500">Ngân hàng</dt>
-          <dd className="text-right text-zinc-300">{formatBankDisplayName(config.bankName)}</dd>
+          <dt className="text-ink-subtle">Ngân hàng</dt>
+          <dd className="text-right text-ink-secondary">{formatBankDisplayName(config.bankName)}</dd>
         </div>
         <div className="flex justify-between gap-4">
-          <dt className="text-zinc-500">Số tài khoản</dt>
-          <dd className="font-mono text-zinc-300">{config.accountNumber}</dd>
+          <dt className="text-ink-subtle">Số tài khoản</dt>
+          <dd className="font-mono text-ink-secondary">{config.accountNumber}</dd>
         </div>
         <div className="flex justify-between gap-4">
-          <dt className="text-zinc-500">Chủ tài khoản</dt>
-          <dd className="text-right text-zinc-300">{config.accountName}</dd>
+          <dt className="text-ink-subtle">Chủ tài khoản</dt>
+          <dd className="text-right text-ink-secondary">{config.accountName}</dd>
         </div>
-        <div className="flex justify-between gap-4 border-t border-zinc-800 pt-3">
-          <dt className="text-zinc-500">Số tiền</dt>
-          <dd className="font-serif text-gold">{formatVnd(order.totalAmount)}</dd>
+        <div className="flex justify-between gap-4 border-t border-edge pt-3">
+          <dt className="text-ink-subtle">Số tiền</dt>
+          <dd className="font-serif text-gold-500">{formatVnd(order.totalAmount)}</dd>
         </div>
         <div className="flex justify-between gap-4">
-          <dt className="text-zinc-500">Nội dung</dt>
-          <dd className="font-mono text-gold">{order.paymentCode}</dd>
+          <dt className="text-ink-subtle">Nội dung</dt>
+          <dd className="font-mono text-gold-500">{order.paymentCode}</dd>
         </div>
       </dl>
     </div>

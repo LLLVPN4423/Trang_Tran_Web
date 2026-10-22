@@ -25,17 +25,17 @@ export function AdminLogin({ onLogin }: Props) {
 
   return (
     <div className="mx-auto w-full max-w-sm">
-      <p className="text-xs uppercase tracking-[0.35em] text-gold-muted">Admin</p>
-      <h1 className="mt-3 font-serif text-3xl text-zinc-100">Đăng nhập</h1>
+      <p className="text-xs uppercase tracking-[0.35em] text-gold-700">Admin</p>
+      <h1 className="mt-3 font-serif text-3xl text-ink">Đăng nhập</h1>
 
       <form onSubmit={handleSubmit} className="mt-10 space-y-5">
         {error && (
-          <p className="rounded-sm border border-red-900/50 bg-red-950/30 px-4 py-3 text-sm text-red-300">
+          <p className="rounded-sm border border-danger/30 bg-danger/10/30 px-4 py-3 text-sm text-danger">
             {error}
           </p>
         )}
         <div>
-          <label htmlFor="email" className="mb-2 block text-xs uppercase tracking-widest text-zinc-500">
+          <label htmlFor="email" className="mb-2 block text-xs uppercase tracking-widest text-ink-subtle">
             Email
           </label>
           <input
@@ -44,11 +44,11 @@ export function AdminLogin({ onLogin }: Props) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full border-b border-zinc-800 bg-transparent py-3 text-zinc-200 outline-none focus:border-gold"
+            className="w-full border-b border-edge bg-transparent py-3 text-ink-secondary outline-none focus:border-gold"
           />
         </div>
         <div>
-          <label htmlFor="password" className="mb-2 block text-xs uppercase tracking-widest text-zinc-500">
+          <label htmlFor="password" className="mb-2 block text-xs uppercase tracking-widest text-ink-subtle">
             Mật khẩu
           </label>
           <input
@@ -57,13 +57,13 @@ export function AdminLogin({ onLogin }: Props) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full border-b border-zinc-800 bg-transparent py-3 text-zinc-200 outline-none focus:border-gold"
+            className="w-full border-b border-edge bg-transparent py-3 text-ink-secondary outline-none focus:border-gold"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-gold/90 py-3 text-xs uppercase tracking-[0.3em] text-zinc-950 hover:bg-gold disabled:opacity-50"
+          className="w-full bg-gold-500 py-3 text-xs uppercase tracking-[0.3em] text-canvas hover:bg-gold-500 disabled:opacity-50"
         >
           {loading ? 'Đang xử lý...' : 'Đăng nhập'}
         </button>

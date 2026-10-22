@@ -19,11 +19,11 @@ function AppointmentContent() {
   return (
     <PageLayout>
       <div className="mx-auto max-w-3xl px-6 py-16">
-        <p className="text-xs uppercase tracking-[0.35em] text-gold-muted">Dịch vụ salon</p>
-        <h1 className="mt-3 font-serif text-4xl text-zinc-100">Đặt lịch dịch vụ</h1>
-        <p className="mt-2 text-sm text-zinc-500">
+        <p className="text-xs uppercase tracking-[0.35em] text-gold-700">Dịch vụ salon</p>
+        <h1 className="mt-3 font-serif text-4xl text-ink">Đặt lịch dịch vụ</h1>
+        <p className="mt-2 text-sm text-ink-subtle">
           Chọn dịch vụ từ{' '}
-          <Link to="/catalog" className="text-gold-muted hover:text-gold">
+          <Link to="/catalog" className="text-gold-700 hover:text-gold-300">
             bảng giá
           </Link>
           , xem lại và gửi lịch một lần. Thanh toán khi làm dịch vụ tại tiệm.

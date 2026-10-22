@@ -119,7 +119,7 @@ export function PromotionsAdminPanel() {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[900px] text-left text-sm">
           <thead>
-            <tr className="border-b border-zinc-800 text-xs uppercase tracking-widest text-zinc-500">
+            <tr className="border-b border-edge text-xs uppercase tracking-widest text-ink-subtle">
               <th className="py-3 pr-4">Mã</th>
               <th className="py-3 pr-4">Tên</th>
               <th className="py-3 pr-4">Giá trị</th>
@@ -131,21 +131,21 @@ export function PromotionsAdminPanel() {
           </thead>
           <tbody>
             {promotions.map((p) => (
-              <tr key={p.id} className="border-b border-zinc-900 text-zinc-400">
-                <td className="py-3 pr-4 font-mono text-gold-muted">{p.code}</td>
-                <td className="py-3 pr-4 text-zinc-200">{p.name}</td>
+              <tr key={p.id} className="border-b border-edge text-ink-muted">
+                <td className="py-3 pr-4 font-mono text-gold-700">{p.code}</td>
+                <td className="py-3 pr-4 text-ink-secondary">{p.name}</td>
                 <td className="py-3 pr-4">{p.type === 'Percentage' ? `${p.value}%` : formatVnd(p.value)}</td>
                 <td className="py-3 pr-4">{formatVnd(p.minOrderAmount)}</td>
                 <td className="py-3 pr-4">{p.usedCount}{p.maxUses != null ? ` / ${p.maxUses}` : ''}</td>
                 <td className="py-3 pr-4">{p.isActive ? 'Active' : 'Off'}</td>
                 <td className="py-3 space-x-2">
-                  <button type="button" onClick={() => setFormMode({ type: 'edit', promotion: p })} className="text-xs hover:text-gold">
+                  <button type="button" onClick={() => setFormMode({ type: 'edit', promotion: p })} className="text-xs hover:text-gold-300">
                     Sửa
                   </button>
-                  <button type="button" onClick={() => toggleActive(p)} className="text-xs hover:text-gold">
+                  <button type="button" onClick={() => toggleActive(p)} className="text-xs hover:text-gold-300">
                     {p.isActive ? 'Tắt' : 'Bật'}
                   </button>
-                  <button type="button" onClick={() => handleDelete(p.id, p.code)} className="text-xs text-red-400/70 hover:text-red-400">
+                  <button type="button" onClick={() => handleDelete(p.id, p.code)} className="text-xs text-danger/70 hover:text-danger">
                     Xóa
                   </button>
                 </td>
@@ -223,7 +223,7 @@ function PromotionForm({
       <AdminField label="Hết hạn">
         <input name="expiresAt" type="datetime-local" defaultValue={expiresValue} className={adminInputClass} />
       </AdminField>
-      <label className="flex items-center gap-2 text-sm text-zinc-400">
+      <label className="flex items-center gap-2 text-sm text-ink-muted">
         <input type="checkbox" name="isActive" defaultChecked={promotion?.isActive ?? true} />
         Kích hoạt mã
       </label>

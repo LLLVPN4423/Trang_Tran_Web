@@ -13,7 +13,7 @@ export function RegisterPage() {
     return (
       <PageLayout>
         <div className="mx-auto max-w-lg px-6 py-24 text-center">
-          <p className="text-zinc-500">Firebase chưa cấu hình.</p>
+          <p className="text-ink-subtle">Firebase chưa cấu hình.</p>
         </div>
       </PageLayout>
     )
@@ -28,16 +28,16 @@ export function RegisterPage() {
           showProfileFields
           onSubmit={(email, password, name, phone) => register(email, password, name!, phone!)}
           footer={
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-ink-subtle">
               Đã có tài khoản?{' '}
-              <Link to="/login" className="text-gold hover:underline">
+              <Link to="/login" className="text-gold-500 hover:underline">
                 Đăng nhập
               </Link>
             </p>
           }
         />
         <AuthDivider />
-        <p className="mb-4 text-center text-xs text-zinc-600">
+        <p className="mb-4 text-center text-xs text-ink-subtle">
           Đăng ký nhanh bằng Google — bạn sẽ bổ sung số điện thoại tại trang Tài khoản.
         </p>
         <GoogleSignInButton />

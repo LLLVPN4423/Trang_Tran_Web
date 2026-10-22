@@ -33,11 +33,11 @@ function CatalogContent() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="section-eyebrow">Catalog</p>
-            <h1 className="section-title">Bảng giá dịch vụ · Sóc Trăng</h1>
+            <h1 className="section-title">Bảng giá dịch vụ</h1>
             <p className="section-body mt-4 max-w-2xl">
               Salon Trang Trần — Tuấn Lan, Hùng Vương. Chọn dịch vụ, thêm vào danh sách rồi gửi lịch một lần.
               Thanh toán tại tiệm.{' '}
-              <Link to="/shop" className="text-gold-muted hover:text-gold">
+              <Link to="/shop" className="text-gold-700 hover:text-gold-300">
                 Mua sản phẩm Moroccanoil online
               </Link>
               .
@@ -70,12 +70,12 @@ function CatalogContent() {
         {error && !loading && <ApiErrorState message={error} onRetry={reload} />}
 
         {!loading && !error && (
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+          <div className="mt-8 grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
             {services.map((service) => (
               <ServiceCard key={service.id} service={service} />
             ))}
             {services.length === 0 && (
-              <p className="col-span-full py-12 text-center text-zinc-500">Không có dịch vụ.</p>
+              <p className="col-span-full py-12 text-center text-ink-subtle">Không có dịch vụ.</p>
             )}
           </div>
         )}
@@ -99,8 +99,8 @@ function FilterChip({
       onClick={onClick}
       className={`px-3 py-1.5 text-xs transition ${
         active
-          ? 'bg-zinc-800/90 text-zinc-100 ring-1 ring-zinc-700/80'
-          : 'text-zinc-500 hover:bg-zinc-900/80 hover:text-zinc-300'
+          ? 'bg-elevated text-ink ring-1 ring-edge-strong/80'
+          : 'text-ink-subtle hover:bg-elevated/80 hover:text-ink-secondary'
       }`}
     >
       {label}

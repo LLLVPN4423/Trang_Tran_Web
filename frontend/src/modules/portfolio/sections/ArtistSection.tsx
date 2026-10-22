@@ -70,7 +70,7 @@ export function ArtistSection() {
           <p className="artist-heading section-eyebrow">{artist.eyebrow}</p>
           <h2 className="artist-heading section-title">
             {artist.heading}
-            <span className="italic text-gold">{artist.headingAccent}</span>
+            <span className="italic text-gold-500">{artist.headingAccent}</span>
           </h2>
           <p className="artist-bio section-body mt-6 max-w-xl">{artist.bio}</p>
         </div>
@@ -103,7 +103,7 @@ export function ArtistSection() {
             {[0, 1].map((i) => (
               <span
                 key={i}
-                className="inline-block px-6 font-serif text-4xl italic text-zinc-800/90 md:text-6xl"
+                className="inline-block px-6 font-serif text-4xl italic text-ink/20 md:text-6xl"
                 aria-hidden={i === 1}
               >
                 {marqueeText}&nbsp;&nbsp;&nbsp;

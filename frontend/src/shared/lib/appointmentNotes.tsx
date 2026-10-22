@@ -87,13 +87,13 @@ function parseInline(text: string): ReactNode[] {
     const token = match[0]
     if (token.startsWith('**')) {
       parts.push(
-        <strong key={key++} className="font-medium text-zinc-200">
+        <strong key={key++} className="font-medium text-ink-secondary">
           {token.slice(2, -2)}
         </strong>,
       )
     } else {
       parts.push(
-        <em key={key++} className="text-zinc-500 not-italic">
+        <em key={key++} className="text-ink-subtle not-italic">
           {token.slice(1, -1)}
         </em>,
       )
@@ -119,8 +119,8 @@ export function AppointmentNotesView({ notes, className = '' }: { notes: string;
     blocks.push(
       <ul key={`ul-${blockKey++}`} className="mt-2 space-y-2 pl-1">
         {listBuffer.map((item, i) => (
-          <li key={i} className="flex gap-2 text-sm leading-relaxed text-zinc-300">
-            <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-gold/70" aria-hidden />
+          <li key={i} className="flex gap-2 text-sm leading-relaxed text-ink-secondary">
+            <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-gold-500/70" aria-hidden />
             <span>{parseInline(item)}</span>
           </li>
         ))}
@@ -143,7 +143,7 @@ export function AppointmentNotesView({ notes, className = '' }: { notes: string;
       blocks.push(
         <h3
           key={`h-${blockKey++}`}
-          className="mt-4 first:mt-0 text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-500"
+          className="mt-4 first:mt-0 text-[10px] font-medium uppercase tracking-[0.2em] text-ink-subtle"
         >
           {t.slice(3)}
         </h3>,
@@ -158,7 +158,7 @@ export function AppointmentNotesView({ notes, className = '' }: { notes: string;
 
     flushList()
     blocks.push(
-      <p key={`p-${blockKey++}`} className="mt-2 text-sm leading-relaxed text-zinc-400">
+      <p key={`p-${blockKey++}`} className="mt-2 text-sm leading-relaxed text-ink-muted">
         {parseInline(t)}
       </p>,
     )
@@ -167,7 +167,7 @@ export function AppointmentNotesView({ notes, className = '' }: { notes: string;
   flushList()
 
   return (
-    <div className={`rounded-sm border border-zinc-800/80 bg-zinc-950/50 p-4 ${className}`.trim()}>
+    <div className={`rounded-sm border border-edge/80 bg-canvas/50 p-4 ${className}`.trim()}>
       {blocks}
     </div>
   )

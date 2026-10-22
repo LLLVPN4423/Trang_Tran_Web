@@ -124,11 +124,11 @@ export function OrderDetailPage() {
   return (
     <PageLayout>
       <div className="mx-auto max-w-2xl px-6 py-16">
-        <p className="text-xs uppercase tracking-[0.35em] text-gold-muted">
+        <p className="text-xs uppercase tracking-[0.35em] text-gold-700">
           {isServiceInvoice ? 'Hóa đơn dịch vụ' : 'Theo dõi đơn hàng'}
         </p>
-        <h1 className="mt-3 font-serif text-4xl text-zinc-100">{order.paymentCode}</h1>
-        <p className="mt-2 text-sm text-zinc-500">
+        <h1 className="mt-3 font-serif text-4xl text-ink">{order.paymentCode}</h1>
+        <p className="mt-2 text-sm text-ink-subtle">
           {PAYMENT_METHOD_LABELS[paymentMethod]}
           {!isServiceInvoice && <> · {FULFILLMENT_METHOD_LABELS[fulfillmentMethod]}</>}
         </p>
@@ -150,57 +150,57 @@ export function OrderDetailPage() {
         )}
 
         {isServiceInvoice && paymentMethod === 'CashAtSalon' && order.status === 'Paid' && (
-          <div className="mt-8 rounded-sm border border-emerald-900/40 bg-emerald-950/20 p-6 text-sm text-zinc-300">
+          <div className="mt-8 rounded-sm border border-success/25 bg-success/10 p-6 text-sm text-ink-secondary">
             Salon đã xác nhận thanh toán tại quầy. Cảm ơn bạn!
           </div>
         )}
 
-        <div className="mt-8 rounded-sm border border-zinc-800 p-6">
+        <div className="mt-8 rounded-sm border border-edge p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs uppercase tracking-widest text-zinc-500">Tổng thanh toán</p>
-              <p className="mt-2 font-serif text-3xl text-zinc-100">{formatVnd(order.totalAmount)}</p>
+              <p className="text-xs uppercase tracking-widest text-ink-subtle">Tổng thanh toán</p>
+              <p className="mt-2 font-serif text-3xl text-ink">{formatVnd(order.totalAmount)}</p>
               {order.shippingFee > 0 && (
-                <p className="mt-1 text-xs text-zinc-500">
+                <p className="mt-1 text-xs text-ink-subtle">
                   Gồm phí ship {formatVnd(order.shippingFee)}
                   {order.shippingZone ? ` · ${getShippingLabel(order.shippingZone)}` : ''}
                 </p>
               )}
             </div>
             <div className="text-right text-sm">
-              <p className="text-zinc-400">
+              <p className="text-ink-muted">
                 Thanh toán:{' '}
-                <span className={order.status === 'Paid' ? 'text-emerald-400' : 'text-amber-400'}>
+                <span className={order.status === 'Paid' ? 'text-success' : 'text-warning'}>
                   {order.status === 'Paid' ? 'Đã thanh toán' : order.status === 'Cancelled' ? 'Đã hủy' : 'Chờ'}
                 </span>
               </p>
               {fulfillmentMethod === 'Delivery' && (
-                <p className="mt-1 text-zinc-400">
+                <p className="mt-1 text-ink-muted">
                   Giao hàng:{' '}
-                  <span className="text-zinc-200">{FULFILLMENT_STATUS_LABELS[order.fulfillmentStatus]}</span>
+                  <span className="text-ink-secondary">{FULFILLMENT_STATUS_LABELS[order.fulfillmentStatus]}</span>
                 </p>
               )}
             </div>
           </div>
 
           {order.deliveryAddress && (
-            <p className="mt-4 text-sm text-zinc-500">
-              <span className="text-zinc-600">Địa chỉ: </span>
+            <p className="mt-4 text-sm text-ink-subtle">
+              <span className="text-ink-subtle">Địa chỉ: </span>
               {order.deliveryAddress}
             </p>
           )}
 
           {(order.trackingCode || order.trackingUrl) && (
-            <div className="mt-4 rounded-sm border border-zinc-800 bg-zinc-950/50 p-4 text-sm">
-              <p className="text-xs uppercase tracking-widest text-zinc-500">Vận đơn</p>
-              {order.carrier && <p className="mt-2 text-zinc-400">{order.carrier}</p>}
-              <p className="mt-1 font-mono text-zinc-200">{order.trackingCode}</p>
+            <div className="mt-4 rounded-sm border border-edge bg-canvas/50 p-4 text-sm">
+              <p className="text-xs uppercase tracking-widest text-ink-subtle">Vận đơn</p>
+              {order.carrier && <p className="mt-2 text-ink-muted">{order.carrier}</p>}
+              <p className="mt-1 font-mono text-ink-secondary">{order.trackingCode}</p>
               {order.trackingUrl && (
                 <a
                   href={order.trackingUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-2 inline-block text-xs uppercase tracking-widest text-gold hover:underline"
+                  className="mt-2 inline-block text-xs uppercase tracking-widest text-gold-500 hover:underline"
                 >
                   Theo dõi trên SPX / đơn vị vận chuyển
                 </a>
@@ -211,21 +211,21 @@ export function OrderDetailPage() {
 
         {!isServiceInvoice && (
         <section className="mt-10">
-          <h2 className="text-xs uppercase tracking-widest text-zinc-500">Tiến trình</h2>
+          <h2 className="text-xs uppercase tracking-widest text-ink-subtle">Tiến trình</h2>
           <ol className="mt-4 space-y-4">
             {timeline.map((step) => (
               <li key={step.key} className="flex gap-4">
                 <div
                   className={`mt-1 h-3 w-3 shrink-0 rounded-full ${
-                    step.done ? 'bg-emerald-500' : step.active ? 'bg-amber-400 animate-pulse' : 'bg-zinc-700'
+                    step.done ? 'bg-success' : step.active ? 'bg-warning animate-pulse' : 'bg-edge-strong'
                   }`}
                 />
                 <div>
-                  <p className={`text-sm ${step.done ? 'text-zinc-200' : step.active ? 'text-amber-200' : 'text-zinc-500'}`}>
+                  <p className={`text-sm ${step.done ? 'text-ink-secondary' : step.active ? 'text-warning' : 'text-ink-subtle'}`}>
                     {step.label}
                   </p>
                   {step.at && (
-                    <p className="text-xs text-zinc-600">{new Date(step.at).toLocaleString('vi-VN')}</p>
+                    <p className="text-xs text-ink-subtle">{new Date(step.at).toLocaleString('vi-VN')}</p>
                   )}
                 </div>
               </li>
@@ -235,16 +235,16 @@ export function OrderDetailPage() {
         )}
 
         <section className="mt-10">
-          <h2 className="text-xs uppercase tracking-widest text-zinc-500">
+          <h2 className="text-xs uppercase tracking-widest text-ink-subtle">
             {isServiceInvoice ? 'Chi tiết dịch vụ' : 'Sản phẩm'}
           </h2>
-          <ul className="mt-4 space-y-2 text-sm text-zinc-400">
+          <ul className="mt-4 space-y-2 text-sm text-ink-muted">
             {order.items.map((item) => (
               <li key={`${item.itemId}-${item.hairSize}`} className="flex justify-between gap-3">
                 <span>
                   {item.name} × {item.quantity}
                 </span>
-                <span className="tabular-nums text-zinc-500">{formatVnd(item.subtotal)}</span>
+                <span className="tabular-nums text-ink-subtle">{formatVnd(item.subtotal)}</span>
               </li>
             ))}
           </ul>
@@ -257,13 +257,13 @@ export function OrderDetailPage() {
         )}
 
         {!isServiceInvoice && showConfirm && (
-          <div className="mt-10 rounded-sm border border-emerald-900/40 bg-emerald-950/20 p-6">
-            <p className="text-sm text-zinc-300">Bạn đã nhận đủ hàng và hài lòng?</p>
+          <div className="mt-10 rounded-sm border border-success/25 bg-success/10 p-6">
+            <p className="text-sm text-ink-secondary">Bạn đã nhận đủ hàng và hài lòng?</p>
             <button
               type="button"
               disabled={submitting}
               onClick={() => void handleConfirm()}
-              className="mt-4 bg-emerald-700/80 px-6 py-3 text-xs uppercase tracking-widest text-zinc-100 hover:bg-emerald-600 disabled:opacity-50"
+              className="mt-4 bg-success/80 px-6 py-3 text-xs uppercase tracking-widest text-ink hover:bg-success disabled:opacity-50"
             >
               Xác nhận đã nhận hàng
             </button>
@@ -271,12 +271,12 @@ export function OrderDetailPage() {
         )}
 
         {!isServiceInvoice && showDispute && (
-          <div className="mt-6 rounded-sm border border-amber-900/40 bg-amber-950/20 p-6">
-            <p className="text-sm text-zinc-300">Có vấn đề với đơn hàng?</p>
+          <div className="mt-6 rounded-sm border border-warning/25 bg-warning/10 p-6">
+            <p className="text-sm text-ink-secondary">Có vấn đề với đơn hàng?</p>
             <select
               value={disputeReason}
               onChange={(e) => setDisputeReason(e.target.value)}
-              className="mt-3 w-full border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300"
+              className="mt-3 w-full border border-edge bg-canvas px-3 py-2 text-sm text-ink-secondary"
             >
               {DISPUTE_REASONS.map((r) => (
                 <option key={r} value={r}>
@@ -289,13 +289,13 @@ export function OrderDetailPage() {
               onChange={(e) => setDisputeNotes(e.target.value)}
               rows={2}
               placeholder="Mô tả thêm (tuỳ chọn)"
-              className="mt-3 w-full resize-none border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300"
+              className="mt-3 w-full resize-none border border-edge bg-canvas px-3 py-2 text-sm text-ink-secondary"
             />
             <button
               type="button"
               disabled={submitting}
               onClick={() => void handleDispute()}
-              className="mt-4 text-xs uppercase tracking-widest text-amber-300 hover:text-amber-200 disabled:opacity-50"
+              className="mt-4 text-xs uppercase tracking-widest text-warning hover:text-warning disabled:opacity-50"
             >
               Gửi phản hồi / khiếu nại
             </button>
@@ -303,21 +303,21 @@ export function OrderDetailPage() {
         )}
 
         {order.fulfillmentStatus === 'Disputed' && (
-          <div className="mt-6 rounded-sm border border-red-900/40 bg-red-950/20 p-6 text-sm text-zinc-300">
-            <p className="font-medium text-red-300">Đã gửi khiếu nại</p>
+          <div className="mt-6 rounded-sm border border-danger/30/40 bg-danger/10 p-6 text-sm text-ink-secondary">
+            <p className="font-medium text-danger">Đã gửi khiếu nại</p>
             <p className="mt-2">{order.disputeReason}</p>
-            {order.disputeNotes && <p className="mt-1 text-zinc-500">{order.disputeNotes}</p>}
-            <p className="mt-3 text-xs text-zinc-500">Salon sẽ liên hệ bạn sớm nhất.</p>
+            {order.disputeNotes && <p className="mt-1 text-ink-subtle">{order.disputeNotes}</p>}
+            <p className="mt-3 text-xs text-ink-subtle">Salon sẽ liên hệ bạn sớm nhất.</p>
           </div>
         )}
 
         <div className="mt-12 flex flex-wrap gap-4 text-xs uppercase tracking-widest">
           {user ? (
-            <Link to="/account?tab=orders" className="text-gold-muted hover:text-gold">
+            <Link to="/account?tab=orders" className="text-gold-700 hover:text-gold-300">
               Đơn của tôi
             </Link>
           ) : null}
-          <Link to="/shop" className="text-zinc-500 hover:text-zinc-300">
+          <Link to="/shop" className="text-ink-subtle hover:text-ink-secondary">
             Tiếp tục mua sắm
           </Link>
         </div>

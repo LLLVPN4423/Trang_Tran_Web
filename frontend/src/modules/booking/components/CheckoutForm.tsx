@@ -115,14 +115,14 @@ export function CheckoutForm({ onSuccess }: Props) {
 
   if (productItems.length === 0) {
     return (
-      <div className="rounded-sm border border-zinc-800 p-6 text-sm text-zinc-500">
+      <div className="rounded-sm border border-edge p-6 text-sm text-ink-subtle">
         Giỏ chỉ dành cho sản phẩm Moroccanoil.{' '}
-        <Link to="/shop" className="text-gold hover:underline">
+        <Link to="/shop" className="text-gold-500 hover:underline">
           Xem sản phẩm
         </Link>
         {' · '}
         Dịch vụ vui lòng{' '}
-        <Link to="/appointment" className="text-gold hover:underline">
+        <Link to="/appointment" className="text-gold-500 hover:underline">
           đặt lịch
         </Link>
         .
@@ -132,11 +132,11 @@ export function CheckoutForm({ onSuccess }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5" data-lenis-prevent>
-      <h2 className="font-serif text-2xl text-zinc-200">Thông tin đặt hàng</h2>
+      <h2 className="font-serif text-2xl text-ink-secondary">Thông tin đặt hàng</h2>
 
       {!user && (
-        <p className="text-sm text-zinc-500">
-          <Link to="/login" className="text-gold hover:underline">
+        <p className="text-sm text-ink-subtle">
+          <Link to="/login" className="text-gold-500 hover:underline">
             Đăng nhập
           </Link>{' '}
           để dùng điểm tích lũy.
@@ -169,7 +169,7 @@ export function CheckoutForm({ onSuccess }: Props) {
       />
 
       <fieldset className="space-y-3">
-        <legend className="mb-2 block text-xs uppercase tracking-widest text-zinc-500">
+        <legend className="mb-2 block text-xs uppercase tracking-widest text-ink-subtle">
           Nhận hàng
         </legend>
         {(['Pickup', 'Delivery'] as FulfillmentMethod[]).map((method) => (
@@ -177,8 +177,8 @@ export function CheckoutForm({ onSuccess }: Props) {
             key={method}
             className={`flex cursor-pointer items-start gap-3 rounded-sm border px-4 py-3 transition ${
               fulfillmentMethod === method
-                ? 'border-gold/40 bg-gold/5'
-                : 'border-zinc-800 hover:border-zinc-700'
+                ? 'border-gold-500/40 bg-gold-500/5'
+                : 'border-edge hover:border-edge-strong'
             }`}
           >
             <input
@@ -189,7 +189,7 @@ export function CheckoutForm({ onSuccess }: Props) {
               onChange={() => setFulfillmentMethod(method)}
               className="mt-1"
             />
-            <span className="text-sm text-zinc-300">{FULFILLMENT_METHOD_LABELS[method]}</span>
+            <span className="text-sm text-ink-secondary">{FULFILLMENT_METHOD_LABELS[method]}</span>
           </label>
         ))}
       </fieldset>
@@ -197,7 +197,7 @@ export function CheckoutForm({ onSuccess }: Props) {
       {fulfillmentMethod === 'Delivery' && (
         <>
           <fieldset className="space-y-3">
-            <legend className="mb-2 block text-xs uppercase tracking-widest text-zinc-500">
+            <legend className="mb-2 block text-xs uppercase tracking-widest text-ink-subtle">
               Khu vực giao hàng
             </legend>
             {SHIPPING_ZONES.map((zone) => (
@@ -205,8 +205,8 @@ export function CheckoutForm({ onSuccess }: Props) {
                 key={zone.zone}
                 className={`flex cursor-pointer items-center justify-between gap-3 rounded-sm border px-4 py-3 transition ${
                   shippingZone === zone.zone
-                    ? 'border-gold/40 bg-gold/5'
-                    : 'border-zinc-800 hover:border-zinc-700'
+                    ? 'border-gold-500/40 bg-gold-500/5'
+                    : 'border-edge hover:border-edge-strong'
                 }`}
               >
                 <span className="flex items-center gap-3">
@@ -217,14 +217,14 @@ export function CheckoutForm({ onSuccess }: Props) {
                     checked={shippingZone === zone.zone}
                     onChange={() => setShippingZone(zone.zone)}
                   />
-                  <span className="text-sm text-zinc-300">{zone.label}</span>
+                  <span className="text-sm text-ink-secondary">{zone.label}</span>
                 </span>
-                <span className="text-sm tabular-nums text-zinc-400">{formatVnd(zone.fee)}</span>
+                <span className="text-sm tabular-nums text-ink-muted">{formatVnd(zone.fee)}</span>
               </label>
             ))}
           </fieldset>
           <div>
-            <label htmlFor="deliveryAddress" className="mb-2 block text-xs uppercase tracking-widest text-zinc-500">
+            <label htmlFor="deliveryAddress" className="mb-2 block text-xs uppercase tracking-widest text-ink-subtle">
               Địa chỉ giao hàng
             </label>
             <textarea
@@ -232,7 +232,7 @@ export function CheckoutForm({ onSuccess }: Props) {
               name="deliveryAddress"
               required
               rows={3}
-              className="w-full resize-none border-b border-zinc-800 bg-transparent py-3 text-zinc-200 outline-none focus:border-gold"
+              className="w-full resize-none border-b border-edge bg-transparent py-3 text-ink-secondary outline-none focus:border-gold"
               placeholder="Số nhà, đường, phường/xã, tỉnh/thành..."
             />
           </div>
@@ -240,7 +240,7 @@ export function CheckoutForm({ onSuccess }: Props) {
       )}
 
       <fieldset className="space-y-3">
-        <legend className="mb-2 block text-xs uppercase tracking-widest text-zinc-500">
+        <legend className="mb-2 block text-xs uppercase tracking-widest text-ink-subtle">
           Thanh toán
         </legend>
         {(['BankTransfer', 'COD'] as PaymentMethod[]).map((method) => (
@@ -248,8 +248,8 @@ export function CheckoutForm({ onSuccess }: Props) {
             key={method}
             className={`flex cursor-pointer items-start gap-3 rounded-sm border px-4 py-3 transition ${
               paymentMethod === method
-                ? 'border-gold/40 bg-gold/5'
-                : 'border-zinc-800 hover:border-zinc-700'
+                ? 'border-gold-500/40 bg-gold-500/5'
+                : 'border-edge hover:border-edge-strong'
             }`}
           >
             <input
@@ -260,40 +260,40 @@ export function CheckoutForm({ onSuccess }: Props) {
               onChange={() => setPaymentMethod(method)}
               className="mt-1"
             />
-            <span className="text-sm text-zinc-300">{PAYMENT_METHOD_LABELS[method]}</span>
+            <span className="text-sm text-ink-secondary">{PAYMENT_METHOD_LABELS[method]}</span>
           </label>
         ))}
         {paymentMethod === 'BankTransfer' && (
-          <p className="text-xs text-zinc-600">
+          <p className="text-xs text-ink-subtle">
             Quét QR chuyển khoản — salon xác nhận sau khi nhận tiền (giữ tồn 15 phút).
           </p>
         )}
         {paymentMethod === 'COD' && (
-          <p className="text-xs text-zinc-600">
+          <p className="text-xs text-ink-subtle">
             Salon gọi xác nhận — trả tiền khi nhận hàng (giữ tồn 48 giờ).
           </p>
         )}
       </fieldset>
 
       <div>
-        <label className="mb-2 block text-xs uppercase tracking-widest text-zinc-500">Mã khuyến mãi</label>
+        <label className="mb-2 block text-xs uppercase tracking-widest text-ink-subtle">Mã khuyến mãi</label>
         <div className="flex gap-2">
           <input
             value={promoCode}
             onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
             placeholder="WELCOME10"
-            className="min-w-0 flex-1 border-b border-zinc-800 bg-transparent py-3 text-zinc-200 outline-none focus:border-gold"
+            className="min-w-0 flex-1 border-b border-edge bg-transparent py-3 text-ink-secondary outline-none focus:border-gold"
           />
-          <button type="button" onClick={applyPromo} className="shrink-0 text-xs uppercase tracking-widest text-gold">
+          <button type="button" onClick={applyPromo} className="shrink-0 text-xs uppercase tracking-widest text-gold-500">
             Áp dụng
           </button>
         </div>
-        {promoMessage && <p className="mt-2 text-xs text-zinc-500">{promoMessage}</p>}
+        {promoMessage && <p className="mt-2 text-xs text-ink-subtle">{promoMessage}</p>}
       </div>
 
       {user && customerProfile && customerProfile.loyaltyPoints >= 100 && (
         <div>
-          <label htmlFor="points" className="mb-2 block text-xs uppercase tracking-widest text-zinc-500">
+          <label htmlFor="points" className="mb-2 block text-xs uppercase tracking-widest text-ink-subtle">
             Đổi điểm (có {customerProfile.loyaltyPoints} điểm)
           </label>
           <input
@@ -306,50 +306,50 @@ export function CheckoutForm({ onSuccess }: Props) {
             onChange={(e) => setPointsToRedeem(Number(e.target.value))}
             className="w-full"
           />
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-ink-subtle">
             Dùng {pointsToRedeem} điểm → giảm {formatVnd(pointsDiscount)}
           </p>
         </div>
       )}
 
-      <div className="rounded-sm border border-zinc-800 p-4 text-sm">
-        <div className="flex justify-between text-zinc-500">
+      <div className="rounded-sm border border-edge p-4 text-sm">
+        <div className="flex justify-between text-ink-subtle">
           <span>Tạm tính</span>
           <span>{formatVnd(productTotal)}</span>
         </div>
         {promoDiscount > 0 && (
-          <div className="mt-2 flex justify-between text-emerald-400">
+          <div className="mt-2 flex justify-between text-success">
             <span>Khuyến mãi</span>
             <span>-{formatVnd(promoDiscount)}</span>
           </div>
         )}
         {pointsDiscount > 0 && (
-          <div className="mt-2 flex justify-between text-gold-muted">
+          <div className="mt-2 flex justify-between text-gold-700">
             <span>Đổi điểm</span>
             <span>-{formatVnd(pointsDiscount)}</span>
           </div>
         )}
         {shippingFee > 0 && (
-          <div className="mt-2 flex justify-between text-zinc-400">
+          <div className="mt-2 flex justify-between text-ink-muted">
             <span>Phí giao hàng</span>
             <span>+{formatVnd(shippingFee)}</span>
           </div>
         )}
-        <div className="mt-3 flex justify-between border-t border-zinc-800 pt-3 font-serif text-lg text-zinc-200">
+        <div className="mt-3 flex justify-between border-t border-edge pt-3 font-serif text-lg text-ink-secondary">
           <span>Tổng thanh toán</span>
           <span>{formatVnd(previewTotal)}</span>
         </div>
       </div>
 
       <div>
-        <label htmlFor="notes" className="mb-2 block text-xs uppercase tracking-widest text-zinc-500">
+        <label htmlFor="notes" className="mb-2 block text-xs uppercase tracking-widest text-ink-subtle">
           Ghi chú
         </label>
         <textarea
           id="notes"
           name="notes"
           rows={2}
-          className="w-full resize-none border-b border-zinc-800 bg-transparent py-3 text-zinc-200 outline-none focus:border-gold"
+          className="w-full resize-none border-b border-edge bg-transparent py-3 text-ink-secondary outline-none focus:border-gold"
           placeholder="Giờ giao hàng, yêu cầu đặc biệt..."
         />
       </div>
@@ -357,7 +357,7 @@ export function CheckoutForm({ onSuccess }: Props) {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full bg-gold/90 py-4 text-xs font-medium uppercase tracking-[0.3em] text-zinc-950 transition hover:bg-gold disabled:opacity-50"
+        className="w-full bg-gold-500 py-4 text-xs font-medium uppercase tracking-[0.3em] text-canvas transition hover:bg-gold-500 disabled:opacity-50"
       >
         {submitting
           ? 'Đang xử lý...'
@@ -386,7 +386,7 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={name} className="mb-2 block text-xs uppercase tracking-widest text-zinc-500">
+      <label htmlFor={name} className="mb-2 block text-xs uppercase tracking-widest text-ink-subtle">
         {label}
       </label>
       <input
@@ -396,7 +396,7 @@ function Field({
         required={required}
         placeholder={placeholder}
         defaultValue={defaultValue ?? undefined}
-        className="w-full border-b border-zinc-800 bg-transparent py-3 text-zinc-200 outline-none focus:border-gold"
+        className="w-full border-b border-edge bg-transparent py-3 text-ink-secondary outline-none focus:border-gold"
       />
     </div>
   )

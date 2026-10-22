@@ -58,9 +58,9 @@ export function SalonAdminGrantPanel() {
   }
 
   return (
-    <div className="rounded-sm border border-zinc-800 bg-zinc-900/30 p-4">
-      <h3 className="text-sm font-medium text-zinc-200">Cấp quyền Salon Admin</h3>
-      <p className="mt-2 text-xs leading-relaxed text-zinc-500">
+    <div className="rounded-sm border border-edge bg-elevated/30 p-4">
+      <h3 className="text-sm font-medium text-ink-secondary">Cấp quyền Salon Admin</h3>
+      <p className="mt-2 text-xs leading-relaxed text-ink-subtle">
         Platform Admin cấp quyền vận hành (lịch, hóa đơn, đơn shop) — không sửa giá/web. Lấy UID tại Firebase
         Console → Authentication. Không cấp Platform Admin qua đây.
       </p>
@@ -70,30 +70,30 @@ export function SalonAdminGrantPanel() {
           value={uid}
           onChange={(e) => setUid(e.target.value)}
           placeholder="Firebase UID nhân viên / chị Trang"
-          className="min-w-0 flex-1 border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
+          className="min-w-0 flex-1 border border-edge bg-canvas px-3 py-2 text-sm text-ink"
         />
         <button type="button" onClick={() => void onGrant()} className="btn-gold shrink-0 px-4 py-2 text-xs uppercase tracking-widest">
           Cấp Salon Admin
         </button>
       </div>
 
-      {msg && <p className="mt-3 text-sm text-gold">{msg}</p>}
-      {err && <p className="mt-3 text-sm text-red-400/90">{err}</p>}
+      {msg && <p className="mt-3 text-sm text-gold-500">{msg}</p>}
+      {err && <p className="mt-3 text-sm text-danger/90">{err}</p>}
 
       <div className="mt-6">
-        <p className="text-xs uppercase tracking-widest text-zinc-600">Đang có quyền Salon</p>
-        {loading && <p className="mt-2 text-sm text-zinc-500">Đang tải…</p>}
+        <p className="text-xs uppercase tracking-widest text-ink-subtle">Đang có quyền Salon</p>
+        {loading && <p className="mt-2 text-sm text-ink-subtle">Đang tải…</p>}
         {!loading && list.length === 0 && (
-          <p className="mt-2 text-sm text-zinc-500">Chưa có UID (env + Firestore).</p>
+          <p className="mt-2 text-sm text-ink-subtle">Chưa có UID (env + Firestore).</p>
         )}
         <ul className="mt-2 space-y-2">
           {list.map((row) => (
             <li
               key={row.userId}
-              className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-900/80 py-2 text-sm"
+              className="flex flex-wrap items-center justify-between gap-2 border-b border-edge/70 py-2 text-sm"
             >
-              <span className="font-mono text-xs text-zinc-300">{row.userId}</span>
-              <span className="text-xs text-zinc-600">
+              <span className="font-mono text-xs text-ink-secondary">{row.userId}</span>
+              <span className="text-xs text-ink-subtle">
                 {row.fromEnvironment && 'env '}
                 {row.fromFirestore && 'Firestore'}
               </span>
@@ -101,7 +101,7 @@ export function SalonAdminGrantPanel() {
                 <button
                   type="button"
                   onClick={() => void onRevoke(row.userId)}
-                  className="text-xs text-zinc-500 hover:text-red-400"
+                  className="text-xs text-ink-subtle hover:text-danger"
                 >
                   Thu hồi
                 </button>
@@ -110,7 +110,7 @@ export function SalonAdminGrantPanel() {
           ))}
         </ul>
         {list.some((r) => r.fromEnvironment) && (
-          <p className="mt-2 text-xs text-zinc-600">UID trong env (.env / Cloud Run) — sửa env để gỡ, không thu hồi tại đây.</p>
+          <p className="mt-2 text-xs text-ink-subtle">UID trong env (.env / Cloud Run) — sửa env để gỡ, không thu hồi tại đây.</p>
         )}
       </div>
     </div>

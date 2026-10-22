@@ -38,7 +38,7 @@ function DrivePreview({ url, alt }: { url: string; alt: string }) {
       src={resolveProductImageUrl(url)}
       alt={alt}
       referrerPolicy="no-referrer"
-      className="mt-2 max-h-36 w-auto rounded-sm border border-zinc-800 object-cover"
+      className="mt-2 max-h-36 w-auto rounded-sm border border-edge object-cover"
     />
   )
 }
@@ -150,24 +150,24 @@ export function SiteContentAdminPanel() {
   return (
     <div className="space-y-6">
       <AdminPanelHeader title="Trang chủ — Hero · Artist · Lookbook · Liên hệ" />
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-ink-subtle">
         Dán link Google Drive (chia sẻ “Bất kỳ ai có link”) như sản phẩm / dịch vụ.
       </p>
 
-      <p className="text-xs text-zinc-500">{GOOGLE_DRIVE_SHARE_HINT}</p>
+      <p className="text-xs text-ink-subtle">{GOOGLE_DRIVE_SHARE_HINT}</p>
 
       {needsApiUpdate && (
-        <p className="rounded-sm border border-amber-900/50 bg-amber-950/30 px-4 py-3 text-sm text-amber-200/90">
+        <p className="rounded-sm border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning/90">
           API production chưa bản mới — bạn vẫn chỉnh và xem trước tại đây, nhưng{' '}
-          <strong className="text-amber-100">lưu liên hệ / Portfolio</strong> cần deploy Cloud Run (hoặc bật GitHub
-          secret <code className="text-amber-100/80">GCP_SA_KEY</code>). Hero / Lookbook vẫn lưu được.
+          <strong className="text-warning">lưu liên hệ / Portfolio</strong> cần deploy Cloud Run (hoặc bật GitHub
+          secret <code className="text-warning/80">GCP_SA_KEY</code>). Hero / Lookbook vẫn lưu được.
         </p>
       )}
 
-      {message && <p className="text-sm text-emerald-400">{message}</p>}
+      {message && <p className="text-sm text-success">{message}</p>}
       {error && <ApiErrorState message={error} />}
 
-      <div className="-mx-1 overflow-x-auto border-b border-zinc-800 pb-4">
+      <div className="-mx-1 overflow-x-auto border-b border-edge pb-4">
         <div className="flex min-w-max gap-2 px-1">
           {(
             [
@@ -183,7 +183,7 @@ export function SiteContentAdminPanel() {
               onClick={() => setTab(id)}
               title={longLabel}
               className={`shrink-0 px-3 py-2.5 text-xs uppercase tracking-widest ${
-                tab === id ? 'bg-gold/10 text-gold' : 'text-zinc-500 hover:text-zinc-300'
+                tab === id ? 'bg-gold-500/10 text-gold-500' : 'text-ink-subtle hover:text-ink-secondary'
               }`}
             >
               <span className="sm:hidden">{shortLabel}</span>
@@ -195,8 +195,8 @@ export function SiteContentAdminPanel() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {tab === 'hero' && (
-          <section className="space-y-4 border border-zinc-800 p-4 sm:p-6">
-            <h2 className="font-serif text-xl text-zinc-200">Hero panel</h2>
+          <section className="space-y-4 border border-edge p-4 sm:p-6">
+            <h2 className="font-serif text-xl text-ink-secondary">Hero panel</h2>
             <AdminField label="Ảnh nền (Google Drive hoặc /images/...)">
               <input
                 className={adminInputClass}
@@ -231,8 +231,8 @@ export function SiteContentAdminPanel() {
         )}
 
         {tab === 'artist' && (
-          <section className="space-y-4 border border-zinc-800 p-4 sm:p-6">
-            <h2 className="font-serif text-xl text-zinc-200">The Artist</h2>
+          <section className="space-y-4 border border-edge p-4 sm:p-6">
+            <h2 className="font-serif text-xl text-ink-secondary">The Artist</h2>
             <AdminField label="Ảnh chính">
               <input
                 className={adminInputClass}
@@ -306,9 +306,9 @@ export function SiteContentAdminPanel() {
         )}
 
         {tab === 'contact' && (
-          <section className="space-y-4 border border-zinc-800 p-4 sm:p-6">
-            <h2 className="font-serif text-xl text-zinc-200">Liên hệ &amp; Mạng xã hội</h2>
-            <p className="text-sm text-zinc-500">
+          <section className="space-y-4 border border-edge p-4 sm:p-6">
+            <h2 className="font-serif text-xl text-ink-secondary">Liên hệ &amp; Mạng xã hội</h2>
+            <p className="text-sm text-ink-subtle">
               Hiển thị ở cuối trang chủ (Đặt lịch) và dòng lưu ý ở section Bảng giá.
             </p>
             <AdminField label="Số điện thoại (hiển thị)">
@@ -352,10 +352,10 @@ export function SiteContentAdminPanel() {
               />
             </AdminField>
 
-            <div className="space-y-4 border-t border-zinc-800 pt-6">
-              <p className="text-xs uppercase tracking-widest text-zinc-500">Link mạng xã hội / Portfolio</p>
+            <div className="space-y-4 border-t border-edge pt-6">
+              <p className="text-xs uppercase tracking-widest text-ink-subtle">Link mạng xã hội / Portfolio</p>
               {form.socialLinks.map((link, index) => (
-                <div key={index} className="grid gap-3 border border-zinc-800/80 p-3 sm:grid-cols-[1fr_2fr_auto]">
+                <div key={index} className="grid gap-3 border border-edge/80 p-3 sm:grid-cols-[1fr_2fr_auto]">
                   <AdminField label="Tên hiển thị">
                     <input
                       className={adminInputClass}
@@ -395,7 +395,7 @@ export function SiteContentAdminPanel() {
                           socialLinks: p.socialLinks.filter((_, i) => i !== index),
                         }))
                       }
-                      className="text-xs text-red-400 hover:underline"
+                      className="text-xs text-danger hover:underline"
                     >
                       Xóa
                     </button>
@@ -410,7 +410,7 @@ export function SiteContentAdminPanel() {
                     socialLinks: [...p.socialLinks, { label: 'Portfolio', url: '' }],
                   }))
                 }
-                className="text-xs uppercase tracking-widest text-gold hover:underline"
+                className="text-xs uppercase tracking-widest text-gold-500 hover:underline"
               >
                 + Thêm link
               </button>
@@ -419,8 +419,8 @@ export function SiteContentAdminPanel() {
         )}
 
         {tab === 'lookbook' && (
-          <section className="space-y-4 border border-zinc-800 p-4 sm:p-6">
-            <h2 className="font-serif text-xl text-zinc-200">Salon Tour / Lookbook</h2>
+          <section className="space-y-4 border border-edge p-4 sm:p-6">
+            <h2 className="font-serif text-xl text-ink-secondary">Salon Tour / Lookbook</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <AdminField label="Eyebrow section">
                 <input
@@ -444,15 +444,15 @@ export function SiteContentAdminPanel() {
 
             <div className="space-y-6">
               {form.lookbook.items.map((item, index) => (
-                <article key={item.id} className="border border-zinc-800/80 p-4">
+                <article key={item.id} className="border border-edge/80 p-4">
                   <div className="mb-3 flex items-center justify-between gap-2">
-                    <p className="text-xs uppercase tracking-widest text-zinc-500">
+                    <p className="text-xs uppercase tracking-widest text-ink-subtle">
                       Ảnh {String(index + 1).padStart(2, '0')}
                     </p>
                     <button
                       type="button"
                       onClick={() => removeLookbookItem(index)}
-                      className="text-xs text-red-400 hover:underline"
+                      className="text-xs text-danger hover:underline"
                     >
                       Xóa
                     </button>
@@ -508,7 +508,7 @@ export function SiteContentAdminPanel() {
             <button
               type="button"
               onClick={addLookbookItem}
-              className="text-xs uppercase tracking-widest text-gold hover:underline"
+              className="text-xs uppercase tracking-widest text-gold-500 hover:underline"
             >
               + Thêm ảnh Lookbook
             </button>

@@ -11,20 +11,20 @@ export function AdminDashboard() {
 
   return (
     <div>
-      <div className="mb-10 flex flex-wrap items-center justify-between gap-4 border-b border-zinc-800 pb-6">
+      <div className="mb-10 flex flex-wrap items-center justify-between gap-4 border-b border-edge pb-6">
         <div>
-          <p className="text-xs uppercase tracking-[0.35em] text-gold-muted">Admin Portal</p>
-          <h1 className="mt-2 font-serif text-3xl text-zinc-100">Quản lý Salon</h1>
-          <p className="mt-1 text-sm text-zinc-500">{user?.email}</p>
+          <p className="text-xs uppercase tracking-[0.35em] text-gold-700">Admin Portal</p>
+          <h1 className="mt-2 font-serif text-3xl text-ink">Quản lý Salon</h1>
+          <p className="mt-1 text-sm text-ink-subtle">{user?.email}</p>
         </div>
         <div className="flex gap-4">
-          <Link to="/" className="text-xs uppercase tracking-widest text-zinc-500 hover:text-gold">
+          <Link to="/" className="text-xs uppercase tracking-widest text-ink-subtle hover:text-gold-300">
             ← Trang chủ
           </Link>
           <button
             type="button"
             onClick={() => logout()}
-            className="text-xs uppercase tracking-widest text-zinc-500 hover:text-red-400"
+            className="text-xs uppercase tracking-widest text-ink-subtle hover:text-danger"
           >
             Đăng xuất
           </button>
@@ -56,7 +56,7 @@ function TabButton({
       type="button"
       onClick={onClick}
       className={`text-xs uppercase tracking-widest ${
-        active ? 'text-gold' : 'text-zinc-500 hover:text-zinc-300'
+        active ? 'text-gold-500' : 'text-ink-subtle hover:text-ink-secondary'
       }`}
     >
       {label}

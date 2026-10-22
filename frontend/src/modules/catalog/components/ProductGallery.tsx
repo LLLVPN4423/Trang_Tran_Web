@@ -12,9 +12,9 @@ export function ProductGallery({ images, alt }: Props) {
 
   if (gallery.length === 0) {
     return (
-      <div className="media-frame aspect-[4/5] w-full bg-zinc-900/60">
+      <div className="media-frame aspect-[4/5] w-full bg-elevated/60">
         <div className="flex h-full items-center justify-center">
-          <span className="label-caps text-zinc-600">Chưa có ảnh</span>
+          <span className="label-caps text-ink-subtle">Chưa có ảnh</span>
         </div>
       </div>
     )
@@ -24,7 +24,7 @@ export function ProductGallery({ images, alt }: Props) {
 
   return (
     <div className="space-y-3">
-      <div className="media-frame aspect-[4/5] w-full overflow-hidden bg-zinc-900/40">
+      <div className="media-frame aspect-[4/5] w-full overflow-hidden bg-elevated/40">
         <img
           src={resolveProductImageUrl(gallery[activeIndex])}
           alt={`${alt} — ảnh ${activeIndex + 1}`}
@@ -42,8 +42,8 @@ export function ProductGallery({ images, alt }: Props) {
               onClick={() => setActive(index)}
               className={`h-16 w-16 shrink-0 overflow-hidden border transition sm:h-20 sm:w-20 ${
                 index === activeIndex
-                  ? 'border-gold ring-1 ring-gold/40'
-                  : 'border-zinc-800 opacity-70 hover:border-zinc-600 hover:opacity-100'
+                  ? 'border-gold ring-1 ring-gold-500/40'
+                  : 'border-edge opacity-70 hover:border-edge-strong hover:opacity-100'
               }`}
             >
               <img
@@ -58,7 +58,7 @@ export function ProductGallery({ images, alt }: Props) {
         </div>
       )}
 
-      <p className="text-xs text-zinc-600">
+      <p className="text-xs text-ink-subtle">
         {gallery.length} ảnh{gallery.length < 7 ? '' : ' (tối đa 7)'}
       </p>
     </div>

@@ -27,7 +27,7 @@ export function GoogleSignInButton() {
   return (
     <div>
       {inApp && (
-        <p className="mb-3 rounded-sm border border-amber-900/50 bg-amber-950/20 px-4 py-3 text-sm text-amber-200">
+        <p className="mb-3 rounded-sm border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning">
           Bạn đang mở link trong app Zalo/Facebook. Google không cho đăng nhập ở đây — bấm <strong>⋯</strong> →{' '}
           <strong>Mở bằng Chrome/Safari</strong>, hoặc gõ <strong>trangtran-hair.pages.dev</strong> vào trình duyệt.
         </p>
@@ -37,14 +37,14 @@ export function GoogleSignInButton() {
         type="button"
         onClick={handleClick}
         disabled={busy || inApp}
-        className="flex w-full items-center justify-center gap-3 border border-zinc-700 bg-zinc-900/50 py-4 text-xs font-medium uppercase tracking-[0.25em] text-zinc-200 transition hover:border-zinc-600 hover:bg-zinc-900 disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-3 border border-edge-strong bg-elevated/50 py-4 text-xs font-medium uppercase tracking-[0.25em] text-ink-secondary transition hover:border-edge-strong hover:bg-elevated disabled:opacity-50"
       >
         <GoogleIcon />
         {busy ? 'Đang kết nối Google...' : 'Tiếp tục với Google'}
       </button>
 
       {error && (
-        <p className="mt-3 rounded-sm border border-red-900/50 bg-red-950/20 px-4 py-3 text-sm text-red-300">
+        <p className="mt-3 rounded-sm border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
           {error}
         </p>
       )}

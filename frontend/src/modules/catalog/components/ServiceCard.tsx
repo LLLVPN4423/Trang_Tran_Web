@@ -35,9 +35,9 @@ export function ServiceCard({ service }: Props) {
   }
 
   return (
-    <article className="group flex h-full flex-col justify-between border border-zinc-800/70 bg-zinc-950/40 p-4 transition hover:border-zinc-700/90 sm:p-5">
-      <Link to={`/catalog/service/${service.id}`} className="block flex-1">
-        <div className="media-frame mb-4 aspect-[4/3] w-full">
+    <article className="catalog-card group">
+      <Link to={`/catalog/service/${service.id}`} className="block min-w-0 flex-1">
+        <div className="media-frame mb-2.5 aspect-square w-full sm:mb-4 sm:aspect-[4/3]">
           {thumb ? (
             <img
               src={resolveProductImageUrl(thumb)}
@@ -47,38 +47,40 @@ export function ServiceCard({ service }: Props) {
               referrerPolicy="no-referrer"
             />
           ) : (
-            <div className="flex h-full items-center justify-center bg-zinc-900/60">
-              <span className="label-caps text-zinc-600">Chưa có ảnh</span>
+            <div className="flex h-full items-center justify-center bg-elevated">
+              <span className="label-caps">Chưa có ảnh</span>
             </div>
           )}
         </div>
 
-        <p className="section-eyebrow mb-2">{CATEGORY_LABELS[service.category]}</p>
-        <h3 className="font-serif text-xl leading-snug text-zinc-100 transition group-hover:text-gold md:text-2xl">
-          {service.name}
-        </h3>
+        <p className="catalog-card-meta">{CATEGORY_LABELS[service.category]}</p>
+        <h3 className="catalog-card-title">{service.name}</h3>
 
         {service.stylistLevel && (
-          <p className="mt-1 text-xs text-zinc-600">{STYLIST_LABELS[service.stylistLevel]}</p>
+          <p className="mt-1 hidden text-xs text-ink-subtle sm:block">{STYLIST_LABELS[service.stylistLevel]}</p>
         )}
 
         {service.description && (
-          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-zinc-500">{service.description}</p>
+          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink-muted max-sm:hidden">
+            {service.description}
+          </p>
         )}
 
-        <p className="mt-3 text-xs text-zinc-600">
+        <p className="mt-1.5 text-[0.65rem] text-ink-subtle sm:mt-3 sm:text-xs">
           {service.durationMinutes ? `~${service.durationMinutes} phút` : null}
           {service.durationMinutes && gallery.length > 0 ? ' · ' : null}
-          {gallery.length > 0 && `${gallery.length} ảnh`}
-          {service.videoUrl && `${gallery.length > 0 ? ' · ' : ''}Có video`}
+          <span className="hidden sm:inline">
+            {gallery.length > 0 && `${gallery.length} ảnh`}
+            {service.videoUrl && `${gallery.length > 0 ? ' · ' : ''}Có video`}
+          </span>
         </p>
       </Link>
 
-      <div className="mt-5 space-y-4 border-t border-zinc-800/60 pt-4">
+      <div className="mt-3 space-y-2.5 border-t border-edge/70 pt-2.5 sm:mt-5 sm:space-y-4 sm:pt-4">
         <div>
-          <p className="font-serif text-lg tabular-nums text-zinc-200 md:text-xl">{displayPrice}</p>
+          <p className="font-serif text-sm tabular-nums text-ink-secondary sm:text-lg md:text-xl">{displayPrice}</p>
           {needsSize && (
-            <p className="mt-1 text-[0.625rem] uppercase tracking-[0.2em] text-zinc-600">
+            <p className="mt-1 hidden text-[0.625rem] uppercase tracking-[0.2em] text-ink-subtle sm:block">
               Chọn size để xem giá cụ thể
             </p>
           )}
@@ -86,46 +88,48 @@ export function ServiceCard({ service }: Props) {
 
         {needsSize && service.priceBySize && (
           <div>
-            <p className="text-[0.625rem] uppercase tracking-[0.2em] text-zinc-600">Size tóc</p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
+            <p className="hidden text-[0.625rem] uppercase tracking-[0.2em] text-ink-subtle sm:block">Size tóc</p>
+            <div className="flex flex-wrap gap-1 sm:mt-2 sm:gap-1.5">
               {HAIR_SIZES.filter((size) => service.priceBySize?.[size] != null).map((size) => (
                 <button
                   key={size}
                   type="button"
                   onClick={() => setHairSize(size)}
-                  className={`min-w-10 px-3 py-1.5 text-[0.625rem] uppercase tracking-[0.15em] transition ${
-                    hairSize === size
-                      ? 'bg-gold/15 text-gold ring-1 ring-gold/30'
-                      : 'border border-zinc-800 text-zinc-500 hover:border-zinc-600 hover:text-zinc-300'
+                  className={`min-w-7 px-1.5 py-1 text-[0.6rem] uppercase tracking-[0.12em] sm:min-w-10 sm:px-3 sm:py-1.5 sm:text-[0.625rem] sm:tracking-[0.15em] ${
+                    hairSize === size ? 'control-selected' : 'control-idle'
                   }`}
                 >
                   {size}
                 </button>
               ))}
             </div>
-            <p className="mt-2 text-sm tabular-nums text-zinc-400">
+            <p className="mt-1.5 text-xs tabular-nums text-ink-muted sm:mt-2 sm:text-sm">
               {formatVnd(service.priceBySize[hairSize] ?? 0)}
             </p>
           </div>
         )}
 
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-2 sm:gap-3">
           <Link
             to={`/catalog/service/${service.id}`}
-            className="text-xs uppercase tracking-wider text-zinc-500 hover:text-gold"
+            className="hidden text-xs uppercase tracking-wider text-ink-subtle transition hover:text-gold-300 sm:inline"
           >
             Chi tiết
           </Link>
 
-          <div className="flex items-center gap-2">
-            {feedback && <span className="text-[0.625rem] text-gold">{feedback}</span>}
-            <button type="button" onClick={handleAdd} className="btn-editorial shrink-0 px-4 py-2">
+          <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+            {feedback && <span className="text-[0.6rem] text-gold-500 sm:text-[0.625rem]">{feedback}</span>}
+            <button
+              type="button"
+              onClick={handleAdd}
+              className="btn-editorial shrink-0 px-2.5 py-1.5 text-[0.65rem] sm:px-4 sm:py-2 sm:text-xs"
+            >
               Thêm
             </button>
           </div>
         </div>
 
-        <p className="text-[0.625rem] uppercase tracking-[0.2em] text-zinc-600">
+        <p className="hidden text-[0.625rem] uppercase tracking-[0.2em] text-ink-subtle sm:block">
           Thanh toán tại tiệm · không mua online
         </p>
       </div>

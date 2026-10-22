@@ -78,7 +78,7 @@ export function BookingSection() {
                 Xem & gửi lịch ({serviceCount})
               </Link>
             ) : (
-              <Link to="/appointment" className="text-sm text-zinc-500 hover:text-gold">
+              <Link to="/appointment" className="text-sm text-ink-subtle hover:text-gold-300">
                 Trang đặt lịch →
               </Link>
             )}
@@ -86,20 +86,20 @@ export function BookingSection() {
 
           <dl className="mt-10 space-y-5 text-sm">
             <div>
-              <dt className="label-caps text-zinc-600">Điện thoại</dt>
+              <dt className="label-caps text-ink-subtle">Điện thoại</dt>
               <dd className="mt-1.5">
-                <a href={`tel:${contact.phoneRaw}`} className="text-zinc-300 hover:text-gold">
+                <a href={`tel:${contact.phoneRaw}`} className="text-ink-secondary hover:text-gold-300">
                   {contact.phone}
                 </a>
               </dd>
             </div>
             <div>
-              <dt className="label-caps text-zinc-600">Giờ mở cửa</dt>
-              <dd className="mt-1.5 text-zinc-300">{contact.openingHours ?? '8:30 – 20:30 (T2–CN)'}</dd>
+              <dt className="label-caps text-ink-subtle">Giờ mở cửa</dt>
+              <dd className="mt-1.5 text-ink-secondary">{contact.openingHours ?? '8:30 – 20:30 (T2–CN)'}</dd>
             </div>
             <div>
-              <dt className="label-caps text-zinc-600">Địa chỉ</dt>
-              <dd className="mt-1.5 leading-relaxed text-zinc-300">
+              <dt className="label-caps text-ink-subtle">Địa chỉ</dt>
+              <dd className="mt-1.5 leading-relaxed text-ink-secondary">
                 {contact.address}
                 {contact.mapsUrl && (
                   <>
@@ -108,7 +108,7 @@ export function BookingSection() {
                       href={contact.mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gold-muted hover:text-gold"
+                      className="text-gold-700 hover:text-gold-300"
                     >
                       Chỉ đường Google Maps →
                     </a>
@@ -118,13 +118,13 @@ export function BookingSection() {
             </div>
             {contact.zaloUrl && (
               <div>
-                <dt className="label-caps text-zinc-600">Chat nhanh</dt>
+                <dt className="label-caps text-ink-subtle">Chat nhanh</dt>
                 <dd className="mt-1.5">
                   <a
                     href={contact.zaloUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gold-muted hover:text-gold"
+                    className="text-gold-700 hover:text-gold-300"
                   >
                     Nhắn Zalo salon →
                   </a>
@@ -132,11 +132,11 @@ export function BookingSection() {
               </div>
             )}
             <div>
-              <dt className="label-caps text-zinc-600">Lưu ý</dt>
-              <dd className="mt-1.5 leading-relaxed text-zinc-400">{contact.note}</dd>
+              <dt className="label-caps text-ink-subtle">Lưu ý</dt>
+              <dd className="mt-1.5 leading-relaxed text-ink-muted">{contact.note}</dd>
             </div>
             <div>
-              <dt className="mb-2 label-caps text-zinc-600">Mạng xã hội</dt>
+              <dt className="mb-2 label-caps text-ink-subtle">Mạng xã hội</dt>
               <dd className="flex flex-wrap gap-x-4 gap-y-2">
                 {socialLinks.map((link) => (
                   <SocialLink key={`${link.label}-${link.url}`} href={link.url} label={link.label} />
@@ -148,15 +148,15 @@ export function BookingSection() {
         </div>
 
         <div>
-          <p className="label-caps mb-4 text-zinc-600">Liên hệ nhanh</p>
+          <p className="label-caps mb-4 text-ink-subtle">Liên hệ nhanh</p>
           <form onSubmit={handleSubmit} className="space-y-5 lg:pt-2" data-lenis-prevent>
             {success && (
-              <p className="rounded-sm border border-emerald-900/50 bg-emerald-950/20 px-4 py-3 text-sm text-emerald-300">
+              <p className="rounded-sm border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
                 Đã gửi yêu cầu đặt lịch! Salon sẽ liên hệ sớm.
               </p>
             )}
             {error && (
-              <p className="rounded-sm border border-red-900/50 bg-red-950/20 px-4 py-3 text-sm text-red-300">
+              <p className="rounded-sm border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
                 {error}
               </p>
             )}
@@ -212,17 +212,17 @@ export function BookingSection() {
                 placeholder="Size tóc, mong muốn..."
               />
             </div>
-            {user && <p className="text-xs text-zinc-600">Đăng nhập với {user.email}</p>}
+            {user && <p className="text-xs text-ink-subtle">Đăng nhập với {user.email}</p>}
             <button type="submit" disabled={submitting} className="btn-gold w-full">
               {submitting ? 'Đang gửi...' : 'Gửi yêu cầu nhanh'}
             </button>
-            <p className="text-xs leading-relaxed text-zinc-600">
+            <p className="text-xs leading-relaxed text-ink-subtle">
               Muốn chọn nhiều dịch vụ kèm giá? Dùng{' '}
-              <Link to="/catalog" className="text-gold-muted hover:text-gold">
+              <Link to="/catalog" className="text-gold-700 hover:text-gold-300">
                 bảng giá
               </Link>{' '}
               và{' '}
-              <Link to="/appointment" className="text-gold-muted hover:text-gold">
+              <Link to="/appointment" className="text-gold-700 hover:text-gold-300">
                 trang đặt lịch
               </Link>
               .
@@ -231,7 +231,7 @@ export function BookingSection() {
         </div>
       </div>
 
-      <footer className="section-inner mt-20 border-t border-zinc-900/90 pt-8 text-center text-xs leading-relaxed text-zinc-600 md:mt-28">
+      <footer className="section-inner mt-20 border-t border-edge/80 pt-8 text-center text-xs leading-relaxed text-ink-subtle md:mt-28">
         <p>TRANG TRẦN HAIR · {contact.address}</p>
         <p className="mt-2">© {new Date().getFullYear()} Trang Tran Hair Salon</p>
       </footer>
@@ -245,7 +245,7 @@ function SocialLink({ href, label }: { href: string; label: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-gold-muted underline-offset-4 hover:text-gold hover:underline"
+      className="text-gold-700 underline-offset-4 hover:text-gold-300 hover:underline"
     >
       {label}
     </a>

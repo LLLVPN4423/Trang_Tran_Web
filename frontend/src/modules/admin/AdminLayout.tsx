@@ -41,8 +41,8 @@ export function AdminLayout() {
     return (
       <PageLayout variant="admin">
         <div className="mx-auto max-w-lg px-6 py-24 text-center">
-          <h1 className="font-serif text-3xl text-zinc-200">Firebase chưa cấu hình</h1>
-          <Link to="/" className="mt-8 inline-block text-sm text-gold-muted hover:underline">← Trang chủ</Link>
+          <h1 className="font-serif text-3xl text-ink-secondary">Firebase chưa cấu hình</h1>
+          <Link to="/" className="mt-8 inline-block text-sm text-gold-700 hover:underline">← Trang chủ</Link>
         </div>
       </PageLayout>
     )
@@ -61,14 +61,14 @@ export function AdminLayout() {
     return (
       <PageLayout>
         <div className="mx-auto max-w-lg px-6 py-24 text-center">
-          <h1 className="font-serif text-3xl text-zinc-200">Không có quyền Admin</h1>
-          <p className="mt-4 text-sm text-zinc-500">
+          <h1 className="font-serif text-3xl text-ink-secondary">Không có quyền Admin</h1>
+          <p className="mt-4 text-sm text-ink-subtle">
             Tài khoản chưa được cấp quyền (hoặc thiếu claim Firebase). Platform: UID trong{' '}
-            <code className="text-zinc-400">FIREBASE_ADMIN_UIDS</code> rồi chạy{' '}
-            <code className="text-zinc-400">node scripts/set-admin.js UID platform</code> — đăng xuất/đăng
-            nhập lại. Xem <code className="text-zinc-400">docs/ADMIN_RBAC.md</code>.
+            <code className="text-ink-muted">FIREBASE_ADMIN_UIDS</code> rồi chạy{' '}
+            <code className="text-ink-muted">node scripts/set-admin.js UID platform</code> — đăng xuất/đăng
+            nhập lại. Xem <code className="text-ink-muted">docs/ADMIN_RBAC.md</code>.
           </p>
-          <Link to="/" className="mt-8 inline-block text-sm text-gold-muted hover:underline">← Trang chủ</Link>
+          <Link to="/" className="mt-8 inline-block text-sm text-gold-700 hover:underline">← Trang chủ</Link>
         </div>
       </PageLayout>
     )
@@ -77,16 +77,16 @@ export function AdminLayout() {
   return (
     <PageLayout variant="admin">
       <div className="px-4 py-8 sm:px-6 sm:py-12">
-        <div className="mb-8 flex flex-wrap items-start justify-between gap-4 border-b border-zinc-800 pb-6">
+        <div className="mb-8 flex flex-wrap items-start justify-between gap-4 border-b border-edge pb-6">
           <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-gold-muted">Admin Portal</p>
-            <h1 className="mt-2 font-serif text-2xl text-zinc-100 sm:text-3xl">
+            <p className="text-xs uppercase tracking-[0.35em] text-gold-700">Admin Portal</p>
+            <h1 className="mt-2 font-serif text-2xl text-ink sm:text-3xl">
               {TITLES[location.pathname] ?? 'Quản lý Salon'}
             </h1>
-            <p className="mt-1 text-sm text-zinc-500">
+            <p className="mt-1 text-sm text-ink-subtle">
               {user.email}
               {adminRole && (
-                <span className="ml-2 text-xs uppercase tracking-wider text-gold-muted">
+                <span className="ml-2 text-xs uppercase tracking-wider text-gold-700">
                   · {adminRole === 'platform' ? 'Platform Admin' : 'Salon Admin'}
                 </span>
               )}
@@ -171,7 +171,7 @@ export function AdminOverview() {
   return (
     <div className="space-y-8">
       {forbidden && (
-        <p className="rounded-sm border border-zinc-800 bg-zinc-900/40 px-4 py-3 text-sm text-zinc-400">
+        <p className="rounded-sm border border-edge bg-elevated/40 px-4 py-3 text-sm text-ink-muted">
           Mục đó chỉ dành cho Platform Admin. Salon Admin vẫn dùng lịch hẹn, hóa đơn và doanh thu bình
           thường.
         </p>
@@ -195,8 +195,8 @@ export function AdminOverview() {
         <StatCard label="Tổng thu hôm nay" value={loading ? '…' : formatVnd(stats.revenueTodayTotal)} href="/admin/revenue" />
       </div>
 
-      <p className="text-sm text-zinc-500">
-        <Link to="/admin/revenue" className="text-gold underline">
+      <p className="text-sm text-ink-subtle">
+        <Link to="/admin/revenue" className="text-gold-500 underline">
           Báo cáo doanh thu chi tiết
         </Link>{' '}
         — lọc theo ngày, so sánh kỳ trước
@@ -217,10 +217,10 @@ export function AdminOverview() {
           <Link
             key={card.to}
             to={card.to}
-            className="border border-zinc-800 p-6 transition hover:border-zinc-700 hover:bg-zinc-900/30"
+            className="border border-edge p-6 transition hover:border-edge-strong hover:bg-elevated/30"
           >
-            <h2 className="font-serif text-xl text-zinc-200">{card.label}</h2>
-            <p className="mt-2 text-sm text-zinc-500">{card.desc}</p>
+            <h2 className="font-serif text-xl text-ink-secondary">{card.label}</h2>
+            <p className="mt-2 text-sm text-ink-subtle">{card.desc}</p>
           </Link>
         ))}
       </div>
@@ -230,9 +230,9 @@ export function AdminOverview() {
 
 function StatCard({ label, value, href }: { label: string; value: string; href?: string }) {
   const content = (
-    <div className="border border-zinc-800 p-5 transition hover:border-zinc-700">
-      <p className="text-xs uppercase tracking-widest text-zinc-600">{label}</p>
-      <p className="mt-2 font-serif text-2xl text-zinc-100">{value}</p>
+    <div className="border border-edge p-5 transition hover:border-edge-strong">
+      <p className="text-xs uppercase tracking-widest text-ink-subtle">{label}</p>
+      <p className="mt-2 font-serif text-2xl text-ink">{value}</p>
     </div>
   )
   return href ? <Link to={href}>{content}</Link> : content

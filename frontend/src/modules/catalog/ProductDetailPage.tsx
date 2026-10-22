@@ -53,7 +53,7 @@ function ProductDetailContent() {
   return (
     <PageLayout>
       <div className="section-inner px-5 py-12 sm:px-8 sm:py-16">
-        <Link to="/shop" className="text-xs uppercase tracking-widest text-gold-muted hover:text-gold">
+        <Link to="/shop" className="text-xs uppercase tracking-widest text-gold-700 hover:text-gold-300">
           ← Quay lại cửa hàng Moroccanoil
         </Link>
 
@@ -61,7 +61,7 @@ function ProductDetailContent() {
         {error && !loading && <div className="mt-10"><ApiErrorState message={error} /></div>}
 
         {!loading && !error && product && !product.isActive && (
-          <p className="mt-10 text-center text-zinc-500">Sản phẩm không còn bán.</p>
+          <p className="mt-10 text-center text-ink-subtle">Sản phẩm không còn bán.</p>
         )}
 
         {!loading && !error && product && product.isActive && (
@@ -71,18 +71,18 @@ function ProductDetailContent() {
             </div>
 
             <div>
-              <p className="section-eyebrow">{product.brand}</p>
-              <h1 className="section-title mt-2">{product.name}</h1>
-              <p className="mt-4 font-serif text-3xl text-gold">{formatVnd(product.price)}</p>
-              <p className="mt-2 text-sm text-zinc-500">
+              <p className="catalog-card-meta mb-2 sm:text-[0.65rem]">{product.brand}</p>
+              <h1 className="catalog-detail-title">{product.name}</h1>
+              <p className="mt-4 font-serif text-3xl text-gold-500">{formatVnd(product.price)}</p>
+              <p className="mt-2 text-sm text-ink-subtle">
                 {outOfStock ? 'Hết hàng' : `Còn ${product.stock} sản phẩm`}
                 {galleryCount > 0 && ` · ${galleryCount} ảnh`}
               </p>
 
               {product.description && (
-                <div className="mt-8 border-t border-zinc-800/80 pt-6">
-                  <h2 className="text-xs uppercase tracking-widest text-zinc-500">Mô tả</h2>
-                  <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-zinc-400">
+                <div className="mt-8 border-t border-edge/80 pt-6">
+                  <h2 className="text-xs uppercase tracking-widest text-ink-subtle">Mô tả</h2>
+                  <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-ink-muted">
                     {product.description}
                   </p>
                 </div>

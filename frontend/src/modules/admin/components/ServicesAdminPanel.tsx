@@ -146,15 +146,15 @@ export function ServicesAdminPanel() {
         }
       />
 
-      <p className="text-sm text-zinc-500">
-        Ảnh &amp; video trên <strong className="text-zinc-400">Google Drive</strong> — chia sẻ &quot;Bất kỳ ai có
+      <p className="text-sm text-ink-subtle">
+        Ảnh &amp; video trên <strong className="text-ink-muted">Google Drive</strong> — chia sẻ &quot;Bất kỳ ai có
         link&quot; → dán vào form (tối đa {MAX_PRODUCT_GALLERY} ảnh). {GOOGLE_DRIVE_SHARE_HINT}
       </p>
 
       <div className="overflow-x-auto">
         <table className="w-full min-w-[880px] text-left text-sm">
           <thead>
-            <tr className="border-b border-zinc-800 text-xs uppercase tracking-widest text-zinc-500">
+            <tr className="border-b border-edge text-xs uppercase tracking-widest text-ink-subtle">
               <th className="py-3 pr-4">Tên</th>
               <th className="py-3 pr-4">Loại</th>
               <th className="py-3 pr-4">Giá</th>
@@ -168,7 +168,7 @@ export function ServicesAdminPanel() {
               const gallery = getCatalogGallery(s)
               const thumb = gallery[0]
               return (
-              <tr key={s.id} className="border-b border-zinc-900 text-zinc-400">
+              <tr key={s.id} className="border-b border-edge text-ink-muted">
                 <td className="py-3 pr-4">
                   <div className="flex items-start gap-3">
                     {thumb ? (
@@ -179,15 +179,15 @@ export function ServicesAdminPanel() {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center bg-zinc-900 text-[0.625rem] text-zinc-600">
+                      <div className="flex h-14 w-14 shrink-0 items-center justify-center bg-elevated text-[0.625rem] text-ink-subtle">
                         —
                       </div>
                     )}
                     <div>
-                      <p className="text-zinc-200">{s.name}</p>
-                      {s.description && <p className="mt-0.5 text-xs text-zinc-600 line-clamp-1">{s.description}</p>}
+                      <p className="text-ink-secondary">{s.name}</p>
+                      {s.description && <p className="mt-0.5 text-xs text-ink-subtle line-clamp-1">{s.description}</p>}
                       {gallery.length > 0 && (
-                        <p className="mt-0.5 text-xs text-zinc-600">
+                        <p className="mt-0.5 text-xs text-ink-subtle">
                           {gallery.length} ảnh{s.videoUrl ? ' · video' : ''}
                         </p>
                       )}
@@ -198,18 +198,18 @@ export function ServicesAdminPanel() {
                 <td className="py-3 pr-4">{formatServicePrice(s)}</td>
                 <td className="py-3 pr-4">{s.durationMinutes ? `${s.durationMinutes} phút` : '—'}</td>
                 <td className="py-3 pr-4">
-                  <span className={s.isActive ? 'text-emerald-500' : 'text-zinc-600'}>
+                  <span className={s.isActive ? 'text-success' : 'text-ink-subtle'}>
                     {s.isActive ? 'Active' : 'Off'}
                   </span>
                 </td>
                 <td className="py-3 space-x-2">
-                  <button type="button" onClick={() => setFormMode({ type: 'edit', service: s })} className="text-xs hover:text-gold">
+                  <button type="button" onClick={() => setFormMode({ type: 'edit', service: s })} className="text-xs hover:text-gold-300">
                     Sửa
                   </button>
-                  <button type="button" onClick={() => toggleActive(s)} className="text-xs hover:text-gold">
+                  <button type="button" onClick={() => toggleActive(s)} className="text-xs hover:text-gold-300">
                     {s.isActive ? 'Tắt' : 'Bật'}
                   </button>
-                  <button type="button" onClick={() => handleDelete(s.id, s.name)} className="text-xs text-red-400/70 hover:text-red-400">
+                  <button type="button" onClick={() => handleDelete(s.id, s.name)} className="text-xs text-danger/70 hover:text-danger">
                     Xóa
                   </button>
                 </td>
@@ -304,7 +304,7 @@ function ServiceForm({
       </AdminField>
 
       <AdminField label="Cách tính giá *">
-        <div className="flex flex-wrap gap-4 text-sm text-zinc-400">
+        <div className="flex flex-wrap gap-4 text-sm text-ink-muted">
           <label className="flex items-center gap-2">
             <input type="radio" name="pricingMode" value="fixed" defaultChecked={!useSizePricing} />
             Giá cố định
@@ -335,7 +335,7 @@ function ServiceForm({
         ))}
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-zinc-400">
+      <label className="flex items-center gap-2 text-sm text-ink-muted">
         <input type="checkbox" name="isActive" defaultChecked={service?.isActive ?? true} />
         Hiển thị trên catalog
       </label>

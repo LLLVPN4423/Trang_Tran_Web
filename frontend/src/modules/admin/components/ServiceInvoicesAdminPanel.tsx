@@ -411,20 +411,20 @@ export function ServiceInvoicesAdminPanel() {
         }
       />
 
-      <div className="rounded-sm border border-zinc-800 bg-zinc-950/50 p-4 text-sm text-zinc-400">
-        <p className="text-zinc-300">
-          Hóa đơn lưu trong Firebase Firestore, collection <code className="text-gold">orders</code>, mã{' '}
-          <strong className="text-zinc-200">HD…</strong> (khác đơn shop <strong>DH…</strong>).
+      <div className="rounded-sm border border-edge bg-canvas/50 p-4 text-sm text-ink-muted">
+        <p className="text-ink-secondary">
+          Hóa đơn lưu trong Firebase Firestore, collection <code className="text-gold-500">orders</code>, mã{' '}
+          <strong className="text-ink-secondary">HD…</strong> (khác đơn shop <strong>DH…</strong>).
         </p>
         <p className="mt-2">
           Đã thu (tất cả HD Paid):{' '}
-          <strong className="text-gold">{formatVnd(revenueSummary.paidServiceAllTime)}</strong>
+          <strong className="text-gold-500">{formatVnd(revenueSummary.paidServiceAllTime)}</strong>
           {' · '}
-          Hôm nay: <strong className="text-zinc-200">{formatVnd(revenueSummary.servicePaidToday)}</strong>
+          Hôm nay: <strong className="text-ink-secondary">{formatVnd(revenueSummary.servicePaidToday)}</strong>
           {' · '}
-          Chờ TT: <strong className="text-amber-300">{revenueSummary.pendingService}</strong> hóa đơn
+          Chờ TT: <strong className="text-warning">{revenueSummary.pendingService}</strong> hóa đơn
         </p>
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-ink-subtle">
           Quy tắc: giảm giá &gt;50% cần ghi chú nội bộ; giá dịch vụ &lt;75% bảng giá bị chặn; hóa đơn CK chờ quá 72h tự hủy;
           mọi hóa đơn ghi UID admin tạo.
         </p>
@@ -433,8 +433,8 @@ export function ServiceInvoicesAdminPanel() {
       {formError && <ApiErrorState message={formError} onRetry={() => setFormError(null)} />}
 
       {createdLink?.status === 'Pending' && (
-        <div className="rounded-sm border border-gold/30 bg-gold/5 p-4 text-sm text-zinc-300">
-          <p className="font-serif text-lg text-gold">Hóa đơn {createdLink.paymentCode}</p>
+        <div className="rounded-sm border border-gold-500/30 bg-gold-500/5 p-4 text-sm text-ink-secondary">
+          <p className="font-serif text-lg text-gold-500">Hóa đơn {createdLink.paymentCode}</p>
           <p className="mt-1">Tổng: {formatVnd(createdLink.totalAmount)}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <AdminButton variant="primary" onClick={() => copyPaymentLink(createdLink)}>
@@ -442,7 +442,7 @@ export function ServiceInvoicesAdminPanel() {
             </AdminButton>
             <Link
               to={`/orders/${createdLink.id}?token=${encodeURIComponent(createdLink.accessToken)}`}
-              className="inline-flex items-center border border-zinc-600 px-3 py-1.5 text-xs uppercase tracking-widest text-zinc-300 hover:border-gold/40"
+              className="inline-flex items-center border border-edge-strong px-3 py-1.5 text-xs uppercase tracking-widest text-ink-secondary hover:border-gold-500/40"
               target="_blank"
               rel="noreferrer"
             >
@@ -450,16 +450,16 @@ export function ServiceInvoicesAdminPanel() {
             </Link>
           </div>
           {qrUrl && (
-            <img src={qrUrl} alt="VietQR" className="mt-4 max-w-[220px] rounded border border-zinc-700" />
+            <img src={qrUrl} alt="VietQR" className="mt-4 max-w-[220px] rounded border border-edge-strong" />
           )}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6 rounded-sm border border-zinc-800 p-4 sm:p-6">
-        <h3 className="font-serif text-xl text-zinc-200">{editingId ? 'Sửa hóa đơn' : 'Tạo hóa đơn mới'}</h3>
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-sm border border-edge p-4 sm:p-6">
+        <h3 className="font-serif text-xl text-ink-secondary">{editingId ? 'Sửa hóa đơn' : 'Tạo hóa đơn mới'}</h3>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block text-xs text-zinc-500">
+          <label className="block text-xs text-ink-subtle">
             Từ lịch hẹn
             <select
               className={adminInputClass}
@@ -482,7 +482,7 @@ export function ServiceInvoicesAdminPanel() {
               ))}
             </select>
           </label>
-          <label className="block text-xs text-zinc-500">
+          <label className="block text-xs text-ink-subtle">
             Khách có tài khoản (điểm thưởng)
             <select className={adminInputClass} value={customerId} onChange={(e) => applyCustomer(e.target.value)}>
               <option value="">Khách vãng lai</option>
@@ -493,20 +493,20 @@ export function ServiceInvoicesAdminPanel() {
               ))}
             </select>
           </label>
-          <label className="block text-xs text-zinc-500">
+          <label className="block text-xs text-ink-subtle">
             Họ tên
             <input required className={adminInputClass} value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
           </label>
-          <label className="block text-xs text-zinc-500">
+          <label className="block text-xs text-ink-subtle">
             SĐT
             <input required className={adminInputClass} value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} />
           </label>
         </div>
 
         <div className="space-y-3">
-          <p className="text-xs uppercase tracking-widest text-zinc-500">Dòng hóa đơn</p>
+          <p className="text-xs uppercase tracking-widest text-ink-subtle">Dòng hóa đơn</p>
           {lines.map((line) => (
-            <div key={line.key} className="grid gap-2 rounded border border-zinc-800 p-3 sm:grid-cols-12">
+            <div key={line.key} className="grid gap-2 rounded border border-edge p-3 sm:grid-cols-12">
               <select
                 className={`${adminInputClass} sm:col-span-2`}
                 value={line.itemType}
@@ -574,7 +574,7 @@ export function ServiceInvoicesAdminPanel() {
                 onChange={(e) => updateLine(line.key, { unitPrice: e.target.value })}
               />
               <div className="flex items-center justify-between gap-2 sm:col-span-3">
-                <span className="text-sm text-zinc-400">{formatVnd(lineSubtotal(line))}</span>
+                <span className="text-sm text-ink-muted">{formatVnd(lineSubtotal(line))}</span>
                 <AdminButton
                   variant="danger"
                   onClick={() => setLines((prev) => (prev.length <= 1 ? prev : prev.filter((l) => l.key !== line.key)))}
@@ -588,19 +588,19 @@ export function ServiceInvoicesAdminPanel() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block text-xs text-zinc-500">
+          <label className="block text-xs text-ink-subtle">
             Giảm giá tay (VND)
             <input className={adminInputClass} type="number" min={0} value={manualDiscount} onChange={(e) => setManualDiscount(e.target.value)} />
           </label>
-          <label className="block text-xs text-zinc-500">
+          <label className="block text-xs text-ink-subtle">
             Mã khuyến mãi
             <input className={adminInputClass} value={promoCode} onChange={(e) => setPromoCode(e.target.value)} />
           </label>
-          <label className="block text-xs text-zinc-500">
+          <label className="block text-xs text-ink-subtle">
             Điểm đổi
             <input className={adminInputClass} type="number" min={0} step={10} value={pointsToRedeem} onChange={(e) => setPointsToRedeem(e.target.value)} />
           </label>
-          <label className="block text-xs text-zinc-500">
+          <label className="block text-xs text-ink-subtle">
             Thanh toán
             <select
               className={adminInputClass}
@@ -611,19 +611,19 @@ export function ServiceInvoicesAdminPanel() {
               <option value="cash">Đã thu tiền mặt tại tiệm</option>
             </select>
           </label>
-          <label className="block text-xs text-zinc-500 sm:col-span-2">
+          <label className="block text-xs text-ink-subtle sm:col-span-2">
             Ghi chú (khách thấy)
             <textarea className={adminInputClass} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />
           </label>
-          <label className="block text-xs text-zinc-500 sm:col-span-2">
+          <label className="block text-xs text-ink-subtle sm:col-span-2">
             Ghi chú nội bộ
             <textarea className={adminInputClass} rows={2} value={internalNotes} onChange={(e) => setInternalNotes(e.target.value)} />
           </label>
         </div>
 
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-ink-muted">
           Tạm tính: {formatVnd(subtotalPreview)} · Giảm: {formatVnd(discountPreview)} ·{' '}
-          <strong className="text-gold">≈ {formatVnd(totalPreview)}</strong> (chưa tính KM/điểm)
+          <strong className="text-gold-500">≈ {formatVnd(totalPreview)}</strong> (chưa tính KM/điểm)
         </p>
 
         <div className="flex flex-wrap gap-2">
@@ -668,18 +668,18 @@ export function ServiceInvoicesAdminPanel() {
             />
           </div>
           {invoices.map((inv) => (
-            <div key={inv.id} className="rounded border border-zinc-800 p-4">
+            <div key={inv.id} className="rounded border border-edge p-4">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <p className="font-mono text-gold">{inv.paymentCode}</p>
-                  <p className="text-sm text-zinc-300">
+                  <p className="font-mono text-gold-500">{inv.paymentCode}</p>
+                  <p className="text-sm text-ink-secondary">
                     {inv.customerName} · {inv.customerPhone}
                   </p>
-                  <p className="text-lg text-zinc-100">{formatVnd(inv.totalAmount)} · {inv.status}</p>
+                  <p className="text-lg text-ink">{formatVnd(inv.totalAmount)} · {inv.status}</p>
                   {inv.createdByAdminUid && (
-                    <p className="mt-1 font-mono text-[10px] text-zinc-600">Admin: {inv.createdByAdminUid}</p>
+                    <p className="mt-1 font-mono text-[10px] text-ink-subtle">Admin: {inv.createdByAdminUid}</p>
                   )}
-                  <p className="text-xs text-zinc-600">
+                  <p className="text-xs text-ink-subtle">
                     {new Date(inv.createdAt).toLocaleString('vi-VN')}
                     {inv.paidAt ? ` → TT ${new Date(inv.paidAt).toLocaleString('vi-VN')}` : ''}
                   </p>
@@ -706,7 +706,7 @@ export function ServiceInvoicesAdminPanel() {
                   )}
                 </div>
               </div>
-              <ul className="mt-2 text-xs text-zinc-500">
+              <ul className="mt-2 text-xs text-ink-subtle">
                 {inv.items.map((i, idx) => (
                   <li key={idx}>
                     {i.name} ×{i.quantity} — {formatVnd(i.subtotal)}

@@ -28,12 +28,12 @@ function ShopContent() {
         <h1 className="section-title">Mua sản phẩm online</h1>
         <p className="section-body mt-4 max-w-2xl">
           Dầu gội, dưỡng tóc Moroccanoil — chọn sản phẩm, thanh toán chuyển khoản hoặc COD.{' '}
-          <Link to="/catalog" className="text-gold-muted hover:text-gold">
+          <Link to="/catalog" className="text-gold-700 hover:text-gold-300">
             Xem bảng giá dịch vụ
           </Link>
           {' · '}
           Dịch vụ salon{' '}
-          <Link to="/appointment" className="text-gold-muted hover:text-gold">
+          <Link to="/appointment" className="text-gold-700 hover:text-gold-300">
             đặt lịch dịch vụ
           </Link>
           .
@@ -51,12 +51,12 @@ function ShopContent() {
         {error && !loading && <ApiErrorState message={error} onRetry={reload} />}
 
         {!loading && !error && (
-          <div className="mt-10 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+          <div className="mt-10 grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
             {products.length === 0 && (
-              <p className="col-span-full py-12 text-center text-zinc-500">Chưa có sản phẩm.</p>
+              <p className="col-span-full py-12 text-center text-ink-subtle">Chưa có sản phẩm.</p>
             )}
           </div>
         )}

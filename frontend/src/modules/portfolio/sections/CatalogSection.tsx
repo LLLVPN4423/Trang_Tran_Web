@@ -62,17 +62,17 @@ export function CatalogSection() {
         <p className="catalog-heading section-lead">{content.contact.note}</p>
 
         {loading ? (
-          <p className="catalog-heading mt-12 text-sm text-zinc-500">Đang tải bảng giá...</p>
+          <p className="catalog-heading mt-12 text-sm text-ink-subtle">Đang tải bảng giá...</p>
         ) : highlights.length === 0 ? (
-          <p className="catalog-heading mt-12 text-sm text-zinc-500">
+          <p className="catalog-heading mt-12 text-sm text-ink-subtle">
             Xem chi tiết tại{' '}
-            <Link to="/catalog" className="text-gold-muted hover:text-gold">
+            <Link to="/catalog" className="text-gold-700 hover:text-gold-300">
               bảng giá dịch vụ
             </Link>
             .
           </p>
         ) : (
-          <ul className="mt-12 divide-y divide-zinc-800/70">
+          <ul className="mt-12 divide-y divide-edge/70">
             {highlights.map((service) => (
               <li key={service.name} className="catalog-item group price-row">
                 <span className="price-row-name">{service.name}</span>

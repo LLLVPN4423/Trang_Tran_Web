@@ -4,6 +4,7 @@ import { AuthProvider } from '@/shared/auth/AuthProvider'
 import { PortfolioPage } from '@/modules/portfolio'
 import { CatalogPage } from '@/modules/catalog'
 import { ShopPage } from '@/modules/shop'
+import { ServiceAreaPage } from '@/modules/service-area/ServiceAreaPage'
 import { ProductDetailPage } from '@/modules/catalog/ProductDetailPage'
 import { ServiceDetailPage } from '@/modules/catalog/ServiceDetailPage'
 import { BookingPage } from '@/modules/booking'
@@ -78,6 +79,7 @@ export function App() {
           <Route path="/" element={<PortfolioPage />} />
           <Route path="/catalog" element={<CatalogPage />} />
           <Route path="/shop" element={<ShopPage />} />
+          <Route path="/khu-vuc" element={<ServiceAreaPage />} />
           <Route path="/catalog/product/:id" element={<ProductDetailPage />} />
           <Route path="/catalog/service/:id" element={<ServiceDetailPage />} />
           <Route path="/appointment" element={<AppointmentPage />} />

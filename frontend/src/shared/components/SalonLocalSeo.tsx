@@ -6,24 +6,37 @@ import { buildSalonGraphJsonLd } from '@/shared/lib/salonStructuredData'
 
 const JSON_LD_ID = 'salon-json-ld'
 
-const PUBLIC_PATHS = new Set(['/', '/catalog', '/appointment', '/shop', '/booking', '/login', '/register'])
+const PUBLIC_PATHS = new Set([
+  '/',
+  '/catalog',
+  '/appointment',
+  '/shop',
+  '/khu-vuc',
+  '/booking',
+  '/login',
+  '/register',
+])
 
 const PAGE_SEO: Record<string, { title: string; description: string }> = {
   '/': {
-    title: `${SALON_PUBLIC.nameVi} · Nhuộm, uốn, balayage Sóc Trăng`,
-    description: `Salon tóc tại ${SALON_PUBLIC.address}. Cắt, nhuộm, uốn, phục hồi — đặt lịch online Trang Tran Hair. ${SALON_PUBLIC.phoneDisplay}. ${SALON_PUBLIC.openingHours}.`,
+    title: `${SALON_PUBLIC.nameVi} · Nhuộm, uốn, balayage Sóc Trăng · nhận khách Cần Thơ`,
+    description: `Salon tóc tại ${SALON_PUBLIC.address}. ${SALON_PUBLIC.serviceAreaSummary} Đặt lịch ${SALON_PUBLIC.phoneDisplay}. ${SALON_PUBLIC.openingHours}.`,
   },
   '/catalog': {
     title: `Bảng giá salon tóc Sóc Trăng · ${SALON_PUBLIC.nameVi}`,
-    description: `Giá cắt, uốn, nhuộm, balayage tại Tuấn Lan, Hùng Vương. Xem chi tiết từng dịch vụ và đặt lịch online — ${SALON_PUBLIC.phoneDisplay}.`,
+    description: `Giá cắt, uốn, nhuộm, balayage tại Tuấn Lan, Hùng Vương — khách Cần Thơ & ĐBSCL đặt lịch trước. Hotline ${SALON_PUBLIC.phoneDisplay}.`,
   },
   '/appointment': {
-    title: `Đặt lịch làm tóc Sóc Trăng · ${SALON_PUBLIC.nameVi}`,
-    description: `Đặt lịch salon online tại ${SALON_PUBLIC.address} (Hùng Vương, Tuấn Lan). Hotline ${SALON_PUBLIC.phoneDisplay}. ${SALON_PUBLIC.openingHours}.`,
+    title: `Đặt lịch làm tóc Sóc Trăng / Cần Thơ · ${SALON_PUBLIC.nameVi}`,
+    description: `Đặt lịch salon online tại ${SALON_PUBLIC.address}. Khách từ Cần Thơ nên đặt trước. Hotline ${SALON_PUBLIC.phoneDisplay}. ${SALON_PUBLIC.openingHours}.`,
   },
   '/shop': {
     title: `Moroccanoil chính hãng · ${SALON_PUBLIC.nameVi} Sóc Trăng`,
     description: `Mua Moroccanoil online tại Sóc Trăng — tích điểm. Salon ${SALON_PUBLIC.nameVi}, ${SALON_PUBLIC.phoneDisplay}.`,
+  },
+  '/khu-vuc': {
+    title: `Khu vực phục vụ · Sóc Trăng, Cần Thơ, ĐBSCL · ${SALON_PUBLIC.nameVi}`,
+    description: `${SALON_PUBLIC.serviceAreaSummary} Địa chỉ thật tại Sóc Trăng — đặt lịch ${SALON_PUBLIC.phoneDisplay}.`,
   },
   '/booking': {
     title: `Thanh toán đơn hàng · ${SALON_PUBLIC.nameVi}`,
@@ -67,7 +80,7 @@ export function SalonLocalSeo() {
       setMeta('og:url', canonical, true)
       setMeta('og:type', 'website', true)
       setMeta('og:locale', 'vi_VN', true)
-      setMeta('og:site_name', SALON_PUBLIC.name, true)
+      setMeta('og:site_name', 'Trang Tran Hair', true)
       setMeta('og:image', ogImage, true)
       setMeta('twitter:card', 'summary_large_image')
       setMeta('twitter:title', seo.title)

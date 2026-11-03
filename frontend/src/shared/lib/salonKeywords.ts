@@ -1,4 +1,4 @@
-/** Từ khóa & mô tả SEO — tiếng Việt, địa phương Sóc Trăng (không nhồi, dùng tự nhiên). */
+/** Từ khóa & mô tả SEO — Sóc Trăng + vùng khách Cần Thơ/ĐBSCL (không giả địa chỉ). */
 export const SALON_META_KEYWORDS = [
   'salon tóc Sóc Trăng',
   'Trang Tran Hair',
@@ -13,7 +13,12 @@ export const SALON_META_KEYWORDS = [
   'đặt lịch salon Sóc Trăng',
   'Moroccanoil Sóc Trăng',
   'salon tóc gần tôi Sóc Trăng',
+  'salon tóc gần Cần Thơ',
+  'nhuộm tóc Cần Thơ',
+  'balayage Cần Thơ',
+  'làm tóc ĐBSCL',
+  'salon tóc Đồng bằng sông Cửu Long',
 ].join(', ')
 
 export const LOCAL_SEO_TAGLINE =
-  'Salon tóc tại Sóc Trăng (Tuấn Lan, Hùng Vương) — cắt, nhuộm, uốn, balayage, phục hồi. Đặt lịch online Trang Tran Hair.'
+  'Salon tóc tại Sóc Trăng (Tuấn Lan, Hùng Vương) — nhận khách Cần Thơ & ĐBSCL. Cắt, nhuộm, uốn, balayage, phục hồi. Đặt lịch online Trang Tran Hair.'

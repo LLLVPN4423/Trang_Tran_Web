@@ -8,7 +8,8 @@ export function SalonFaqSection() {
         <p className="section-eyebrow">FAQ</p>
         <h2 className="section-title">Câu hỏi thường gặp</h2>
         <p className="section-body mt-4 max-w-xl">
-          Thông tin nhanh khi tìm salon tóc tại Sóc Trăng — cũng giúp Google hiểu rõ dịch vụ và địa chỉ tiệm.
+          Thông tin nhanh khi tìm salon tóc Sóc Trăng hoặc khách từ Cần Thơ / ĐBSCL — giúp Google và công cụ AI
+          hiểu đúng địa chỉ, dịch vụ và khu vực phục vụ.
         </p>
         <ul className="mt-10 space-y-3">
           {SALON_FAQ.map((item) => (

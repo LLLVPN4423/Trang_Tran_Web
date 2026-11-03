@@ -18,8 +18,32 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
+      "@/shared/lib/productMedia": ["src/shared/lib/catalogMedia.ts"],
+      "@/shared/store/cartStore": ["src/shared/store/cartStoreLive.ts"],
+      "@/modules/catalog/ServiceDetailPage": ["src/modules/catalog/ServiceDetailLive.tsx"],
+      "@/modules/portfolio/sections/HeroSection": ["src/modules/portfolio/sections/HeroSectionLive.tsx"],
+      "@/modules/portfolio/PortfolioPage": ["src/modules/portfolio/PortfolioPageLive.tsx"],
+      "@/modules/admin/components/RevenueAdminPanel": ["src/modules/admin/components/RevenueAdminPanelLive.tsx"],
+      "@/modules/admin/lib/salonRevenue": ["src/modules/admin/lib/salonRevenueLive.ts"],
+      "@/modules/orders": ["src/modules/orders/mod.ts"],
+      "@/modules/orders/*": ["src/modules/orders/*"],
       "@/*": ["src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "src/shared/lib/productMedia.ts",
+    "src/shared/store/cartStore.ts",
+    "src/modules/catalog/ServiceDetailPage.tsx",
+    "src/modules/portfolio/PortfolioPage.tsx",
+    "src/modules/portfolio/sections/HeroSection.tsx",
+    "src/modules/admin/components/RevenueAdminPanel.tsx",
+    "src/modules/admin/lib/salonRevenue.ts",
+    "src/modules/orders/index.ts",
+    "src/**/*.restored.tsx",
+    "src/**/*.restored.ts",
+    "src/**/*.clean.tsx",
+    "src/**/*.ts.__fix",
+    "src/**/*.tsx.__fix"
+  ]
 }

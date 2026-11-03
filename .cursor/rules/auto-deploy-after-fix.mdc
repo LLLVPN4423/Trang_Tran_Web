@@ -1,0 +1,15 @@
+---
+description: Sau mỗi lần fix/feature xong thì deploy production ngay, không chờ user hỏi lại
+alwaysApply: true
+---
+
+# Auto-deploy after fix
+
+Khi hoàn thành một fix, UI change, hoặc feature sẵn sàng cho khách:
+
+1. **Deploy ngay** trong cùng lượt — không hỏi lại trừ khi thiếu credential/secret.
+2. **Frontend-only** → `scripts/deploy-pages.ps1` (hoặc tương đương: build frontend + `wrangler pages deploy dist --project-name=trangtran-hair --branch=main`).
+3. **Backend/API đổi** → deploy Cloud Run theo `DEPLOY.md` / workflow `deploy-cloudrun.yml`.
+4. **Cả hai** → Pages + Cloud Run.
+5. Sau deploy: smoke test nếu có (`scripts/smoke-test-production.js`), rồi báo URL production.
+6. Chỉ bỏ qua deploy khi thay đổi thuần docs/local-only và user không yêu cầu lên production.

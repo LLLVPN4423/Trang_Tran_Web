@@ -15,10 +15,11 @@ export function buildWebSiteJsonLd(origin: string) {
   return {
     '@type': 'WebSite',
     '@id': `${origin}/#website`,
-    name: SALON_PUBLIC.name,
-    alternateName: SALON_PUBLIC.nameVi,
+    // Tên ngắn — Google site name ưu tiên brand ngắn, không dùng "Cloudflare"
+    name: 'Trang Tran Hair',
+    alternateName: [SALON_PUBLIC.name, SALON_PUBLIC.nameVi, 'Salon Trang Tran'],
     url: origin,
-    description: `Salon tóc Sóc Trăng — nhuộm, uốn, balayage. ${SALON_PUBLIC.address}.`,
+    description: `Salon tóc Sóc Trăng — nhận khách Cần Thơ & ĐBSCL. Nhuộm, uốn, balayage. ${SALON_PUBLIC.address}.`,
     inLanguage: 'vi-VN',
     publisher: { '@id': `${origin}${SALON_ID}` },
   }
@@ -28,6 +29,7 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   '/catalog': 'Bảng giá dịch vụ',
   '/appointment': 'Đặt lịch',
   '/shop': 'Shop Moroccanoil',
+  '/khu-vuc': 'Khu vực phục vụ',
   '/booking': 'Thanh toán',
   '/login': 'Đăng nhập',
   '/register': 'Đăng ký',

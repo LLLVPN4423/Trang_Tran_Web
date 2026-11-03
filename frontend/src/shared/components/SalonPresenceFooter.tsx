@@ -9,7 +9,8 @@ export function SalonPresenceFooter() {
         <div>
           <p className="label-caps">{SALON_PUBLIC.nameVi}</p>
           <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-            Salon tóc tại Sóc Trăng — nhuộm, uốn, balayage, phục hồi. Đặt lịch online hoặc gọi{' '}
+            Salon tóc tại Sóc Trăng — nhận khách Cần Thơ & ĐBSCL. Nhuộm, uốn, balayage, phục hồi. Đặt lịch
+            online hoặc gọi{' '}
             <a href={`tel:${SALON_PUBLIC.phoneRaw}`} className="text-gold-700 transition hover:text-gold-300">
               {SALON_PUBLIC.phoneDisplay}
             </a>

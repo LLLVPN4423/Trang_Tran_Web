@@ -1,4 +1,5 @@
 import { SALON_META_KEYWORDS } from '@/shared/lib/salonKeywords'
+import { buildAreaServedJsonLd } from '@/shared/lib/salonServiceArea'
 
 /** Thông tin công khai salon — SEO, JSON-LD, CTA (đồng bộ với site content mặc định). */
 export const SALON_PUBLIC = {
@@ -18,6 +19,9 @@ export const SALON_PUBLIC = {
     'https://www.google.com/maps/search/?api=1&query=18-19+LK2+Tu%E1%BA%A5n+Lan+H%C3%B9ng+V%C6%B0%C6%A1ng+S%C3%B3c+Tr%C4%83ng',
   /** Ảnh preview khi share link (Facebook/Zalo) — file có sẵn trên host, không phí CDN riêng. */
   ogImagePath: '/images/hero/Hero.jpg',
+  /** Tiệm ở Sóc Trăng; nhận khách đi từ Cần Thơ & ĐBSCL (không giả địa chỉ Cần Thơ). */
+  serviceAreaSummary:
+    'Phục vụ khách Sóc Trăng và nhận khách từ Cần Thơ, Hậu Giang, Vĩnh Long, Bạc Liêu (Đồng bằng sông Cửu Long).',
 } as const
 
 export function salonOgImageUrl(origin: string = SALON_PUBLIC.siteUrl): string {
@@ -59,7 +63,18 @@ export function buildHairSalonJsonLd(origin: string = SALON_PUBLIC.siteUrl) {
       'https://www.tiktok.com/@trangtranhair',
     ],
     priceRange: '$$',
-    areaServed: { '@type': 'City', name: 'Sóc Trăng' },
+    areaServed: buildAreaServedJsonLd(),
+    knowsAbout: [
+      'nhuộm tóc',
+      'balayage',
+      'uốn tóc',
+      'duỗi tóc',
+      'phục hồi tóc',
+      'salon tóc Sóc Trăng',
+      'làm tóc Cần Thơ',
+      'salon tóc Đồng bằng sông Cửu Long',
+    ],
+    description: `${SALON_PUBLIC.nameVi} tại ${SALON_PUBLIC.address}. ${SALON_PUBLIC.serviceAreaSummary} Đặt lịch ${SALON_PUBLIC.phoneDisplay}.`,
     image: salonOgImageUrl(origin),
   }
 }

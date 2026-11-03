@@ -66,11 +66,48 @@ export default defineConfig(({ mode }) => {
 
     resolve: {
 
-      alias: {
+      alias: [
 
-        '@': path.resolve(__dirname, './src'),
+        // Ghost/corrupt NTFS names — resolve to Live replacements until chkdsk clears them.
 
-      },
+        {
+          find: '@/shared/lib/productMedia',
+          replacement: path.resolve(__dirname, './src/shared/lib/catalogMedia.ts'),
+        },
+        {
+          find: '@/shared/store/cartStore',
+          replacement: path.resolve(__dirname, './src/shared/store/cartStoreLive.ts'),
+        },
+        {
+          find: '@/modules/catalog/ServiceDetailPage',
+          replacement: path.resolve(__dirname, './src/modules/catalog/ServiceDetailLive.tsx'),
+        },
+        {
+          find: '@/modules/portfolio/sections/HeroSection',
+          replacement: path.resolve(__dirname, './src/modules/portfolio/sections/HeroSectionLive.tsx'),
+        },
+        {
+          find: '@/modules/portfolio/PortfolioPage',
+          replacement: path.resolve(__dirname, './src/modules/portfolio/PortfolioPageLive.tsx'),
+        },
+        {
+          find: '@/modules/admin/components/RevenueAdminPanel',
+          replacement: path.resolve(
+            __dirname,
+            './src/modules/admin/components/RevenueAdminPanelLive.tsx',
+          ),
+        },
+        {
+          find: '@/modules/admin/lib/salonRevenue',
+          replacement: path.resolve(__dirname, './src/modules/admin/lib/salonRevenueLive.ts'),
+        },
+        {
+          find: '@/modules/orders',
+          replacement: path.resolve(__dirname, './src/modules/orders/mod.ts'),
+        },
+        { find: '@', replacement: path.resolve(__dirname, './src') },
+
+      ],
 
     },
 
@@ -79,6 +116,25 @@ export default defineConfig(({ mode }) => {
     server: {
 
       port: 5173,
+
+      watch: {
+        // NTFS-corrupt ghost files crash chokidar lstat — ignore until chkdsk.
+        ignored: [
+          '**/productMedia.ts',
+          '**/cartStore.ts',
+          '**/ServiceDetailPage.tsx',
+          '**/PortfolioPage.tsx',
+          '**/HeroSection.tsx',
+          '**/RevenueAdminPanel.tsx',
+          '**/salonRevenue.ts',
+          '**/orders/index.ts',
+          '**/*.restored.ts',
+          '**/*.restored.tsx',
+          '**/*.clean.tsx',
+          '**/*.ts.__fix',
+          '**/*.tsx.__fix',
+        ],
+      },
 
       proxy: {
 

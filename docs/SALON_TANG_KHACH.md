@@ -12,6 +12,8 @@ Hướng dẫn vận hành **song song web** [trangtran-hair.pages.dev](https://
 
 → Khách tìm *salon tóc Sóc Trăng*, *nhuộm tóc Hùng Vương* sẽ thấy tiệm trên Maps.
 
+**AI / Cần Thơ:** xem [AI_GOI_Y_SALON.md](./AI_GOI_Y_SALON.md) — thêm *service areas* Cần Thơ trên GBP + trang web `/khu-vuc`.
+
 ## 2. Website (đã tối ưu kỹ thuật)
 
 - **SEO**: meta tiếng Việt, `robots.txt`, `sitemap.xml`, dữ liệu **HairSalon** (JSON-LD) cho Google.

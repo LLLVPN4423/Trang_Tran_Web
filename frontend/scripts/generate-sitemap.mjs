@@ -18,13 +18,13 @@ const API = (
 
 const today = new Date().toISOString().slice(0, 10)
 
+/** Chỉ URL công khai đáng index — bỏ login/register/booking (ít giá trị SEO). */
 const STATIC_ROUTES = [
   { loc: '/', priority: '1.0', changefreq: 'weekly' },
   { loc: '/catalog', priority: '0.9', changefreq: 'weekly' },
-  { loc: '/appointment', priority: '0.9', changefreq: 'weekly' },
+  { loc: '/appointment', priority: '0.95', changefreq: 'weekly' },
+  { loc: '/khu-vuc', priority: '0.9', changefreq: 'monthly' },
   { loc: '/shop', priority: '0.8', changefreq: 'weekly' },
-  { loc: '/booking', priority: '0.7', changefreq: 'monthly' },
-  { loc: '/register', priority: '0.4', changefreq: 'yearly' },
 ]
 
 async function fetchJson(path) {

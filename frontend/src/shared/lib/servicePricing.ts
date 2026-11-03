@@ -91,6 +91,7 @@ export function buildAppointmentPayload(
   lines: ServiceCartLine[],
   customerName: string,
   customerPhone: string,
+  preferredAt: string,
   customerNotes: string,
 ) {
   const serviceInterest = lines
@@ -116,6 +117,10 @@ export function buildAppointmentPayload(
     `**${formatVnd(estimateTotal)}**`,
     '',
     '_Giá chốt tại tiệm sau khi tư vấn._',
+    '',
+    '## Ngày/giờ mong muốn',
+    '',
+    preferredAt.trim(),
   ]
 
   if (customerNotes.trim()) {

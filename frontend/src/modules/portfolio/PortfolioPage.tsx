@@ -1,7 +1,7 @@
 import { ModuleErrorBoundary } from '@/shared/components/ModuleErrorBoundary'
 import { AppShell } from '@/shared/components/AppShell'
 import { SmoothScrollProvider } from '@/app/providers/SmoothScrollProvider'
-import { HeroSection } from './sections/HeroSection'
+import { HeroSection } from './sections/HeroSectionLive'
 import { ArtistSection } from './sections/ArtistSection'
 import { GallerySection } from './sections/GallerySection'
 import { LookbookSection } from './sections/LookbookSection'

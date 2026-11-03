@@ -16,4 +16,8 @@
     <ProjectReference Include="..\TrangTranHair.Infrastructure\TrangTranHair.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Controllers\SeedController.cs" />
+  </ItemGroup>
+
 </Project>

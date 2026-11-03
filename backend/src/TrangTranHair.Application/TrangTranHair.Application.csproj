@@ -16,4 +16,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Interfaces\IOrderRepository.cs" />
+    <Compile Remove="Interfaces\ICustomerRepository.cs" />
+    <Compile Remove="Interfaces\ICustomerService.cs" />
+    <Compile Remove="DTOs\OrderDtos.cs" />
+    <Compile Remove="DTOs\SiteContentDtos.cs" />
+  </ItemGroup>
+
 </Project>

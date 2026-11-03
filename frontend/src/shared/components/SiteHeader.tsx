@@ -31,8 +31,14 @@ export function SiteHeader({ onMenuClick, showMenuButton = true }: Props) {
               <span className="mt-1 block h-0.5 w-4 bg-current" />
             </button>
           )}
-          <Link to="/" className="font-serif text-lg tracking-wide text-ink sm:text-xl">
-            Trang Tran
+          <Link to="/" className="flex items-center" aria-label="Trang Tran Hair Salon">
+            <img
+              src="/logo.png"
+              alt="Trang Tran Hair Salon"
+              className="h-9 w-auto sm:h-10"
+              width={160}
+              height={40}
+            />
           </Link>
         </div>
 

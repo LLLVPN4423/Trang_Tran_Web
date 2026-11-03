@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <!-- NTFS-corrupt ghosts; content lives in *Live.cs until chkdsk clears names -->
+  <ItemGroup>
+    <Compile Remove="Enums\PromotionType.cs" />
+    <Compile Remove="Enums\PaymentMethod.cs" />
+  </ItemGroup>
+
 </Project>

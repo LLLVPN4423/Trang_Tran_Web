@@ -1,4 +1,4 @@
-import type { ProductResponse } from '@/shared/api/types'
+﻿import type { ProductResponse } from '@/shared/api/types'
 
 export const MAX_PRODUCT_GALLERY = 7
 

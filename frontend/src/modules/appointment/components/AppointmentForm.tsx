@@ -25,6 +25,7 @@ export function AppointmentForm() {
     const form = new FormData(formEl)
     const name = String(form.get('name') ?? '').trim()
     const phone = String(form.get('phone') ?? '').trim()
+    const preferredAt = String(form.get('preferredAt') ?? '').trim()
     const notes = String(form.get('notes') ?? '').trim()
 
     if (!name || !phone) {
@@ -33,7 +34,13 @@ export function AppointmentForm() {
       return
     }
 
-    const payload = buildAppointmentPayload(items, name, phone, notes)
+    if (!preferredAt) {
+      setError('Vui lòng ghi ngày/giờ mong muốn để salon gọi xác nhận lịch.')
+      setSubmitting(false)
+      return
+    }
+
+    const payload = buildAppointmentPayload(items, name, phone, preferredAt, notes)
 
     try {
       await createAppointment({
@@ -121,6 +128,23 @@ export function AppointmentForm() {
       </div>
 
       <div>
+        <label htmlFor="appointment-preferred-at" className="label-caps mb-2 block">
+          Ngày/giờ mong muốn <span className="text-gold-500">*</span>
+        </label>
+        <textarea
+          id="appointment-preferred-at"
+          name="preferredAt"
+          required
+          rows={2}
+          className="field-input resize-none"
+          placeholder="VD: Thứ 7 tuần này, sau 14h"
+        />
+        <p className="mt-1.5 text-xs text-ink-subtle">
+          Chưa chốt lịch — salon sẽ gọi xác nhận trong giờ mở cửa.
+        </p>
+      </div>
+
+      <div>
         <label htmlFor="appointment-notes" className="label-caps mb-2 block">
           Ghi chú thêm
         </label>
@@ -129,7 +153,7 @@ export function AppointmentForm() {
           name="notes"
           rows={3}
           className="field-input resize-none"
-          placeholder="Ngày/giờ mong muốn, tình trạng tóc..."
+          placeholder="Tình trạng tóc, dị ứng thuốc nhuộm..."
         />
       </div>
 

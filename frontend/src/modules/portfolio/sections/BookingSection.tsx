@@ -42,12 +42,21 @@ export function BookingSection() {
     setSuccess(false)
 
     const form = new FormData(formEl)
+    const preferredAt = String(form.get('preferredAt') ?? '').trim()
+    const extraNotes = String(form.get('notes') ?? '').trim()
+    if (!preferredAt) {
+      setError('Vui lòng ghi ngày/giờ mong muốn để salon gọi xác nhận lịch.')
+      setSubmitting(false)
+      return
+    }
+    const noteParts = ['## Ngày/giờ mong muốn', '', preferredAt]
+    if (extraNotes) noteParts.push('', '## Ghi chú khách', '', extraNotes)
     try {
       await createAppointment({
         customerName: String(form.get('name')).trim(),
         customerPhone: String(form.get('phone')).trim(),
         serviceInterest: String(form.get('service')),
-        notes: String(form.get('notes')).trim() || null,
+        notes: noteParts.join('\n'),
       })
       setSuccess(true)
       formEl.reset()
@@ -201,15 +210,31 @@ export function BookingSection() {
               </select>
             </div>
             <div>
+              <label htmlFor="preferredAt" className="label-caps mb-2 block">
+                Ngày/giờ mong muốn <span className="text-gold-500">*</span>
+              </label>
+              <textarea
+                id="preferredAt"
+                name="preferredAt"
+                required
+                rows={2}
+                className="field-input resize-none"
+                placeholder="VD: Thứ 7 tuần này, sau 14h"
+              />
+              <p className="mt-1.5 text-xs text-ink-subtle">
+                Chưa chốt lịch — salon sẽ gọi xác nhận trong giờ mở cửa.
+              </p>
+            </div>
+            <div>
               <label htmlFor="notes" className="label-caps mb-2 block">
-                Ghi chú
+                Ghi chú thêm
               </label>
               <textarea
                 id="notes"
                 name="notes"
                 rows={3}
                 className="field-input resize-none"
-                placeholder="Size tóc, mong muốn..."
+                placeholder="Tình trạng tóc, dị ứng thuốc nhuộm..."
               />
             </div>
             {user && <p className="text-xs text-ink-subtle">Đăng nhập với {user.email}</p>}

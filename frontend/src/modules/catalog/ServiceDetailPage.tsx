@@ -13,7 +13,6 @@ import { PageLayout } from '@/shared/components/PageLayout'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { ApiErrorState } from '@/shared/components/ApiErrorState'
 import { ProductGallery } from './components/ProductGallery'
-import { ProductVideo } from './components/ProductVideo'
 import { getCatalogGallery } from '@/shared/lib/productMedia'
 import {
   formatServiceCardPrice,
@@ -112,7 +111,12 @@ function ServiceDetailContent() {
         {!loading && !error && service && service.isActive && (
           <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:gap-14">
             <div>
-              <ProductGallery images={gallery} alt={service.name} />
+              <ProductGallery
+                images={gallery}
+                alt={service.name}
+                videoUrl={service.videoUrl}
+                aspectClassName="aspect-square sm:aspect-[4/5]"
+              />
             </div>
 
             <div>
@@ -204,9 +208,6 @@ function ServiceDetailContent() {
           </div>
         )}
 
-        {!loading && !error && service && service.isActive && (
-          <ProductVideo videoUrl={service.videoUrl} title={service.name} />
-        )}
       </div>
     </PageLayout>
   )

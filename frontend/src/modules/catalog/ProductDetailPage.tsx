@@ -10,7 +10,6 @@ import { PageLayout } from '@/shared/components/PageLayout'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { ApiErrorState } from '@/shared/components/ApiErrorState'
 import { ProductGalleryFromProduct } from './components/ProductGallery'
-import { ProductVideo } from './components/ProductVideo'
 import { getProductGallery } from '@/shared/lib/productMedia'
 
 export function ProductDetailPage() {
@@ -77,6 +76,7 @@ function ProductDetailContent() {
               <p className="mt-2 text-sm text-ink-subtle">
                 {outOfStock ? 'Hết hàng' : `Còn ${product.stock} sản phẩm`}
                 {galleryCount > 0 && ` · ${galleryCount} ảnh`}
+                {product.videoUrl && ' · Có video'}
               </p>
 
               {product.description && (
@@ -107,9 +107,6 @@ function ProductDetailContent() {
           </div>
         )}
 
-        {!loading && !error && product && product.isActive && (
-          <ProductVideo videoUrl={product.videoUrl} title={product.name} />
-        )}
       </div>
     </PageLayout>
   )

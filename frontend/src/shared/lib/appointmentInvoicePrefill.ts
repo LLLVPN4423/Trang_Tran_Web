@@ -203,8 +203,10 @@ export function extractCustomerNotesFromAppointment(notes: string | null | undef
   const marker = '## Ghi chú khách'
   const idx = md.indexOf(marker)
   if (idx < 0) return ''
-  return md
-    .slice(idx + marker.length)
+  const rest = md.slice(idx + marker.length)
+  const nextHeading = rest.search(/\n## /)
+  const body = nextHeading >= 0 ? rest.slice(0, nextHeading) : rest
+  return body
     .split('\n')
     .map((l) => l.trim())
     .filter(Boolean)

@@ -1,0 +1,18 @@
+---
+description: Mỗi lần thêm/xóa/sửa code phải cập nhật docs/TIEN_DO.md
+alwaysApply: true
+---
+
+# Cập nhật tiến độ sau mọi thay đổi code
+
+Khi hoàn thành lượt làm việc có **thêm / xóa / sửa** code (frontend, backend, scripts, config build/deploy, rules Cursor có ảnh hưởng vận hành):
+
+1. **Luôn cập nhật** `docs/TIEN_DO.md` trong cùng lượt — không chờ user nhắc.
+2. Sửa tối thiểu:
+   - Dòng **Cập nhật:** → ngày hôm nay
+   - Bảng **Trạng thái hiện tại** nếu hạng mục đổi
+   - Mục **Việc đã xong gần đây** hoặc **Việc còn lại** cho khớp thực tế
+   - **Quyết định quan trọng** nếu có quyết định mới
+3. Không ghi log từng dòng diff; ghi **ý nghĩa** (đã làm gì, ảnh hưởng production/SEO/admin thế nào).
+4. Được bỏ qua khi lượt **chỉ** sửa chính `docs/TIEN_DO.md`, hoặc đổi thuần typo docs không liên quan vận hành — vẫn cập nhật ngày nếu sửa nội dung tiến độ có ý nghĩa.
+5. Nếu user yêu cầu commit/push: **include** `docs/TIEN_DO.md` cùng thay đổi code.

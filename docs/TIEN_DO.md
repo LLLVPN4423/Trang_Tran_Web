@@ -1,6 +1,7 @@
 # Tiến độ & ngữ cảnh — Trang Tran Hair Web
 
 **Cập nhật:** 2026-11-03  
+**Rule:** mỗi lần thêm/xóa/sửa code → cập nhật file này (`.cursor/rules/update-tien-do.mdc`).  
 **Dùng file này** khi mở agent/chat mới — đọc trước transcript Cursor (nếu cần chi tiết).
 
 **Production:** https://trangtran-hair.pages.dev  
@@ -19,6 +20,7 @@
 | Trang `/khu-vuc` (Cần Thơ / ĐBSCL) | Có URL + sitemap; **ẩn menu** khách (sidebar/footer) |
 | `llms.txt` + robots AI bots | Đã lên production |
 | Auto-deploy rule Cursor | `.cursor/rules/auto-deploy-after-fix.mdc` |
+| Rule cập nhật tiến độ | `.cursor/rules/update-tien-do.mdc` — bắt buộc sửa `docs/TIEN_DO.md` sau mỗi thay đổi code |
 | Disk NTFS / root `package.json` | Đôi khi lỗi đọc — build từ `frontend/` + load `.env` gốc |
 
 ---
@@ -39,6 +41,8 @@
 - [x] FAQ + JSON-LD khu vực Cần Thơ / ĐBSCL
 - [x] Docs: `AI_GOI_Y_SALON.md`, GSC, GBP mô tả, tăng khách
 - [x] Ẩn link `/khu-vuc` khỏi sidebar + footer
+- [x] Push git `788f2c9` + `9d9d794` (tiến độ, SEO/AI, Live bypass, hướng dẫn khách)
+- [x] Rule Cursor: bắt buộc cập nhật `docs/TIEN_DO.md` sau mọi thay đổi code
 
 ---
 

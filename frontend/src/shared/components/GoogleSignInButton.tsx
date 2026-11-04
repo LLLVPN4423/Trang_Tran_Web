@@ -3,7 +3,13 @@ import { useAuth } from '@/shared/auth/AuthProvider'
 import { getAuthErrorMessage } from '@/shared/auth/authErrors'
 import { isInAppBrowser } from '@/shared/auth/firebase'
 
-export function GoogleSignInButton() {
+interface Props {
+  /** Extra disable (e.g. register page privacy acknowledgement not checked). */
+  disabled?: boolean
+  disabledHint?: string
+}
+
+export function GoogleSignInButton({ disabled = false, disabledHint }: Props = {}) {
   const { loginWithGoogle, isRedirectProcessing } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -11,6 +17,10 @@ export function GoogleSignInButton() {
   const inApp = isInAppBrowser()
 
   const handleClick = async () => {
+    if (disabled) {
+      setError(disabledHint ?? 'Vui lòng xác nhận đã đọc thông báo bảo mật trước khi tiếp tục.')
+      return
+    }
     setError(null)
     setLoading(true)
     try {
@@ -36,12 +46,16 @@ export function GoogleSignInButton() {
       <button
         type="button"
         onClick={handleClick}
-        disabled={busy || inApp}
+        disabled={busy || inApp || disabled}
         className="flex w-full items-center justify-center gap-3 border border-edge-strong bg-elevated/50 py-4 text-xs font-medium uppercase tracking-[0.25em] text-ink-secondary transition hover:border-edge-strong hover:bg-elevated disabled:opacity-50"
       >
         <GoogleIcon />
         {busy ? 'Đang kết nối Google...' : 'Tiếp tục với Google'}
       </button>
+
+      {disabled && disabledHint && !error && (
+        <p className="mt-3 text-center text-xs text-ink-subtle">{disabledHint}</p>
+      )}
 
       {error && (
         <p className="mt-3 rounded-sm border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">

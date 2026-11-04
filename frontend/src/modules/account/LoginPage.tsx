@@ -73,14 +73,32 @@ interface AuthFormProps {
   onSubmit: (email: string, password: string, name?: string, phone?: string) => Promise<void>
   showProfileFields?: boolean
   footer?: ReactNode
+  /** Extra UI above the submit button (e.g. privacy disclosure lives outside on register). */
+  beforeSubmit?: ReactNode
+  /** When true, submit is disabled (e.g. privacy notice not acknowledged). */
+  submitDisabled?: boolean
+  submitDisabledHint?: string
 }
 
-export function AuthForm({ title, subtitle, onSubmit, showProfileFields, footer }: AuthFormProps) {
+export function AuthForm({
+  title,
+  subtitle,
+  onSubmit,
+  showProfileFields,
+  footer,
+  beforeSubmit,
+  submitDisabled,
+  submitDisabledHint,
+}: AuthFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (submitDisabled) {
+      setError(submitDisabledHint ?? 'Vui lòng xác nhận đã đọc thông báo bảo mật trước khi tiếp tục.')
+      return
+    }
     setError(null)
     setLoading(true)
     const form = new FormData(e.currentTarget)
@@ -114,6 +132,8 @@ export function AuthForm({ title, subtitle, onSubmit, showProfileFields, footer 
         <Field label="Email" name="email" type="email" required />
         <Field label="Mật khẩu" name="password" type="password" required minLength={6} />
 
+        {beforeSubmit}
+
         {error && (
           <p className="rounded-sm border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
             {error}
@@ -122,11 +142,14 @@ export function AuthForm({ title, subtitle, onSubmit, showProfileFields, footer 
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || submitDisabled}
           className="w-full bg-gold-500 py-4 text-xs font-medium uppercase tracking-[0.3em] text-canvas transition hover:bg-gold-500 disabled:opacity-50"
         >
           {loading ? 'Đang xử lý...' : title}
         </button>
+        {submitDisabled && submitDisabledHint && (
+          <p className="text-center text-xs text-ink-subtle">{submitDisabledHint}</p>
+        )}
       </form>
 
       {footer && <div className="mt-8">{footer}</div>}

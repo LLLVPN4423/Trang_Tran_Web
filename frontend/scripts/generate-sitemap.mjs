@@ -25,6 +25,13 @@ const STATIC_ROUTES = [
   { loc: '/appointment', priority: '0.95', changefreq: 'weekly' },
   { loc: '/khu-vuc', priority: '0.9', changefreq: 'monthly' },
   { loc: '/shop', priority: '0.8', changefreq: 'weekly' },
+  // Phase 1A legal pages (public, indexable)
+  { loc: '/chinh-sach-bao-mat', priority: '0.5', changefreq: 'monthly' },
+  { loc: '/dieu-khoan-giao-dich', priority: '0.5', changefreq: 'monthly' },
+  { loc: '/chinh-sach-thanh-toan', priority: '0.5', changefreq: 'monthly' },
+  { loc: '/chinh-sach-giao-hang-doi-tra', priority: '0.5', changefreq: 'monthly' },
+  { loc: '/lien-he-khieu-nai', priority: '0.4', changefreq: 'monthly' },
+  { loc: '/thong-tin-kinh-doanh', priority: '0.5', changefreq: 'monthly' },
 ]
 
 async function fetchJson(path) {

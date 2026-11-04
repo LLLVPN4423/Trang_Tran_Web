@@ -30,6 +30,7 @@ const TITLES: Record<string, string> = {
   '/admin/site-content': 'Nội dung & liên hệ',
   '/admin/promotions': 'Khuyến mãi',
   '/admin/customers': 'Khách hàng',
+  '/admin/privacy-requests': 'Yêu cầu quyền riêng tư',
   '/admin/tools': 'Công cụ kỹ thuật',
 }
 
@@ -213,6 +214,11 @@ export function AdminOverview() {
           { to: '/admin/site-content', label: 'Nội dung & liên hệ', desc: 'SĐT, địa chỉ, Facebook, Portfolio — tab đầu tiên trên điện thoại' },
           { to: '/admin/promotions', label: 'Khuyến mãi', desc: 'Tạo/sửa mã giảm giá' },
           { to: '/admin/customers', label: 'Khách hàng', desc: 'Điểm tích lũy, điều chỉnh thủ công' },
+          {
+            to: '/admin/privacy-requests',
+            label: 'Yêu cầu quyền riêng tư',
+            desc: 'Tiếp nhận DSR: truy cập, sửa, xóa, hạn chế — không tự xóa dữ liệu',
+          },
         ].map((card) => (
           <Link
             key={card.to}

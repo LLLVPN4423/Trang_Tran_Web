@@ -8,6 +8,7 @@ import {
 import type { OrderResponse } from '@/shared/api/types'
 import { formatVnd } from '@/shared/api/types'
 import { ApiErrorState } from '@/shared/components/ApiErrorState'
+import { FormLegalNotice } from '@/shared/components/FormLegalNotice'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { PageLayout } from '@/shared/components/PageLayout'
 import {
@@ -310,6 +311,16 @@ export function OrderDetailPage() {
             <p className="mt-3 text-xs text-ink-subtle">Salon sẽ liên hệ bạn sớm nhất.</p>
           </div>
         )}
+
+        <FormLegalNotice
+          className="mt-10"
+          preface="Tham khảo chính sách thanh toán và giao hàng / đổi trả nếu cần hỗ trợ về đơn này."
+          links={[
+            { to: '/chinh-sach-thanh-toan', label: 'Chính sách thanh toán' },
+            { to: '/chinh-sach-giao-hang-doi-tra', label: 'Giao hàng & đổi trả' },
+            { to: '/lien-he-khieu-nai', label: 'Liên hệ & khiếu nại' },
+          ]}
+        />
 
         <div className="mt-12 flex flex-wrap gap-4 text-xs uppercase tracking-widest">
           {user ? (

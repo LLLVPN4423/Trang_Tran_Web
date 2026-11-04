@@ -14,6 +14,7 @@ import { useAuth } from '@/shared/auth/AuthProvider'
 import { useCartStore } from '@/shared/store/cartStore'
 import { selectCartSubtotal } from '@/shared/store/cartSelectors'
 import { ApiErrorState } from '@/shared/components/ApiErrorState'
+import { FormLegalNotice } from '@/shared/components/FormLegalNotice'
 import {
   FULFILLMENT_METHOD_LABELS,
   PAYMENT_METHOD_LABELS,
@@ -265,15 +266,28 @@ export function CheckoutForm({ onSuccess }: Props) {
         ))}
         {paymentMethod === 'BankTransfer' && (
           <p className="text-xs text-ink-subtle">
-            Quét QR chuyển khoản — salon xác nhận sau khi nhận tiền (giữ tồn 15 phút).
+            Quét QR chuyển khoản — salon xác nhận sau khi nhận tiền (giữ tồn 15 phút).{' '}
+            <Link to="/chinh-sach-thanh-toan" className="text-gold-700 hover:text-gold-300 hover:underline">
+              Chính sách thanh toán
+            </Link>
           </p>
         )}
         {paymentMethod === 'COD' && (
           <p className="text-xs text-ink-subtle">
-            Salon gọi xác nhận — trả tiền khi nhận hàng (giữ tồn 48 giờ).
+            Salon gọi xác nhận — trả tiền khi nhận hàng (giữ tồn 48 giờ).{' '}
+            <Link to="/chinh-sach-thanh-toan" className="text-gold-700 hover:text-gold-300 hover:underline">
+              Chính sách thanh toán
+            </Link>
           </p>
         )}
       </fieldset>
+
+      {fulfillmentMethod === 'Delivery' && (
+        <FormLegalNotice
+          preface="Phí giao và điều kiện đổi trả được mô tả trong chính sách (một số mục đang hoàn thiện)."
+          links={[{ to: '/chinh-sach-giao-hang-doi-tra', label: 'Giao hàng & đổi trả' }]}
+        />
+      )}
 
       <div>
         <label className="mb-2 block text-xs uppercase tracking-widest text-ink-subtle">Mã khuyến mãi</label>
@@ -353,6 +367,15 @@ export function CheckoutForm({ onSuccess }: Props) {
           placeholder="Giờ giao hàng, yêu cầu đặc biệt..."
         />
       </div>
+
+      <FormLegalNotice
+        preface="Kiểm tra lại sản phẩm, địa chỉ và tổng tiền trước khi gửi đơn."
+        links={[
+          { to: '/dieu-khoan-giao-dich', label: 'Điều khoản giao dịch' },
+          { to: '/chinh-sach-thanh-toan', label: 'Thanh toán' },
+          { to: '/chinh-sach-giao-hang-doi-tra', label: 'Giao hàng & đổi trả' },
+        ]}
+      />
 
       <button
         type="submit"

@@ -11,6 +11,14 @@ import { BookingPage } from '@/modules/booking'
 import { AppointmentPage } from '@/modules/appointment'
 import { OrderDetailPage } from '@/modules/orders'
 import { LoginPage, RegisterPage, AccountPage, LoyaltyPage } from '@/modules/account'
+import {
+  PrivacyPolicyPage,
+  TransactionTermsPage,
+  PaymentPolicyPage,
+  ShippingReturnsPage,
+  ContactComplaintsPage,
+  BusinessInfoPage,
+} from '@/modules/legal'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { NotFoundPage } from '@/shared/components/NotFoundPage'
 import { ModuleErrorBoundary } from '@/shared/components/ModuleErrorBoundary'
@@ -42,6 +50,11 @@ const PromotionsAdminPanel = lazyWithRetry(() =>
 )
 const CustomersAdminPanel = lazyWithRetry(() =>
   import('@/modules/admin/components/CustomersAdminPanel').then((m) => ({ default: m.CustomersAdminPanel })),
+)
+const PrivacyRequestsAdminPanel = lazyWithRetry(() =>
+  import('@/modules/admin/components/PrivacyRequestsAdminPanel').then((m) => ({
+    default: m.PrivacyRequestsAdminPanel,
+  })),
 )
 const SiteContentAdminPanel = lazyWithRetry(() =>
   import('@/modules/admin/components/SiteContentAdminPanel').then((m) => ({ default: m.SiteContentAdminPanel })),
@@ -92,6 +105,12 @@ export function App() {
               </ModuleErrorBoundary>
             }
           />
+          <Route path="/chinh-sach-bao-mat" element={<PrivacyPolicyPage />} />
+          <Route path="/dieu-khoan-giao-dich" element={<TransactionTermsPage />} />
+          <Route path="/chinh-sach-thanh-toan" element={<PaymentPolicyPage />} />
+          <Route path="/chinh-sach-giao-hang-doi-tra" element={<ShippingReturnsPage />} />
+          <Route path="/lien-he-khieu-nai" element={<ContactComplaintsPage />} />
+          <Route path="/thong-tin-ho-kinh-doanh" element={<BusinessInfoPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route
@@ -149,6 +168,7 @@ export function App() {
               }
             />
             <Route path="customers" element={<CustomersAdminPanel />} />
+            <Route path="privacy-requests" element={<PrivacyRequestsAdminPanel />} />
             <Route
               path="tools"
               element={

@@ -33,6 +33,12 @@ import type {
   SiteContentResponse,
   UpdateSiteContentRequest,
   LookbookAspect,
+  CreatePrivacyRequestRequest,
+  PrivacyRequestCustomerResponse,
+  PrivacyRequestAdminResponse,
+  PrivacyRequestType,
+  PrivacyRequestStatus,
+  AdminUpdatePrivacyRequestRequest,
 } from './types'
 
 export async function fetchServices(): Promise<ServiceResponse[]> {
@@ -301,6 +307,49 @@ export async function updateCustomerMe(request: UpdateCustomerRequest): Promise<
 
 export async function fetchAllCustomers(): Promise<CustomerResponse[]> {
   const { data } = await apiClient.get<CustomerResponse[]>('/api/customers')
+  return data
+}
+
+export async function createPrivacyRequest(
+  request: CreatePrivacyRequestRequest,
+): Promise<PrivacyRequestCustomerResponse> {
+  const { data } = await apiClient.post<PrivacyRequestCustomerResponse>('/api/privacy-requests', request)
+  return data
+}
+
+export async function fetchMyPrivacyRequests(): Promise<PrivacyRequestCustomerResponse[]> {
+  const { data } = await apiClient.get<PrivacyRequestCustomerResponse[]>('/api/privacy-requests/me')
+  return data
+}
+
+export async function fetchMyPrivacyRequest(id: string): Promise<PrivacyRequestCustomerResponse> {
+  const { data } = await apiClient.get<PrivacyRequestCustomerResponse>(`/api/privacy-requests/me/${id}`)
+  return data
+}
+
+export async function fetchAdminPrivacyRequests(params?: {
+  type?: PrivacyRequestType
+  status?: PrivacyRequestStatus
+}): Promise<PrivacyRequestAdminResponse[]> {
+  const { data } = await apiClient.get<PrivacyRequestAdminResponse[]>('/api/privacy-requests', {
+    params: {
+      ...(params?.type ? { type: params.type } : {}),
+      ...(params?.status ? { status: params.status } : {}),
+    },
+  })
+  return data
+}
+
+export async function fetchAdminPrivacyRequest(id: string): Promise<PrivacyRequestAdminResponse> {
+  const { data } = await apiClient.get<PrivacyRequestAdminResponse>(`/api/privacy-requests/${id}`)
+  return data
+}
+
+export async function updateAdminPrivacyRequest(
+  id: string,
+  request: AdminUpdatePrivacyRequestRequest,
+): Promise<PrivacyRequestAdminResponse> {
+  const { data } = await apiClient.patch<PrivacyRequestAdminResponse>(`/api/privacy-requests/${id}`, request)
   return data
 }
 

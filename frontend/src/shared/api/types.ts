@@ -274,6 +274,81 @@ export interface CustomerResponse {
   createdAt: string
 }
 
+export type PrivacyRequestType =
+  | 'Access'
+  | 'Correction'
+  | 'Deletion'
+  | 'Restriction'
+  | 'Other'
+
+export type PrivacyRequestStatus =
+  | 'Submitted'
+  | 'IdentityVerificationRequired'
+  | 'UnderReview'
+  | 'MoreInformationRequired'
+  | 'Approved'
+  | 'Rejected'
+  | 'Completed'
+
+export interface PrivacyRequestHistoryCustomerItem {
+  at: string
+  actorRole: string
+  fromStatus: PrivacyRequestStatus | null
+  toStatus: PrivacyRequestStatus
+  customerVisibleNote: string | null
+}
+
+export interface PrivacyRequestHistoryAdminItem {
+  at: string
+  actorUid: string
+  actorRole: string
+  fromStatus: PrivacyRequestStatus | null
+  toStatus: PrivacyRequestStatus
+  customerVisibleNote: string | null
+  internalNote: string | null
+}
+
+export interface PrivacyRequestCustomerResponse {
+  id: string
+  type: PrivacyRequestType
+  description: string
+  status: PrivacyRequestStatus
+  customerVisibleResult: string | null
+  createdAt: string
+  updatedAt: string | null
+  history: PrivacyRequestHistoryCustomerItem[]
+}
+
+export interface PrivacyRequestAdminResponse {
+  id: string
+  customerFirebaseUid: string
+  customerId: string | null
+  customerNameSnapshot: string | null
+  customerEmailSnapshot: string | null
+  customerPhoneSnapshot: string | null
+  type: PrivacyRequestType
+  description: string
+  status: PrivacyRequestStatus
+  customerVisibleResult: string | null
+  internalNotes: string | null
+  assignedAdminUid: string | null
+  createdAt: string
+  updatedAt: string | null
+  history: PrivacyRequestHistoryAdminItem[]
+}
+
+export interface CreatePrivacyRequestRequest {
+  type: PrivacyRequestType
+  description: string
+}
+
+export interface AdminUpdatePrivacyRequestRequest {
+  status: PrivacyRequestStatus
+  customerVisibleResult?: string | null
+  customerVisibleNote?: string | null
+  internalNote?: string | null
+}
+
 export interface SyncCustomerRequest {
   name: string
   phone: string

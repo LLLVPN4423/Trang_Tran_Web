@@ -1,0 +1,6 @@
+export { PrivacyPolicyPage } from './pages/PrivacyPolicyPage'
+export { TransactionTermsPage } from './pages/TransactionTermsPage'
+export { PaymentPolicyPage } from './pages/PaymentPolicyPage'
+export { ShippingReturnsPage } from './pages/ShippingReturnsPage'
+export { ContactComplaintsPage } from './pages/ContactComplaintsPage'
+export { BusinessInfoPage } from './pages/BusinessInfoPage'

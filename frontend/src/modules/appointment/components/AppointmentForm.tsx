@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { createAppointment } from '@/shared/api/endpoints'
 import { useAuth } from '@/shared/auth/AuthProvider'
+import { FormLegalNotice } from '@/shared/components/FormLegalNotice'
 import { buildAppointmentPayload } from '@/shared/lib/servicePricing'
 import { useServiceCartStore } from '@/shared/store/serviceCartStore'
 
@@ -158,6 +159,14 @@ export function AppointmentForm() {
       </div>
 
       {user && <p className="text-xs text-ink-subtle">Đăng nhập với {user.email}</p>}
+
+      <FormLegalNotice
+        preface="Gửi form là yêu cầu đặt lịch — chưa phải lịch đã được xác nhận. Salon sẽ liên hệ sau."
+        links={[
+          { to: '/dieu-khoan-giao-dich', label: 'Điều khoản giao dịch' },
+          { to: '/chinh-sach-bao-mat', label: 'Chính sách bảo mật' },
+        ]}
+      />
 
       <button type="submit" disabled={submitting} className="btn-gold w-full">
         {submitting ? 'Đang gửi...' : 'Gửi yêu cầu đặt lịch'}

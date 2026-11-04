@@ -21,11 +21,13 @@ import { formatVnd } from '@/shared/api/types'
 import { AppointmentNotesView } from '@/shared/lib/appointmentNotes'
 import { FULFILLMENT_STATUS_LABELS } from '@/shared/lib/orderFulfillment'
 import { FULFILLMENT_METHOD_LABELS, normalizeFulfillmentMethod } from '@/shared/lib/orderLabels'
+import { FormLegalNotice } from '@/shared/components/FormLegalNotice'
 import { PageLayout } from '@/shared/components/PageLayout'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { ApiErrorState } from '@/shared/components/ApiErrorState'
+import { PrivacyCenterSection } from './PrivacyCenterSection'
 
-type AccountTab = 'overview' | 'points' | 'orders' | 'appointments' | 'profile'
+type AccountTab = 'overview' | 'points' | 'orders' | 'appointments' | 'profile' | 'privacy'
 
 const TAB_LABELS: Record<AccountTab, string> = {
   overview: 'Tổng quan',
@@ -33,9 +35,10 @@ const TAB_LABELS: Record<AccountTab, string> = {
   orders: 'Đơn hàng',
   appointments: 'Lịch hẹn',
   profile: 'Hồ sơ',
+  privacy: 'Quyền riêng tư',
 }
 
-const VALID_TABS = new Set<AccountTab>(['overview', 'points', 'orders', 'appointments', 'profile'])
+const VALID_TABS = new Set<AccountTab>(['overview', 'points', 'orders', 'appointments', 'profile', 'privacy'])
 
 export function AccountPage() {
   const { user, customerProfile, isLoading, refreshProfile } = useAuth()
@@ -234,6 +237,13 @@ export function AccountPage() {
             onSaved={refreshProfile}
           />
         )}
+
+        {activeTab === 'privacy' && (
+          <PrivacyCenterSection
+            profile={customerProfile}
+            onGoToProfile={() => setTab('profile')}
+          />
+        )}
       </div>
     </PageLayout>
   )
@@ -318,6 +328,15 @@ function OverviewSection({
           </div>
         )}
       </div>
+
+      <FormLegalNotice
+        preface="Tài liệu hỗ trợ & quyền riêng tư"
+        links={[
+          { to: '/chinh-sach-bao-mat', label: 'Chính sách bảo mật' },
+          { to: '/lien-he-khieu-nai', label: 'Liên hệ & khiếu nại' },
+          { to: '/dieu-khoan-giao-dich', label: 'Điều khoản giao dịch' },
+        ]}
+      />
     </div>
   )
 }

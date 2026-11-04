@@ -21,7 +21,7 @@
 | Trang `/khu-vuc` | Có URL + sitemap; **ẩn menu** khách |
 | **Security & Legal audit (docs-only)** | **Xong báo cáo** — `docs/audit/*` — **chờ duyệt remediation** (chưa sửa code) |
 | **Master readiness planning (docs-only)** | **Xong** — `docs/planning/*` (2026-11-04) — **chờ owner duyệt trước khi implement** |
-| **Phase 1 Legal system** | **1A–1D** — đang chuẩn bị merge `release/phase-1a-1d-integration-test` → `main` (Pages + Cloud Run) |
+| **Phase 1 Legal system** | **1A–1D đã lên production** — PR #1 merge `80263a2`; Pages Git + Cloud Run API; smoke **40/40** |
 | Auto-deploy / TIEN_DO rules | `.cursor/rules/*` |
 | Disk NTFS / root `package.json` | Đôi khi lỗi đọc — build từ `frontend/` |
 
@@ -48,7 +48,8 @@
 - [x] **Phase 1B 2026-11-04:** Footer 3 nhóm + contextual links (register/appointment/checkout/order/account) — **build/preview PASS; no deploy/commit**
 - [x] **Phase 1C 2026-11-04:** Register privacy disclosure + acknowledgement gate (≠ consent); marketing deferred to 1F — **build/preview PASS; no deploy/commit**
 - [x] **Phase 1D audit 2026-11-04:** `PHASE_1D_AUDIT_REPORT.md` — Profile PASS/PARTIAL; privacy-request workflow MISSING
-- [x] **Phase 1D implement 2026-11-04:** WP1–WP5 + WP7; WP6 accessToken audit-only; reports `PHASE_1D_IMPLEMENTATION/TEST/PRIVACY_RIGHTS` + `PHASE_1D_WP6_ACCESSTOKEN_AUDIT` — **build + 25 unit tests PASS; no commit/deploy**
+- [x] **Phase 1D implement 2026-11-04:** WP1–WP5 + WP7; WP6 accessToken audit-only; reports `PHASE_1D_IMPLEMENTATION/TEST/PRIVACY_RIGHTS` + `PHASE_1D_WP6_ACCESSTOKEN_AUDIT`
+- [x] **Phase 1A–1D production 2026-11-04:** merge PR #1 → `main` (`80263a2`); Cloud Run privacy API **401**/not 404; Pages production legal + Privacy Center; smoke **40/40**
 
 ---
 
@@ -56,11 +57,12 @@
 
 ### Chờ owner
 
-1. **Kiểm thử Phase 1A–1D** trên branch `release/phase-1a-1d-integration-test` (`f3422ee`) — **chưa merge/deploy main**; rồi mới cho Phase 1E.
-2. Điền `OWNER_INPUT_REPORT.md` / checklist HKD + chính sách giao-hủy-hoàn + liên hệ khiếu nại/DSR; retention trước khi anonymize.
-3. **Duyệt remediation** bảo mật theo `docs/audit/*` / backlog — tách khỏi Phase 1 legal.
-4. Xác nhận giữ endpoint SePay nhưng **không** bật làm verifier live.
-5. Duyệt kế hoạch tổng `MASTER_READINESS_PLAN.md` nếu chưa.
+1. **Owner UAT trên production** (legal pages, register disclosure, Account → Quyền riêng tư, Admin privacy) — rồi mới duyệt Phase 1E.
+2. Thêm GitHub secrets `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (Actions Pages workflow đang fail; Git integration vẫn deploy được).
+3. Điền `OWNER_INPUT_REPORT.md` / checklist HKD + chính sách giao-hủy-hoàn + liên hệ khiếu nại/DSR; retention trước khi anonymize.
+4. **Duyệt remediation** bảo mật theo `docs/audit/*` / backlog — tách khỏi Phase 1 legal.
+5. Xác nhận giữ endpoint SePay nhưng **không** bật làm verifier live.
+6. Duyệt kế hoạch tổng `MASTER_READINESS_PLAN.md` nếu chưa.
 
 ### Vận hành / SEO
 

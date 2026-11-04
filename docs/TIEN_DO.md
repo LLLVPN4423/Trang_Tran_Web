@@ -21,7 +21,7 @@
 | Trang `/khu-vuc` | Có URL + sitemap; **ẩn menu** khách |
 | **Security & Legal audit (docs-only)** | **Xong báo cáo** — `docs/audit/*` — **chờ duyệt remediation** (chưa sửa code) |
 | **Master readiness planning (docs-only)** | **Xong** — `docs/planning/*` (2026-11-04) — **chờ owner duyệt trước khi implement** |
-| **Phase 1 Legal system** | **1A–1D checkpoint** — branch `release/phase-1a-1d-integration-test` (không push `main`); **chờ owner test trước 1E** |
+| **Phase 1 Legal system** | **1A–1D** — đang chuẩn bị merge `release/phase-1a-1d-integration-test` → `main` (Pages + Cloud Run) |
 | Auto-deploy / TIEN_DO rules | `.cursor/rules/*` |
 | Disk NTFS / root `package.json` | Đôi khi lỗi đọc — build từ `frontend/` |
 
@@ -56,7 +56,7 @@
 
 ### Chờ owner
 
-1. **Duyệt checkpoint Phase 1D** (commit/push message đề xuất) — **không** tự deploy; rồi mới cho Phase 1E.
+1. **Kiểm thử Phase 1A–1D** trên branch `release/phase-1a-1d-integration-test` (`f3422ee`) — **chưa merge/deploy main**; rồi mới cho Phase 1E.
 2. Điền `OWNER_INPUT_REPORT.md` / checklist HKD + chính sách giao-hủy-hoàn + liên hệ khiếu nại/DSR; retention trước khi anonymize.
 3. **Duyệt remediation** bảo mật theo `docs/audit/*` / backlog — tách khỏi Phase 1 legal.
 4. Xác nhận giữ endpoint SePay nhưng **không** bật làm verifier live.

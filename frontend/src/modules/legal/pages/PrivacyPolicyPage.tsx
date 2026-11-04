@@ -91,9 +91,13 @@ export function PrivacyPolicyPage() {
           Tùy điều kiện pháp luật áp dụng, bạn có thể có quyền được biết, truy cập, chỉnh sửa, xóa, hạn chế xử lý, rút sự đồng ý (khi xử lý dựa trên đồng ý), và khiếu nại. Một số dữ liệu giao dịch có thể phải giữ lại theo nghĩa vụ pháp lý khác — yêu cầu xóa không được hiểu là xóa ngay lập tức mọi hồ sơ đơn hàng.
         </p>
         <p>
-          Cơ chế gửi yêu cầu quyền dữ liệu trên tài khoản sẽ được bổ sung ở giai đoạn triển khai tiếp theo. Hiện tại kênh liên hệ chính thức:
+          Nếu đã có tài khoản, bạn có thể xem nhóm dữ liệu đang xử lý và gửi yêu cầu quyền riêng tư tại{' '}
+          <Link to="/account?tab=privacy" className="text-gold-700 hover:text-gold-300">
+            Tài khoản → Quyền riêng tư
+          </Link>
+          . Yêu cầu xóa / hạn chế được nhân viên tiếp nhận và đánh giá — hệ thống không tự xóa đơn hàng hay thanh toán.
         </p>
-        <LegalFieldView label="Kênh yêu cầu dữ liệu cá nhân" field={businessInfo.privacyRequestContact} />
+        <LegalFieldView label="Kênh yêu cầu dữ liệu cá nhân (bổ sung)" field={businessInfo.privacyRequestContact} />
         <p>
           Bạn cũng có thể dùng trang{' '}
           <Link to="/lien-he-khieu-nai" className="text-gold-700 hover:text-gold-300">
